@@ -23,6 +23,13 @@ public interface BooruClient {
   public Request<CommentList> commentListRequest(long postId, Listener<CommentList> listener, ErrorListener errorListener);
   
   /**
+   * Checks if current API endpoint requires authentication.
+   * 
+   * @return Return true if current endpoint uses HTTP Basic Auth.
+   */
+  public boolean requiresAuthentication();
+  
+  /**
    * Get default query to search for when application is first launched.
    * 
    * @return Default query. Should be something like "rating: safe"

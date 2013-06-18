@@ -13,6 +13,7 @@ import java.util.Date;
 public class Image {
 	/** Obscenity rating */
 	public enum ObscenityRating {
+	    UNDEFINED,
 		SAFE,
 		QUESTIONABLE,
 		EXPLICIT
