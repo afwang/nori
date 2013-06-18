@@ -223,7 +223,7 @@ public class DanbooruLegacy implements BooruClient {
           }
           
           // Shimmie is dumb.
-          if (mApiSubtype == ApiSubtype.GELBOORU) {
+          if (mApiSubtype == ApiSubtype.SHIMMIE2) {
             image.sampleUrl = image.fileUrl;
             image.sampleHeight = image.height;
             image.sampleWidth = image.width;
