@@ -42,7 +42,14 @@ public class DanbooruLegacy implements BooruClient {
   }
   private class SearchResultRequest extends Request<SearchResult> {
     private Listener<SearchResult> mListener;
-
+    
+    /**
+     * Creates a new HTTP GET Request
+     * 
+     * @param url URL to fetch
+     * @param listener Listener to receive the {@link SearchResult} response
+     * @param errorListener Error listener, or null to ignore errors
+     */
     public SearchResultRequest(String url, Listener<SearchResult> listener, ErrorListener errorListener) {
       super(Method.GET, url, errorListener);
       mListener = listener;
@@ -73,6 +80,13 @@ public class DanbooruLegacy implements BooruClient {
   private final String username;
   private final String password;
   
+  /**
+   * Creates a new instance of the Danbooru Legacy API client.
+   * 
+   * @param endpoint URL endpoint of the API endpoint (example: http://yande.re), doesn't include paths or trailing slashes
+   * @param subtype The type of API implementation the remote service is running
+   * @param requestQueue Android Volley {@link RequestQueue}
+   */
   public DanbooruLegacy(String endpoint, ApiSubtype subtype, RequestQueue requestQueue) {
     mApiEndpoint = endpoint;
     mApiSubtype = subtype;
@@ -82,6 +96,15 @@ public class DanbooruLegacy implements BooruClient {
     password = null;
   }
 
+  /**
+   * Creates a new instance of the Danbooru Legacy API client.
+   * 
+   * @param endpoint URL of the API endpoint (example: http://yande.re), doesn't include path or trailing slashes
+   * @param subtype The type of API implementation the remote service is running
+   * @param requestQueue Android Volley {@link RequestQueue}
+   * @param username HTTP Basic Auth username
+   * @param password HTTP Basic Auth password
+   */
   public DanbooruLegacy(String endpoint, ApiSubtype subtype, RequestQueue requestQueue, String username, String password) {
     mApiEndpoint = endpoint;
     mApiSubtype = subtype;
@@ -93,7 +116,6 @@ public class DanbooruLegacy implements BooruClient {
 
   /*
    * {@inheritDoc}
-   * @see pe.moe.nori.api.BooruClient#commentListRequest(long, com.android.volley.Response.Listener, com.android.volley.Response.ErrorListener)
    */
   @Override
   public Request<CommentList> commentListRequest(long postId, Listener<CommentList> listener, ErrorListener errorListener) {
@@ -113,13 +135,18 @@ public class DanbooruLegacy implements BooruClient {
 
   /*
    * {@inheritDoc}
-   * @see pe.moe.nori.api.BooruClient#getDefaultQuery()
    */
   @Override
   public String getDefaultQuery() {
     return "rating:safe";
   }
 
+  /**
+   * Parses an HTTP response body into a {@link SearchResult}
+   * 
+   * @param data HTTP response body containing a valid XML document
+   * @return Returns a {@link SearchResult} containing data found in the XML document
+   */
   private SearchResult parseSearchResultXML(String data) throws XmlPullParserException, IOException, ParseException {
     // Make sure data isn't null or empty.
     if (data == null || data.equals(""))
@@ -144,15 +171,17 @@ public class DanbooruLegacy implements BooruClient {
             if (xpp.getAttributeValue(i).equals("count")) // Total image count across all pages.
               searchResult.count = Long.parseLong(xpp.getAttributeValue(i));
             else if (xpp.getAttributeValue(i).equals("offset")) // Offset, used for paging.
-              searchResult.offset = Long.parseLong(xpp.getAttributeValue(i));
-            
-            // Shimmie is dumb
-            if (mApiSubtype == ApiSubtype.SHIMMIE2) {
-              // HACK: Force querying for next page
-              searchResult.count = DEFAULT_LIMIT * 2;
-              searchResult.offset = 0;
-            }
+              searchResult.offset = Long.parseLong(xpp.getAttributeValue(i));            
           }
+          
+          // Shimmie2 doesn't put stuff in the root tag
+          // Pull request: https://github.com/shish/shimmie2/pull/301
+          if (mApiSubtype == ApiSubtype.SHIMMIE2) {
+            // HACK: Force querying next page
+            searchResult.count = DEFAULT_LIMIT * 2;
+            searchResult.offset = 0;
+          }
+          
         } else if (xpp.getName().equals("post")) { // Image tag.
           // Create new image.
           Image image = new Image();
@@ -222,19 +251,22 @@ public class DanbooruLegacy implements BooruClient {
               image.hasComments = value.equals("true");
           }
           
-          // Shimmie is dumb.
+          // More shimmie2 hacks. 
           if (mApiSubtype == ApiSubtype.SHIMMIE2) {
+            // Doesn't use sample files.
             image.sampleUrl = image.fileUrl;
             image.sampleHeight = image.height;
             image.sampleWidth = image.width;
             
-            // HACK: Could calculate correct aspect ratio, but this isn't used anyway.
+            // Doesn't return thumbnail dimensions.
+            // Pull request: https://github.com/shish/shimmie2/pull/301
             image.previewHeight = 150;
             image.previewWidth = 150;
             
+            // No parent IDs.
             image.parentId = -1;
-            // Shimmie doesn't have a comment API.
-            image.hasComments = false;            
+            // No comment API.
+            image.hasComments = false;
           }
           
           // Add image to results.
@@ -249,6 +281,8 @@ public class DanbooruLegacy implements BooruClient {
   
   /**
    * Checks if API requires authentication.
+   * 
+   * @return Returns true if the API require HTTP basic authentication
    */
   @Override
   public boolean requiresAuthentication() {
@@ -257,7 +291,6 @@ public class DanbooruLegacy implements BooruClient {
 
   /*
    * {@inheritDoc}
-   * @see pe.moe.nori.api.BooruClient#searchRequest(java.lang.String, int, com.android.volley.Response.Listener, com.android.volley.Response.ErrorListener)
    */
   @Override
   public Request<SearchResult> searchRequest(String tags, int pid, Listener<SearchResult> listener, ErrorListener errorListener) {
@@ -279,7 +312,6 @@ public class DanbooruLegacy implements BooruClient {
 
   /*
    * {@inheritDoc}
-   * @see pe.moe.nori.api.BooruClient#searchRequest(java.lang.String, com.android.volley.Response.Listener, com.android.volley.Response.ErrorListener)
    */
   @Override
   public Request<SearchResult> searchRequest(String tags, Listener<SearchResult> listener, ErrorListener errorListener) {
