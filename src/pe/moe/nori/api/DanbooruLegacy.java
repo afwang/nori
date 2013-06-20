@@ -66,7 +66,8 @@ public class DanbooruLegacy implements BooruClient {
     protected Response<SearchResult> parseNetworkResponse(NetworkResponse response) {
       // Try parsing the XML or return error.
       try {
-        return Response.success(parseSearchResultXML(new String(response.data, "UTF-8")), HttpHeaderParser.parseCacheHeaders(response));
+        return Response.success(parseSearchResultXML(new String(response.data, HttpHeaderParser.parseCharset(response.headers))),
+            HttpHeaderParser.parseCacheHeaders(response));
       } catch (Exception e) {
         return Response.error(new VolleyError("Error processing data."));
       }
