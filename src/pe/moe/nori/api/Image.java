@@ -53,6 +53,8 @@ public class Image {
 	public long id;
 	/** Parent ID */
 	public long parentId;
+	/** Pixiv ID */
+	public long pixivId = -1;
 	
 	/** Obscenity rating */
 	public ObscenityRating obscenityRating;
