@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Search">
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Slideshow">
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Services">
+
+    </PreferenceCategory>
+</PreferenceScreen>
