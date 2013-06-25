@@ -59,7 +59,8 @@ public class DanbooruLegacy implements BooruClient {
 
     @Override
     protected void deliverResponse(SearchResult response) {
-      mListener.onResponse(response);
+      if (mListener != null)
+        mListener.onResponse(response);
     }
 
     @Override
@@ -263,9 +264,7 @@ public class DanbooruLegacy implements BooruClient {
             // Pull request: https://github.com/shish/shimmie2/pull/301
             image.previewHeight = 150;
             image.previewWidth = 150;
-            
-            // No parent IDs.
-            image.parentId = -1;
+
             // No comment API.
             image.hasComments = false;
           }

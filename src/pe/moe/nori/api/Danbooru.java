@@ -58,8 +58,8 @@ public class Danbooru implements BooruClient {
     
     @Override
     protected void deliverResponse(SearchResult response) {
-      // Pass response to listener.
-      mListener.onResponse(response); 
+      if (mListener != null)
+        mListener.onResponse(response);
     }
     
     @Override
