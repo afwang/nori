@@ -1,5 +1,9 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-  android:name="pe.moe.nori.fragments.SearchResultFragment"
-  android:id="@+id/result_fragment"
+<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/result_grid"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"/>
+  android:layout_height="match_parent"
+  android:horizontalSpacing="@dimen/search_result_grid_spacing"
+  android:verticalSpacing="@dimen/search_result_grid_spacing"
+  android:numColumns="auto_fit"
+  android:columnWidth="@dimen/search_result_column_width"
+  android:stretchMode="columnWidth"/>

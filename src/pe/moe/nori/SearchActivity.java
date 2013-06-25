@@ -6,11 +6,18 @@
 package pe.moe.nori;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.util.LruCache;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -20,11 +27,13 @@ import com.actionbarsherlock.view.Window;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import pe.moe.nori.adapters.ServiceDropdownAdapter;
 import pe.moe.nori.api.BooruClient;
+import pe.moe.nori.api.Image;
 import pe.moe.nori.api.SearchResult;
-import pe.moe.nori.fragments.SearchResultFragment;
 import pe.moe.nori.providers.ServiceSettingsProvider;
 
 import java.util.List;
@@ -32,7 +41,6 @@ import java.util.List;
 public class SearchActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>> {
   /** Unique ID for the navigation dropdown {@link Loader} */
   private static final int SERVICE_DROPDOWN_LOADER = 0x00;
-
   /** ActionBar navigation dropdown {@link ActionBar.OnNavigationListener} */
   public ActionBar.OnNavigationListener mNavigationCallback = new ActionBar.OnNavigationListener() {
 
@@ -43,10 +51,9 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
           mServiceDropdownAdapter.getItem(itemPosition));
 
       // Searches for default query when:
-      // * App is first created (mLastResultSize == 0).
-      // * Activity is restored from savedInstanceState and last search had no results (mLastResultSize == 0).
+      // * App is first created (mSearchResult == null).
       // * A new service was picked from the dropdown menu (itemId != mPref...).
-      if (mBooruClient != null && (mLastResultSize == 0 || itemId != mPreferences.getLong("last_service_dropdown_index", 0)))
+      if (mBooruClient != null && (mSearchResult == null || itemId != mPreferences.getLong("last_service_dropdown_index", 0)))
         doSearch(mSharedPreferences.getString("default_query", mBooruClient.getDefaultQuery()));
 
       // Remember dropdown state to be restored when app is relaunched.
@@ -56,11 +63,35 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     }
 
   };
-
   /** Android Volley HTTP Request queue used for queuing API requests and image downloads. */
   public RequestQueue mRequestQueue;
   /** Last result size. Used when deciding to retain {@link SearchResult}s from previous instance */
   public long mLastResultSize = 0; // Used for saving instance state.
+  /** {@link GridView} displaying search results */
+  private GridView mGridView;
+  /** LRU cache used for caching images */
+  private LruCache<String, Bitmap> mLruCache = new LruCache<String, Bitmap>(2048) {
+    @Override
+    protected int sizeOf(String key, Bitmap value) {
+      return (int) ((long) value.getRowBytes() * (long) value.getHeight() / 1048576);
+    }
+  };
+  /** An {@link ImageLoader.ImageCache} implementation wrapping the {@link LruCache} for use with Android Volley. */
+  private ImageLoader.ImageCache mImageCache = new ImageLoader.ImageCache() {
+    @Override
+    public Bitmap getBitmap(String url) {
+      return mLruCache.get(url);
+    }
+
+    @Override
+    public void putBitmap(String url, Bitmap bitmap) {
+      mLruCache.put(url, bitmap);
+    }
+  };
+  /** An image loader handling fetching, caching and putting images into views. */
+  private ImageLoader mImageLoader;
+  /** The {@link SearchResult} currently being displayed in this view. */
+  private SearchResult mSearchResult = null;
   /** Android ActionBar */
   private ActionBar mActionBar;
   /** Persistent data for this activity */
@@ -82,12 +113,13 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       // Hide progress bar.
       setProgressBarIndeterminateVisibility(false);
 
-      SearchResultFragment searchResultFragment = (SearchResultFragment) getSupportFragmentManager().findFragmentById(R.id.result_fragment);
-      if (searchResultFragment != null) {
-        if (response != null) mLastResultSize = response.images.size();
-        else mLastResultSize = 0;
-        searchResultFragment.onSearchResult(response);
+      if (mSearchResult == null) { // New result.
+        mSearchResult = response;
+      } else { // Load next page.
+        mSearchResult.extend(response);
       }
+
+      mSearchAdapter.notifyDataSetChanged();
     }
   };
   /** Listener receiving errors from the API client */
@@ -102,11 +134,54 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       Toast.makeText(SearchActivity.this, R.string.error_connection, Toast.LENGTH_SHORT).show();
     }
   };
+  /** Adapter used by the {@link GridView */
+  private BaseAdapter mSearchAdapter = new BaseAdapter() {
+    @Override
+    public int getCount() {
+      return mSearchResult == null ? 0 : mSearchResult.images.size();
+    }
+
+    @Override
+    public Image getItem(int position) {
+      return mSearchResult.images.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+      // Return API image ID.
+      return getItem(position).id;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      final NetworkImageView networkImageView;
+
+      // Recycle view if possible.
+      if (convertView == null) {
+        // Create a new view.
+        networkImageView = new NetworkImageView(SearchActivity.this);
+        // Set properties.
+        networkImageView.setLayoutParams(new GridView.LayoutParams(mGridView.getColumnWidth(), mGridView.getColumnWidth()));
+        networkImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        networkImageView.setDefaultImageResId(R.color.background_image_loading);
+      } else {
+        // Recycle old view.
+        networkImageView = (NetworkImageView) convertView;
+      }
+
+      // Set image URL.
+      networkImageView.setImageUrl(getItem(position).previewUrl, mImageLoader);
+
+      return networkImageView;
+    }
+  };
 
   private void doSearch(final String query) {
     // Give up if no API client available.
     if (mBooruClient == null)
       return;
+    // Clear search result.
+    mSearchResult = null;
     // Restarts and clears the request queue.
     mRequestQueue.start();
     // Show progress bar.
@@ -128,31 +203,49 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     // Get shared preferences.
     mPreferences = getPreferences(MODE_PRIVATE);
     mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-    // Prepare Volley request queue.
+    // Prepare Volley request queue and ImageLoader.
     mRequestQueue = Volley.newRequestQueue(this);
+    mImageLoader = new ImageLoader(mRequestQueue, mImageCache);
+    // Inflate views.
+    setContentView(R.layout.activity_search);
+    // Get GridView and set adapter.
+    mGridView = (GridView) findViewById(R.id.result_grid);
+    mGridView.setAdapter(mSearchAdapter);
     // Get loader manager and setup navigation dropdown.
     mLoaderManager = getSupportLoaderManager();
     mLoaderManager.initLoader(SERVICE_DROPDOWN_LOADER, null, this).forceLoad();
-    // Inflate views.
-    setContentView(R.layout.activity_search);
   }
 
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
 
-    // Save last result size.
-    // This is used to decide whether to retain results from a previous instance.
-    outState.putLong("last_result_size", mLastResultSize);
+    // Save search result.
+    outState.putParcelable("search_result", mSearchResult);
+    // Save scroll position.
+    outState.putInt("scroll_position", mGridView.getFirstVisiblePosition());
+  }
+
+  @Override
+  public void onLowMemory() {
+    super.onLowMemory();
+    // Trim image cache.
+    mLruCache.trimToSize(64);
+  }
+
+  public void onSearchResult(SearchResult searchResult) {
+    mSearchResult.images.addAll(searchResult.images);
   }
 
   @Override
   protected void onRestoreInstanceState(Bundle savedInstanceState) {
     super.onRestoreInstanceState(savedInstanceState);
 
-    // Restore last result size.
-    // This is used to decide whether to retain results from a previous instance.
-    mLastResultSize = savedInstanceState.getLong("last_result_size");
+    // Restore search result.
+    mSearchResult = savedInstanceState.getParcelable("search_result");
+    mSearchAdapter.notifyDataSetChanged();
+    // Restore scroll position.
+    mGridView.setSelection(savedInstanceState.getInt("scroll_position"));
   }
 
   @Override

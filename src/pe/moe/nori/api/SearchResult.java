@@ -30,9 +30,37 @@ public class SearchResult implements Parcelable {
   public long count;
   /** Offset, used for paging */
   public long offset;
+  /** True if more results are available on the next page */
+  private boolean hasMore = true;
 
   /** Default constructor */
   public SearchResult() {
+  }
+
+  /**
+   * Extends the result with images from another page.
+   *
+   * @param result Results from another page.
+   */
+  public void extend(SearchResult result) {
+    if (result.images.size() > 0) {
+      // Merge array lists.
+      images.addAll(result.images);
+      // Set offset.
+      offset = result.offset;
+    } else {
+      // Don't bother fetching next page.
+      hasMore = false;
+    }
+  }
+
+  /**
+   * Check if more results could be available on the next page.
+   *
+   * @return True if last call to {@link #extend(SearchResult)} added images to the result.
+   */
+  public boolean hasMore() {
+    return hasMore;
   }
 
   /**
@@ -44,6 +72,7 @@ public class SearchResult implements Parcelable {
     in.readList(images, null);
     count = in.readLong();
     offset = in.readLong();
+    hasMore = in.readByte() == 0x00;
   }
 
   @Override
@@ -58,6 +87,7 @@ public class SearchResult implements Parcelable {
     dest.writeList(images);
     dest.writeLong(count);
     dest.writeLong(offset);
+    dest.writeByte((byte) (hasMore ? 0x01 : 0x00));
   }
 
 }
