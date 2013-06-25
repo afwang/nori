@@ -150,6 +150,7 @@ public class SearchResultFragment extends SherlockFragment {
         // Set properties.
         networkImageView.setLayoutParams(new GridView.LayoutParams(mGridView.getColumnWidth(), mGridView.getColumnWidth()));
         networkImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        networkImageView.setDefaultImageResId(R.color.background_image_loading);
       } else {
         // Recycle old view.
         networkImageView = (NetworkImageView) convertView;
