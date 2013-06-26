@@ -24,6 +24,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.Window;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -106,12 +107,17 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   private BooruClient mBooruClient;
   /** Adapter for the ActionBar navigation dropdown */
   private ServiceDropdownAdapter mServiceDropdownAdapter;
+  /** Pending API request */
+  private Request<SearchResult> mPendingRequest = null;
   /** Listener receiving parsed {@link SearchResult} responses from the API client */
   private Response.Listener<SearchResult> mSearchResultListener = new Response.Listener<SearchResult>() {
     @Override
     public void onResponse(SearchResult response) {
       // Hide progress bar.
       setProgressBarIndeterminateVisibility(false);
+
+      // Clear pending request.
+      mPendingRequest = null;
 
       if (mSearchResult == null) { // New result.
         mSearchResult = response;
@@ -180,13 +186,15 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     // Give up if no API client available.
     if (mBooruClient == null)
       return;
-    // Clear search result.
+    // Cancel pending request and clear search result.
+    if (mPendingRequest != null) {
+      mPendingRequest.cancel();
+    }
     mSearchResult = null;
-    // Restarts and clears the request queue.
-    mRequestQueue.start();
     // Show progress bar.
     setProgressBarIndeterminateVisibility(true);
-    // Add request to queue.
+    // Create and add request to queue.
+    mPendingRequest = mBooruClient.searchRequest(query, mSearchResultListener, mErrorListener);
     mRequestQueue.add(mBooruClient.searchRequest(query, mSearchResultListener, mErrorListener));
   }
 
