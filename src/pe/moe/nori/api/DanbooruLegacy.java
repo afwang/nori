@@ -41,7 +41,8 @@ public class DanbooruLegacy implements BooruClient {
     public static final SimpleDateFormat SHIMMIE2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
   }
   private class SearchResultRequest extends Request<SearchResult> {
-    private Listener<SearchResult> mListener;
+    private final Listener<SearchResult> mListener;
+    private final String mQuery;
     
     /**
      * Creates a new HTTP GET Request
@@ -50,15 +51,19 @@ public class DanbooruLegacy implements BooruClient {
      * @param listener Listener to receive the {@link SearchResult} response
      * @param errorListener Error listener, or null to ignore errors
      */
-    public SearchResultRequest(String url, Listener<SearchResult> listener, ErrorListener errorListener) {
+    public SearchResultRequest(String url, String query, Listener<SearchResult> listener, ErrorListener errorListener) {
       super(Method.GET, url, errorListener);
       mListener = listener;
+      mQuery = query;
       setRequestQueue(mRequestQueue);
-      
     }
 
     @Override
     protected void deliverResponse(SearchResult response) {
+      // Append search query to response.
+      if (response != null)
+        response.query = mQuery;
+
       if (mListener != null)
         mListener.onResponse(response);
     }
@@ -145,7 +150,7 @@ public class DanbooruLegacy implements BooruClient {
 
   /**
    * Parses an HTTP response body into a {@link SearchResult}
-   * 
+   *
    * @param data HTTP response body containing a valid XML document
    * @return Returns a {@link SearchResult} containing data found in the XML document
    */
@@ -293,42 +298,42 @@ public class DanbooruLegacy implements BooruClient {
    * {@inheritDoc}
    */
   @Override
-  public Request<SearchResult> searchRequest(String tags, int pid, Listener<SearchResult> listener, ErrorListener errorListener) {
+  public Request<SearchResult> searchRequest(String query, int pid, Listener<SearchResult> listener, ErrorListener errorListener) {
     final String url;
     
     if (mApiSubtype == ApiSubtype.DANBOORU) {
-      url = String.format(Locale.US, mApiEndpoint + "/post.xml?tags=%s&pid=%d&limit=%d", Uri.encode(tags), pid+1, DEFAULT_LIMIT);
+      url = String.format(Locale.US, mApiEndpoint + "/post.xml?tags=%s&pid=%d&limit=%d", Uri.encode(query), pid+1, DEFAULT_LIMIT);
     } else if (mApiSubtype == ApiSubtype.GELBOORU) {
-      url = String.format(Locale.US, mApiEndpoint + "/index.php?page=dapi&s=post&q=index&tags=%s&pid=%d&limit=%d", Uri.encode(tags), pid, DEFAULT_LIMIT);
+      url = String.format(Locale.US, mApiEndpoint + "/index.php?page=dapi&s=post&q=index&tags=%s&pid=%d&limit=%d", Uri.encode(query), pid, DEFAULT_LIMIT);
     } else if (mApiSubtype == ApiSubtype.SHIMMIE2) {
-      url = String.format(Locale.US, mApiEndpoint + "/api/danbooru/find_posts/index.xml?tags=%s&page=%d&limit=%d", Uri.encode(tags), pid+1, DEFAULT_LIMIT);
+      url = String.format(Locale.US, mApiEndpoint + "/api/danbooru/find_posts/index.xml?tags=%s&page=%d&limit=%d", Uri.encode(query), pid+1, DEFAULT_LIMIT);
     } else {
       // Not implemented.
       return null;
     }
     
-    return new SearchResultRequest(url, listener, errorListener);
+    return new SearchResultRequest(url, query, listener, errorListener);
   }
 
   /*
    * {@inheritDoc}
    */
   @Override
-  public Request<SearchResult> searchRequest(String tags, Listener<SearchResult> listener, ErrorListener errorListener) {
+  public Request<SearchResult> searchRequest(String query, Listener<SearchResult> listener, ErrorListener errorListener) {
     final String url;
     
     if (mApiSubtype == ApiSubtype.DANBOORU) {
-      url = String.format(Locale.US, mApiEndpoint + "/post.xml?tags=%s&limit=%d", Uri.encode(tags), DEFAULT_LIMIT);
+      url = String.format(Locale.US, mApiEndpoint + "/post.xml?tags=%s&limit=%d", Uri.encode(query), DEFAULT_LIMIT);
     } else if (mApiSubtype == ApiSubtype.GELBOORU) {
-      url = String.format(Locale.US, mApiEndpoint + "/index.php?page=dapi&s=post&q=index&tags=%s&limit=%d", Uri.encode(tags), DEFAULT_LIMIT);
+      url = String.format(Locale.US, mApiEndpoint + "/index.php?page=dapi&s=post&q=index&tags=%s&limit=%d", Uri.encode(query), DEFAULT_LIMIT);
     } else if (mApiSubtype == ApiSubtype.SHIMMIE2) {
-      url = String.format(Locale.US, mApiEndpoint + "/api/danbooru/find_posts/index.xml?tags=%s&limit=%d", Uri.encode(tags), DEFAULT_LIMIT);
+      url = String.format(Locale.US, mApiEndpoint + "/api/danbooru/find_posts/index.xml?tags=%s&limit=%d", Uri.encode(query), DEFAULT_LIMIT);
     } else {
       // Not implemented.
       return null;
     }
     
-    return new SearchResultRequest(url, listener, errorListener);
+    return new SearchResultRequest(url, query, listener, errorListener);
   }
 
 }

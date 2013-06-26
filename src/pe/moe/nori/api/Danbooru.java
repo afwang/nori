@@ -39,7 +39,9 @@ import com.android.volley.toolbox.HttpHeaderParser;
 public class Danbooru implements BooruClient {
   private class SearchResultRequest extends Request<SearchResult> {
     // Response listener.
-    private Listener<SearchResult> mListener;
+    private final Listener<SearchResult> mListener;
+    // Request query.
+    private final String mQuery;
     
     /**
      * Creates a new GET request
@@ -48,16 +50,21 @@ public class Danbooru implements BooruClient {
      * @param listener Listener to receive the String response
      * @param errorListener Error listener, or null to ignore errors
      */
-    public SearchResultRequest(String url, Listener<SearchResult> listener, ErrorListener errorListener) {
+    public SearchResultRequest(String url, String query, Listener<SearchResult> listener, ErrorListener errorListener) {
       super(Method.GET, url, errorListener);
-      // Set response listener.
+      // Set response listener and request query.
       mListener = listener;
+      mQuery = query;
       // Set request queue.
       setRequestQueue(mRequestQueue);
     }
     
     @Override
     protected void deliverResponse(SearchResult response) {
+      // Append search query to response.
+      if (response != null)
+        response.query = mQuery;
+
       if (mListener != null)
         mListener.onResponse(response);
     }
@@ -233,15 +240,15 @@ public class Danbooru implements BooruClient {
   }
   
   @Override
-  public Request<SearchResult> searchRequest(String tags, int pid, Listener<SearchResult> listener, ErrorListener errorListener) {
-    final String url = String.format(mApiEndpoint + "/posts.xml?tags=%s&page=%d&limit=%d", Uri.encode(tags), pid+1, DEFAULT_LIMIT);
-    return new SearchResultRequest(url, listener, errorListener);
+  public Request<SearchResult> searchRequest(String query, int pid, Listener<SearchResult> listener, ErrorListener errorListener) {
+    final String url = String.format(mApiEndpoint + "/posts.xml?tags=%s&page=%d&limit=%d", Uri.encode(query), pid+1, DEFAULT_LIMIT);
+    return new SearchResultRequest(url, query, listener, errorListener);
   }
 
   @Override
-  public Request<SearchResult> searchRequest(String tags, Listener<SearchResult> listener, ErrorListener errorListener) {
-    final String url = String.format(mApiEndpoint + "/posts.xml?tags=%s&limit=%d", Uri.encode(tags), DEFAULT_LIMIT);
-    return new SearchResultRequest(url, listener, errorListener);
+  public Request<SearchResult> searchRequest(String query, Listener<SearchResult> listener, ErrorListener errorListener) {
+    final String url = String.format(mApiEndpoint + "/posts.xml?tags=%s&limit=%d", Uri.encode(query), DEFAULT_LIMIT);
+    return new SearchResultRequest(url, query, listener, errorListener);
   }
 
 }

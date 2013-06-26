@@ -15,10 +15,7 @@ import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.*;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -39,7 +36,7 @@ import pe.moe.nori.providers.ServiceSettingsProvider;
 
 import java.util.List;
 
-public class SearchActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>> {
+public class SearchActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>>, AbsListView.OnScrollListener {
   /** Unique ID for the navigation dropdown {@link Loader} */
   private static final int SERVICE_DROPDOWN_LOADER = 0x00;
   /** ActionBar navigation dropdown {@link ActionBar.OnNavigationListener} */
@@ -219,6 +216,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     // Get GridView and set adapter.
     mGridView = (GridView) findViewById(R.id.result_grid);
     mGridView.setAdapter(mSearchAdapter);
+    mGridView.setOnScrollListener(this);
     // Get loader manager and setup navigation dropdown.
     mLoaderManager = getSupportLoaderManager();
     mLoaderManager.initLoader(SERVICE_DROPDOWN_LOADER, null, this).forceLoad();
@@ -300,5 +298,24 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     // Restore navigation mode and show activity title.
     mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     mActionBar.setDisplayShowTitleEnabled(true);
+  }
+
+  @Override
+  public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+  }
+
+  @Override
+  public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+    // Fetch more images if near end of list and there is no other pending API request.
+    if (mPendingRequest == null && ((totalItemCount - visibleItemCount)) <= (firstVisibleItem + 10)) {
+      // Give up if no API client or search result available.
+      if (mBooruClient == null || mSearchResult == null)
+        return;
+      // Create API request and add it to queue.
+      setProgressBarIndeterminateVisibility(true);
+      mPendingRequest = mBooruClient.searchRequest(mSearchResult.query, mSearchResult.pageNumber + 1, mSearchResultListener, mErrorListener);
+      mRequestQueue.add(mPendingRequest);
+    }
   }
 }
