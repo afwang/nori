@@ -69,7 +69,7 @@ public class SearchResult implements Parcelable {
    */
   protected SearchResult(Parcel in) {
     // Read values from parcel.
-    in.readList(images, null);
+    in.readList(images, Image.class.getClassLoader());
     count = in.readLong();
     offset = in.readLong();
     hasMore = in.readByte() == 0x00;
