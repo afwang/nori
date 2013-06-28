@@ -20,7 +20,9 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.actionbarsherlock.widget.SearchView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,7 +38,7 @@ import pe.moe.nori.providers.ServiceSettingsProvider;
 
 import java.util.List;
 
-public class SearchActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>>, AbsListView.OnScrollListener {
+public class SearchActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>>, AbsListView.OnScrollListener, SearchView.OnQueryTextListener {
   /** Unique ID for the navigation dropdown {@link Loader} */
   private static final int SERVICE_DROPDOWN_LOADER = 0x00;
   /** ActionBar navigation dropdown {@link ActionBar.OnNavigationListener} */
@@ -92,6 +94,8 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   private SearchResult mSearchResult = null;
   /** Android ActionBar */
   private ActionBar mActionBar;
+  /** SearchView action item */
+  private MenuItem mSearchViewItem;
   /** Persistent data for this activity */
   private SharedPreferences mPreferences;
   /** Persistent data for the entire app */
@@ -188,6 +192,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       mPendingRequest.cancel();
     }
     mSearchResult = null;
+    mSearchAdapter.notifyDataSetChanged();
     // Show progress bar.
     setProgressBarIndeterminateVisibility(true);
     // Create and add request to queue.
@@ -261,7 +266,9 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     // Inflate menu.
     final MenuInflater inflater = getSupportMenuInflater();
     inflater.inflate(R.menu.search, menu);
-    // TODO: SearchView
+    // Set SearchView listener
+    mSearchViewItem = menu.findItem(R.id.action_search);
+    ((SearchView) mSearchViewItem.getActionView()).setOnQueryTextListener(this);
 
     return true;
   }
@@ -317,5 +324,18 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       mPendingRequest = mBooruClient.searchRequest(mSearchResult.query, mSearchResult.pageNumber + 1, mSearchResultListener, mErrorListener);
       mRequestQueue.add(mPendingRequest);
     }
+  }
+
+  @Override
+  public boolean onQueryTextSubmit(String query) {
+    // Hide SearchView and start search.
+    mSearchViewItem.collapseActionView();
+    doSearch(query);
+    return true;
+  }
+
+  @Override
+  public boolean onQueryTextChange(String newText) {
+    return false;
   }
 }
