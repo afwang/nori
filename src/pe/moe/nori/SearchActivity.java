@@ -318,8 +318,8 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
     // Fetch more images if near end of list and there is no other pending API request.
     if (mPendingRequest == null && ((totalItemCount - visibleItemCount)) <= (firstVisibleItem + 10)) {
-      // Give up if no API client or search result available.
-      if (mBooruClient == null || mSearchResult == null)
+      // Give up if no API client, no search result or is at last page.
+      if (mBooruClient == null || mSearchResult == null || !mSearchResult.hasMore())
         return;
       // Create API request and add it to queue.
       setProgressBarIndeterminateVisibility(true);
