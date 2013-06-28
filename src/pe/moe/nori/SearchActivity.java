@@ -41,6 +41,14 @@ import java.util.List;
 public class SearchActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>>, AbsListView.OnScrollListener, SearchView.OnQueryTextListener {
   /** Unique ID for the navigation dropdown {@link Loader} */
   private static final int SERVICE_DROPDOWN_LOADER = 0x00;
+  /** Overrides the default behavior to clear the {@link SearchView} when collapsed. */
+  private final SearchView.OnClickListener mSearchViewOnClickListener = new SearchView.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+      if (mBooruClient != null && mSearchResult != null && !mSearchResult.query.equals(mBooruClient.getDefaultQuery()))
+        ((SearchView) v).setQuery(mSearchResult.query, false);
+    }
+  };
   /** ActionBar navigation dropdown {@link ActionBar.OnNavigationListener} */
   public ActionBar.OnNavigationListener mNavigationCallback = new ActionBar.OnNavigationListener() {
 
@@ -65,8 +73,6 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   };
   /** Android Volley HTTP Request queue used for queuing API requests and image downloads. */
   public RequestQueue mRequestQueue;
-  /** Last result size. Used when deciding to retain {@link SearchResult}s from previous instance */
-  public long mLastResultSize = 0; // Used for saving instance state.
   /** {@link GridView} displaying search results */
   private GridView mGridView;
   /** LRU cache used for caching images */
@@ -100,8 +106,6 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   private SharedPreferences mPreferences;
   /** Persistent data for the entire app */
   private SharedPreferences mSharedPreferences;
-  /** LoaderManager used to query settings database asynchronously */
-  private LoaderManager mLoaderManager;
   /** Loads API settings from the database */
   private ServiceSettingsProvider mServiceSettingsProvider;
   /** Imageboard API client */
@@ -223,7 +227,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     mGridView.setAdapter(mSearchAdapter);
     mGridView.setOnScrollListener(this);
     // Get loader manager and setup navigation dropdown.
-    mLoaderManager = getSupportLoaderManager();
+    final LoaderManager mLoaderManager = getSupportLoaderManager();
     mLoaderManager.initLoader(SERVICE_DROPDOWN_LOADER, null, this).forceLoad();
   }
 
@@ -244,10 +248,6 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     mLruCache.trimToSize(64);
   }
 
-  public void onSearchResult(SearchResult searchResult) {
-    mSearchResult.images.addAll(searchResult.images);
-  }
-
   @Override
   protected void onRestoreInstanceState(Bundle savedInstanceState) {
     super.onRestoreInstanceState(savedInstanceState);
@@ -266,9 +266,11 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     // Inflate menu.
     final MenuInflater inflater = getSupportMenuInflater();
     inflater.inflate(R.menu.search, menu);
-    // Set SearchView listener
+    // Set SearchView listeners.
     mSearchViewItem = menu.findItem(R.id.action_search);
-    ((SearchView) mSearchViewItem.getActionView()).setOnQueryTextListener(this);
+    SearchView mSearchView = (SearchView) mSearchViewItem.getActionView();
+    mSearchView.setOnQueryTextListener(this);
+    mSearchView.setOnSearchClickListener(mSearchViewOnClickListener);
 
     return true;
   }
@@ -328,9 +330,9 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
 
   @Override
   public boolean onQueryTextSubmit(String query) {
-    // Hide SearchView and start search.
-    mSearchViewItem.collapseActionView();
+    // Clear focus from SearchView and start search.
     doSearch(query);
+    mSearchViewItem.getActionView().clearFocus();
     return true;
   }
 
