@@ -119,7 +119,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     @Override
     public void onResponse(SearchResult response) {
       // Hide progress bar.
-      setProgressBarIndeterminateVisibility(false);
+      setSupportProgressBarIndeterminateVisibility(false);
 
       // Clear pending request.
       mPendingRequest = null;
@@ -138,7 +138,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     @Override
     public void onErrorResponse(VolleyError error) {
       // Hide progress bar.
-      setProgressBarIndeterminateVisibility(false);
+      setSupportProgressBarIndeterminateVisibility(false);
       // Log error.
       Log.e("SearchResultFetch", error.toString());
       // Show error notification to the user.
@@ -198,7 +198,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     mSearchResult = null;
     mSearchAdapter.notifyDataSetChanged();
     // Show progress bar.
-    setProgressBarIndeterminateVisibility(true);
+    setSupportProgressBarIndeterminateVisibility(true);
     // Create and add request to queue.
     mPendingRequest = mBooruClient.searchRequest(query, mSearchResultListener, mErrorListener);
     mRequestQueue.add(mBooruClient.searchRequest(query, mSearchResultListener, mErrorListener));
@@ -322,7 +322,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       if (mBooruClient == null || mSearchResult == null || !mSearchResult.hasMore())
         return;
       // Create API request and add it to queue.
-      setProgressBarIndeterminateVisibility(true);
+      setSupportProgressBarIndeterminateVisibility(true);
       mPendingRequest = mBooruClient.searchRequest(mSearchResult.query, mSearchResult.pageNumber + 1, mSearchResultListener, mErrorListener);
       mRequestQueue.add(mPendingRequest);
     }
