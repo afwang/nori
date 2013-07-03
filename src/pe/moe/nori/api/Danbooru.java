@@ -141,7 +141,6 @@ public class Danbooru implements BooruClient {
     
     // Create XML parser.
     XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-    factory.setNamespaceAware(true);
     XmlPullParser xpp = factory.newPullParser();
     xpp.setInput(new StringReader(data));
     int eventType = xpp.getEventType();
