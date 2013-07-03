@@ -5,6 +5,7 @@
  */
 package pe.moe.nori;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -273,6 +274,18 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     mSearchView.setOnSearchClickListener(mSearchViewOnClickListener);
 
     return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_help:
+        // Start help activity.
+        startActivity(new Intent(this, HelpActivity.class));
+        return true;
+    }
+
+    return false;
   }
 
   @Override
