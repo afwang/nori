@@ -3,7 +3,7 @@
   <PreferenceCategory
     android:title="@string/preference_category_search">
     <ListPreference
-      android:key="search_minimum_rating"
+      android:key="search_safety_rating"
       android:title="@string/preference_safetyRating_title"
       android:dialogTitle="@string/preference_safetyRating_title"
       android:entries="@array/preference_safetyRating_entries"

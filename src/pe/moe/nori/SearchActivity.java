@@ -128,9 +128,10 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       mPendingRequest = null;
 
       if (mSearchResult == null) { // New result.
+        response.filter(mSharedPreferences.getString("search_safety_rating", getString(R.string.preference_safetyRating_default)));
         mSearchResult = response;
       } else { // Load next page.
-        mSearchResult.extend(response);
+        mSearchResult.extend(response, mSharedPreferences.getString("search_safety_rating", getString(R.string.preference_safetyRating_default)));
       }
 
       mSearchAdapter.notifyDataSetChanged();

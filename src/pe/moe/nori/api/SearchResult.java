@@ -9,6 +9,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class SearchResult implements Parcelable {
   /** Class loader used when deserializing from {@link Parcel}. */
@@ -36,9 +37,26 @@ public class SearchResult implements Parcelable {
   public String query;
   /** True if more results are available on the next page */
   private boolean hasMore = true;
+  /** Safery rating */
+  private int safetyRating = 0x00;
 
   /** Default constructor */
   public SearchResult() {
+  }
+
+  /**
+   * Constructor used for deserializing from {@link Parcel}
+   *
+   * @param in {@link Parcel} to read values from
+   */
+  protected SearchResult(Parcel in) {
+    // Read values from parcel.
+    in.readList(images, Image.class.getClassLoader());
+    count = in.readLong();
+    pageNumber = in.readInt();
+    offset = in.readLong();
+    query = in.readString();
+    hasMore = in.readByte() == 0x00;
   }
 
   /**
@@ -60,26 +78,41 @@ public class SearchResult implements Parcelable {
   }
 
   /**
+   * Extends the result with images from another page while removing any images above given {@link pe.moe.nori.api.Image.ObscenityRating}.
+   *
+   * @param result Results from another page.
+   * @param rating Most explicit acceptable rating as set in SharedPreferences.
+   * @see #filter(String)
+   */
+  public void extend(SearchResult result, String rating) {
+    result.filter(rating);
+    extend(result);
+  }
+
+  /**
+   * Remove images with {@link pe.moe.nori.api.Image.ObscenityRating} above given rating.
+   *
+   * @param rating Most explicit acceptable rating as set in SharedPreferences.
+   */
+  public void filter(String rating) {
+    for (Iterator<Image> it = images.iterator(); it.hasNext();) {
+      Image image = it.next();
+      // TODO: Probably should assume "questionable" if undefined. Make it a preference?
+      if ((image.obscenityRating == Image.ObscenityRating.QUESTIONABLE) && rating.equals("safe"))
+        it.remove();
+      else if ((image.obscenityRating == Image.ObscenityRating.EXPLICIT)
+          && (rating.equals("safe") || rating.equals("questionable")))
+        it.remove();
+    }
+  }
+
+  /**
    * Check if more results could be available on the next page.
    *
    * @return True if last call to {@link #extend(SearchResult)} added images to the result.
    */
   public boolean hasMore() {
     return hasMore;
-  }
-
-  /**
-   * Constructor used for deserializing from {@link Parcel}
-   * @param in {@link Parcel} to read values from
-   */
-  protected SearchResult(Parcel in) {
-    // Read values from parcel.
-    in.readList(images, Image.class.getClassLoader());
-    count = in.readLong();
-    pageNumber = in.readInt();
-    offset = in.readLong();
-    query = in.readString();
-    hasMore = in.readByte() == 0x00;
   }
 
   @Override
