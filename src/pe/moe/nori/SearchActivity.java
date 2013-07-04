@@ -47,7 +47,8 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   private final SearchView.OnClickListener mSearchViewOnClickListener = new SearchView.OnClickListener() {
     @Override
     public void onClick(View v) {
-      if (mBooruClient != null && mSearchResult != null && !mSearchResult.query.equals(mBooruClient.getDefaultQuery()))
+      if (mBooruClient != null && mSearchResult != null
+          && !mSearchResult.query.equals(mSharedPreferences.getString("search_default_query", mBooruClient.getDefaultQuery())))
         ((SearchView) v).setQuery(mSearchResult.query, false);
     }
   };
@@ -64,7 +65,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       // * App is first created (mSearchResult == null).
       // * A new service was picked from the dropdown menu (itemId != mPref...).
       if (mBooruClient != null && (mSearchResult == null || itemId != mPreferences.getLong("last_service_dropdown_index", 0)))
-        doSearch(mSharedPreferences.getString("default_query", mBooruClient.getDefaultQuery()));
+        doSearch(mSharedPreferences.getString("search_default_query", mBooruClient.getDefaultQuery()));
 
       // Remember dropdown state to be restored when app is relaunched.
       mPreferences.edit().putLong("last_service_dropdown_index", itemId).apply();
