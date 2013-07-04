@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.util.LruCache;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -267,9 +268,12 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     // Inflate menu.
     final MenuInflater inflater = getSupportMenuInflater();
     inflater.inflate(R.menu.search, menu);
-    // Set SearchView listeners.
+    // Find SearchView.
     mSearchViewItem = menu.findItem(R.id.action_search);
     SearchView mSearchView = (SearchView) mSearchViewItem.getActionView();
+    // Disable dictionary suggestions.
+    mSearchView.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER);
+    // Set listeners.
     mSearchView.setOnQueryTextListener(this);
     mSearchView.setOnSearchClickListener(mSearchViewOnClickListener);
 
