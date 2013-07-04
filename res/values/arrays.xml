@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Preferences -->
+  <string-array name="preference_safetyRating_entries">
+    <item>@string/preference_safetyRating_safe</item>
+    <item>@string/preference_safetyRating_questionable</item>
+    <item>@string/preference_safetyRating_explicit</item>
+  </string-array>
+  <string-array name="preference_safetyRating_values">
+    <item>safe</item>
+    <item>questiobable</item>
+    <item>explicit</item>
+  </string-array>
+</resources>

@@ -287,9 +287,13 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
         // Start help activity.
         startActivity(new Intent(this, HelpActivity.class));
         return true;
+      case R.id.action_settings:
+        // Start settings activity.
+        startActivity(new Intent(this, SettingsActivity.class));
+        return true;
+      default:
+        return false;
     }
-
-    return false;
   }
 
   @Override

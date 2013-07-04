@@ -1,22 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Nori</string>
-    <string name="hello_world">Hello world!</string>
+  <string name="app_name">Nori</string>
+  <string name="hello_world">Hello world!</string>
 
-    <!-- Action bar -->
-    <string name="action_search">Search</string>
-    <string name="action_settings">Settings</string>
-    <string name="action_help">Help</string>
+  <!-- Activity titles -->
+  <string name="activity_label_help">Help</string>
+  <string name="activity_label_settings">Settings</string>
 
-    <!-- Preference -->
-    <string name="preference_safety_rating">Safety rating</string>
-    <string name="preference_safety_rating_summary">Show images marked as inappropriate</string>
-    
-    <!-- Obscenity ratings -->
-    <string name="rating_safe">Safe</string>
-    <string name="rating_questionable">Questionable</string>
-    <string name="rating_explicit">Explicit</string>
+  <!-- Errors -->
   <string name="error_connection">Could not connect to server.</string>
+
+  <!-- Action bar -->
+  <string name="action_search">Search</string>
+  <string name="action_settings">Settings</string>
+  <string name="action_help">Help</string>
+
+  <!-- Obscenity ratings -->
+  <string name="rating_safe">Safe</string>
+  <string name="rating_questionable">Questionable</string>
+  <string name="rating_explicit">Explicit</string>
+
+  <!-- Preferences -->
+  <string name="preference_category_search">Search</string>
+
+  <string name="preference_safetyRating_title">Safety rating</string>
+  <string name="preference_safetyRating_safe">Safe</string>
+  <string name="preference_safetyRating_questionable">Questionable</string>
+  <string name="preference_safetyRating_explicit">Explicit</string>
+  <string name="preference_defaultQuery_title">Default query</string>
+  <string name="preference_defaultQuery_default">rating:safe</string>
+
+  <string name="preference_category_slideshow">Slideshow</string>
+  <string name="preference_slideshowDelay_title">Slideshow delay</string>
+  <string name="preference_slideshowDelay_summary">%ds</string>
+
+
+  <string name="preference_category_services">Services</string>
+  <!-- Default values -->
+  <string name="preference_safetyRating_default">safe</string>
+
 
 </resources>
