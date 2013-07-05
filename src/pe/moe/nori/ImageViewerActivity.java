@@ -65,6 +65,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     setContentView(R.layout.activity_imageviewer);
     mViewPager = (ViewPager) findViewById(R.id.pager);
     mViewPager.setAdapter(new SearchResultPagerAdapter(this, mSearchResult));
+    mViewPager.setOffscreenPageLimit(5);
     mViewPager.setOnPageChangeListener(this);
 
     // Load current position from Intent if not restored from instance state.
