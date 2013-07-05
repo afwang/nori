@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.content.AsyncTaskLoader;
 import com.android.volley.RequestQueue;
 import pe.moe.nori.api.BooruClient;
@@ -52,7 +54,19 @@ public class ServiceSettingsProvider {
     return new ServiceSettingsLoader(mContext, mDatabaseHelper, serviceId);
   }
 
-  public static class ServiceSettings {
+  public static class ServiceSettings implements Parcelable {
+    public static final Parcelable.Creator<ServiceSettings> CREATOR = new Parcelable.Creator<ServiceSettings>() {
+
+      @Override
+      public ServiceSettings createFromParcel(Parcel source) {
+        return new ServiceSettings(source);
+      }
+
+      @Override
+      public ServiceSettings[] newArray(int size) {
+        return new ServiceSettings[size];
+      }
+    };
     public int id;
     public String name;
     public int type;
@@ -62,11 +76,27 @@ public class ServiceSettingsProvider {
     public String username;
     public String passphrase;
 
+    public ServiceSettings() {
+    }
+
+    public ServiceSettings(Parcel in) {
+      id = in.readInt();
+      name = in.readString();
+      type = in.readInt();
+      subtype = in.readInt();
+      apiUrl = in.readString();
+      requiresAuthentication = (in.readByte() == 0x01);
+      if (requiresAuthentication) {
+        username = in.readString();
+        passphrase = in.readString();
+      }
+    }
+
     /**
      * Create a new {@link BooruClient} based on {@link ServiceSettings}
      *
      * @param requestQueue Android Volley {@link RequestQueue}
-     * @param settings Client settings
+     * @param settings     Client settings
      * @return A new instance of {link @BooruClient}, null if settings are null or incorrect.
      */
     public static BooruClient createClient(RequestQueue requestQueue, ServiceSettings settings) {
@@ -90,6 +120,25 @@ public class ServiceSettingsProvider {
     @Override
     public String toString() {
       return name;
+    }
+
+    @Override
+    public int describeContents() {
+      return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+      dest.writeInt(id);
+      dest.writeString(name);
+      dest.writeInt(type);
+      dest.writeInt(subtype);
+      dest.writeString(apiUrl);
+      dest.writeByte((byte) (requiresAuthentication ? 0x01 : 0x00));
+      if (requiresAuthentication) {
+        dest.writeString(username);
+        dest.writeString(passphrase);
+      }
     }
   }
 
@@ -138,9 +187,7 @@ public class ServiceSettingsProvider {
     }
   }
 
-  /**
-   * Loads {@link ServiceSettings} from the database asynchronously.
-   */
+  /** Loads {@link ServiceSettings} from the database asynchronously. */
   public static class ServiceSettingsLoader extends AsyncTaskLoader<List<ServiceSettings>> {
     private final Integer mServiceId;
     private final SQLiteOpenHelper mDatabaseHelper;

@@ -37,8 +37,6 @@ public class SearchResult implements Parcelable {
   public String query;
   /** True if more results are available on the next page */
   private boolean hasMore = true;
-  /** Safery rating */
-  private int safetyRating = 0x00;
 
   /** Default constructor */
   public SearchResult() {
@@ -56,7 +54,7 @@ public class SearchResult implements Parcelable {
     pageNumber = in.readInt();
     offset = in.readLong();
     query = in.readString();
-    hasMore = in.readByte() == 0x00;
+    hasMore = in.readByte() == 0x01;
   }
 
   /**
@@ -95,7 +93,7 @@ public class SearchResult implements Parcelable {
    * @param rating Most explicit acceptable rating as set in SharedPreferences.
    */
   public void filter(String rating) {
-    for (Iterator<Image> it = images.iterator(); it.hasNext();) {
+    for (Iterator<Image> it = images.iterator(); it.hasNext(); ) {
       Image image = it.next();
       // TODO: Probably should assume "questionable" if undefined. Make it a preference?
       if ((image.obscenityRating == Image.ObscenityRating.QUESTIONABLE) && rating.equals("safe"))

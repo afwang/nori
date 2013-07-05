@@ -52,8 +52,6 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
         ((SearchView) v).setQuery(mSearchResult.query, false);
     }
   };
-  /** Used for passing {@link ServiceSettingsProvider.ServiceSettings} in {@link Intent}s */
-  private ServiceSettingsProvider.ServiceSettings mServiceSettings;
   /** ActionBar navigation dropdown {@link ActionBar.OnNavigationListener} */
   public ActionBar.OnNavigationListener mNavigationCallback = new ActionBar.OnNavigationListener() {
 
@@ -78,6 +76,8 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   };
   /** Android Volley HTTP Request queue used for queuing API requests and image downloads. */
   public RequestQueue mRequestQueue;
+  /** Used for passing {@link ServiceSettingsProvider.ServiceSettings} in {@link Intent}s */
+  private ServiceSettingsProvider.ServiceSettings mServiceSettings;
   /** {@link GridView} displaying search results */
   private GridView mGridView;
   /** LRU cache used for caching images */
@@ -373,6 +373,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     Intent intent = new Intent(this, ImageViewerActivity.class);
 
     intent.putExtra("pe.moe.nori.api.SearchResult", mSearchResult);
+    intent.putExtra("pe.moe.nori.api.Settings", mServiceSettings);
     startActivity(intent);
   }
 }
