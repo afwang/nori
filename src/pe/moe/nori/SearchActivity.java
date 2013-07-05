@@ -81,10 +81,10 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   /** {@link GridView} displaying search results */
   private GridView mGridView;
   /** LRU cache used for caching images */
-  private LruCache<String, Bitmap> mLruCache = new LruCache<String, Bitmap>(2048) {
+  private LruCache<String, Bitmap> mLruCache = new LruCache<String, Bitmap>(4096) {
     @Override
     protected int sizeOf(String key, Bitmap value) {
-      return (int) ((long) value.getRowBytes() * (long) value.getHeight() / 1048576);
+      return (int) ((long) value.getRowBytes() * (long) value.getHeight() / 1024);
     }
   };
   /** An {@link ImageLoader.ImageCache} implementation wrapping the {@link LruCache} for use with Android Volley. */
