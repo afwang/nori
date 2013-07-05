@@ -40,7 +40,7 @@ import pe.moe.nori.providers.ServiceSettingsProvider;
 
 import java.util.List;
 
-public class SearchActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>>, AbsListView.OnScrollListener, SearchView.OnQueryTextListener {
+public class SearchActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>>, AbsListView.OnScrollListener, SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
   /** Unique ID for the navigation dropdown {@link Loader} */
   private static final int SERVICE_DROPDOWN_LOADER = 0x00;
   /** Overrides the default behavior to clear the {@link SearchView} when collapsed. */
@@ -52,14 +52,16 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
         ((SearchView) v).setQuery(mSearchResult.query, false);
     }
   };
+  /** Used for passing {@link ServiceSettingsProvider.ServiceSettings} in {@link Intent}s */
+  private ServiceSettingsProvider.ServiceSettings mServiceSettings;
   /** ActionBar navigation dropdown {@link ActionBar.OnNavigationListener} */
   public ActionBar.OnNavigationListener mNavigationCallback = new ActionBar.OnNavigationListener() {
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
       // Creates a new API client from the saved settings in the ServiceDropdownAdapter.
-      mBooruClient = ServiceSettingsProvider.ServiceSettings.createClient(mRequestQueue,
-          mServiceDropdownAdapter.getItem(itemPosition));
+      mServiceSettings = mServiceDropdownAdapter.getItem(itemPosition);
+      mBooruClient = ServiceSettingsProvider.ServiceSettings.createClient(mRequestQueue, mServiceSettings);
 
       // Searches for default query when:
       // * App is first created (mSearchResult == null).
@@ -230,6 +232,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     mGridView = (GridView) findViewById(R.id.result_grid);
     mGridView.setAdapter(mSearchAdapter);
     mGridView.setOnScrollListener(this);
+    mGridView.setOnItemClickListener(this);
     // Get loader manager and setup navigation dropdown.
     final LoaderManager mLoaderManager = getSupportLoaderManager();
     mLoaderManager.initLoader(SERVICE_DROPDOWN_LOADER, null, this).forceLoad();
@@ -362,5 +365,14 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   @Override
   public boolean onQueryTextChange(String newText) {
     return false;
+  }
+
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    // Pass the SearchResult, ServiceSettings and position to ImageViewerActivity.
+    Intent intent = new Intent(this, ImageViewerActivity.class);
+
+    intent.putExtra("pe.moe.nori.api.SearchResult", mSearchResult);
+    startActivity(intent);
   }
 }
