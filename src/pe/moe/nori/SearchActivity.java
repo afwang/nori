@@ -374,6 +374,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
 
     intent.putExtra("pe.moe.nori.api.SearchResult", mSearchResult);
     intent.putExtra("pe.moe.nori.api.Settings", mServiceSettings);
+    intent.putExtra("pe.moe.nori.api.SearchResult.position", position);
     startActivity(intent);
   }
 }
