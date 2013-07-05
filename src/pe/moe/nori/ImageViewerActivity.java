@@ -15,10 +15,11 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import pe.moe.nori.api.BooruClient;
+import pe.moe.nori.api.Image;
 import pe.moe.nori.api.SearchResult;
 import pe.moe.nori.providers.ServiceSettingsProvider;
 
-public class ImageViewerActivity extends SherlockActivity {
+public class ImageViewerActivity extends SherlockActivity implements ViewPager.OnPageChangeListener {
   /** Current SearchResult */
   private SearchResult mSearchResult;
   /** HTTP request queue */
@@ -64,6 +65,7 @@ public class ImageViewerActivity extends SherlockActivity {
     setContentView(R.layout.activity_imageviewer);
     mViewPager = (ViewPager) findViewById(R.id.pager);
     mViewPager.setAdapter(new SearchResultPagerAdapter(this, mSearchResult));
+    mViewPager.setOnPageChangeListener(this);
 
     // Load current position from Intent if not restored from instance state.
     if (savedInstanceState == null)
@@ -76,6 +78,35 @@ public class ImageViewerActivity extends SherlockActivity {
     super.onLowMemory();
     // Trim bitmap cache to reduce memory usage.
     mBitmapLruCache.trimToSize(32);
+  }
+
+  @Override
+  public void onPageScrolled(int i, float v, int i2) {
+
+  }
+
+  @Override
+  public void onPageSelected(int pos) {
+    // Set activity title.
+    final StringBuilder stringBuilder = new StringBuilder();
+    final Image image = mSearchResult.images.get(pos);
+    stringBuilder.append(image.id);
+    stringBuilder.append(": ");
+
+    for (int i = 0; i < image.generalTags.length; i++) {
+      stringBuilder.append(image.generalTags[i] + " ");
+    }
+    if (stringBuilder.length() > 25) {
+      stringBuilder.setLength(24);
+      stringBuilder.append("…");
+    }
+
+    setTitle(stringBuilder.toString());
+  }
+
+  @Override
+  public void onPageScrollStateChanged(int i) {
+
   }
 
   /** Adapter for the {@link ViewPager} used for flipping through the images. */
