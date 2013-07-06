@@ -164,6 +164,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     // Set share intent for the share button.
     Intent shareIntent = new Intent(Intent.ACTION_SEND)
         .putExtra(Intent.EXTRA_TEXT, image.fileUrl)
+        .putExtra(Intent.EXTRA_TEXT, image.webUrl)
         .setType("text/plain");
     mShareActionProvider.setShareIntent(shareIntent);
 
