@@ -148,7 +148,6 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
 
   @Override
   public void onPageScrolled(int i, float v, int i2) {
-    return;
   }
 
   @Override
