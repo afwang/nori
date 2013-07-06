@@ -33,6 +33,8 @@ public class Image implements Parcelable {
   public Integer width;
   /** Image height */
   public Integer height;
+  /** Web URL */
+  public String webUrl;
   /** Thumbnail URL */
   public String previewUrl;
   /** Thumbnail width */
@@ -86,6 +88,7 @@ public class Image implements Parcelable {
     fileUrl = in.readString();
     width = in.readInt();
     height = in.readInt();
+    webUrl = in.readString();
     previewUrl = in.readString();
     previewWidth = in.readInt();
     previewHeight = in.readInt();
@@ -119,6 +122,7 @@ public class Image implements Parcelable {
     dest.writeString(fileUrl);
     dest.writeInt(width);
     dest.writeInt(height);
+    dest.writeString(webUrl);
     dest.writeString(previewUrl);
     dest.writeInt(previewWidth);
     dest.writeInt(previewHeight);

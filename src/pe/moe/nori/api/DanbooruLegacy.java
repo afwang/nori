@@ -5,6 +5,15 @@
  */
 package pe.moe.nori.api;
 
+import android.net.Uri;
+import com.android.volley.*;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.HttpHeaderParser;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
@@ -12,86 +21,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import android.net.Uri;
-
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.Response.ErrorListener;
-import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-
-/**
- * Legacy Danbooru API client (Gelbooru/Konachan/Shimmie2)
- */
+/** Legacy Danbooru API client (Gelbooru/Konachan/Shimmie2) */
 public class DanbooruLegacy implements BooruClient {
-  public static enum ApiSubtype {
-    SHIMMIE2,
-    GELBOORU,
-    DANBOORU
-  }
-  private static final class DateFormat {
-    public static final SimpleDateFormat GELBOORU = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
-    public static final SimpleDateFormat SHIMMIE2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-  }
-  private class SearchResultRequest extends Request<SearchResult> {
-    private final Listener<SearchResult> mListener;
-    private final String mQuery;
-    
-    /**
-     * Creates a new HTTP GET Request
-     * 
-     * @param url URL to fetch
-     * @param listener Listener to receive the {@link SearchResult} response
-     * @param errorListener Error listener, or null to ignore errors
-     */
-    public SearchResultRequest(String url, String query, Listener<SearchResult> listener, ErrorListener errorListener) {
-      super(Method.GET, url, errorListener);
-      mListener = listener;
-      mQuery = query;
-      setRequestQueue(mRequestQueue);
-    }
-
-    @Override
-    protected void deliverResponse(SearchResult response) {
-      // Append search query to response.
-      if (response != null)
-        response.query = mQuery;
-
-      if (mListener != null)
-        mListener.onResponse(response);
-    }
-
-    @Override
-    protected Response<SearchResult> parseNetworkResponse(NetworkResponse response) {
-      // Try parsing the XML or return error.
-      try {
-        return Response.success(parseSearchResultXML(new String(response.data, HttpHeaderParser.parseCharset(response.headers))),
-            HttpHeaderParser.parseCacheHeaders(response));
-      } catch (Exception e) {
-        return Response.error(new VolleyError("Error processing data."));
-      }
-    }
-
-  }
+  private static final int DEFAULT_LIMIT = 100;
   private final RequestQueue mRequestQueue;
   private final String mApiEndpoint;
   private final ApiSubtype mApiSubtype;
-  private static final int DEFAULT_LIMIT = 100;
   private final String username;
   private final String password;
-  
+
   /**
    * Creates a new instance of the Danbooru Legacy API client.
-   * 
-   * @param endpoint URL endpoint of the API endpoint (example: http://yande.re), doesn't include paths or trailing slashes
-   * @param subtype The type of API implementation the remote service is running
+   *
+   * @param endpoint     URL endpoint of the API endpoint (example: http://yande.re), doesn't include paths or trailing slashes
+   * @param subtype      The type of API implementation the remote service is running
    * @param requestQueue Android Volley {@link RequestQueue}
    */
   public DanbooruLegacy(String endpoint, ApiSubtype subtype, RequestQueue requestQueue) {
@@ -105,12 +48,12 @@ public class DanbooruLegacy implements BooruClient {
 
   /**
    * Creates a new instance of the Danbooru Legacy API client.
-   * 
-   * @param endpoint URL of the API endpoint (example: http://yande.re), doesn't include path or trailing slashes
-   * @param subtype The type of API implementation the remote service is running
+   *
+   * @param endpoint     URL of the API endpoint (example: http://yande.re), doesn't include path or trailing slashes
+   * @param subtype      The type of API implementation the remote service is running
    * @param requestQueue Android Volley {@link RequestQueue}
-   * @param username HTTP Basic Auth username
-   * @param password HTTP Basic Auth password
+   * @param username     HTTP Basic Auth username
+   * @param password     HTTP Basic Auth password
    */
   public DanbooruLegacy(String endpoint, ApiSubtype subtype, RequestQueue requestQueue, String username, String password) {
     mApiEndpoint = endpoint;
@@ -127,7 +70,7 @@ public class DanbooruLegacy implements BooruClient {
   @Override
   public Request<CommentList> commentListRequest(long postId, Listener<CommentList> listener, ErrorListener errorListener) {
     final String url;
-    
+
     if (mApiSubtype == ApiSubtype.DANBOORU) {
       url = String.format(Locale.US, mApiEndpoint + "/comment.xml?post_id=%d", postId);
     } else if (mApiSubtype == ApiSubtype.GELBOORU) {
@@ -136,7 +79,7 @@ public class DanbooruLegacy implements BooruClient {
       // Shimmie doesn't implement this.
       return null;
     }
-    
+
     return null;
   }
 
@@ -177,9 +120,9 @@ public class DanbooruLegacy implements BooruClient {
             if (xpp.getAttributeValue(i).equals("count")) // Total image count across all pages.
               searchResult.count = Long.parseLong(xpp.getAttributeValue(i));
             else if (xpp.getAttributeValue(i).equals("offset")) // Offset, used for paging.
-              searchResult.offset = Long.parseLong(xpp.getAttributeValue(i));            
+              searchResult.offset = Long.parseLong(xpp.getAttributeValue(i));
           }
-          
+
           // Shimmie2 doesn't put stuff in the root tag
           // Pull request: https://github.com/shish/shimmie2/pull/301
           if (mApiSubtype == ApiSubtype.SHIMMIE2) {
@@ -187,7 +130,7 @@ public class DanbooruLegacy implements BooruClient {
             searchResult.count = DEFAULT_LIMIT * 2;
             searchResult.offset = 0;
           }
-          
+
         } else if (xpp.getName().equals("post")) { // Image tag.
           // Create new image.
           Image image = new Image();
@@ -236,9 +179,7 @@ public class DanbooruLegacy implements BooruClient {
                 image.obscenityRating = Image.ObscenityRating.EXPLICIT;
               else // Unknown / undefined
                 image.obscenityRating = Image.ObscenityRating.UNDEFINED;
-            }	
-
-            else if (name.equals("score")) // Popularity score
+            } else if (name.equals("score")) // Popularity score
               image.score = Integer.parseInt(value);
             else if (name.equals("source")) // Source URL
               image.source = value;
@@ -252,18 +193,17 @@ public class DanbooruLegacy implements BooruClient {
                 image.createdAt = DateFormat.GELBOORU.parse(value);
               else if (mApiSubtype == ApiSubtype.SHIMMIE2)
                 image.createdAt = DateFormat.SHIMMIE2.parse(value);
-            }
-            else if (name.equals("has_comments")) // Has comments
+            } else if (name.equals("has_comments")) // Has comments
               image.hasComments = value.equals("true");
           }
-          
-          // More shimmie2 hacks. 
+
+          // More shimmie2 hacks.
           if (mApiSubtype == ApiSubtype.SHIMMIE2) {
             // Doesn't use sample files.
             image.sampleUrl = image.fileUrl;
             image.sampleHeight = image.height;
             image.sampleWidth = image.width;
-            
+
             // Doesn't return thumbnail dimensions.
             // Pull request: https://github.com/shish/shimmie2/pull/301
             image.previewHeight = 150;
@@ -272,20 +212,29 @@ public class DanbooruLegacy implements BooruClient {
             // No comment API.
             image.hasComments = false;
           }
-          
+
+          // Append web URL.
+          if (mApiSubtype == ApiSubtype.GELBOORU) {
+            image.webUrl = String.format(Locale.US, "%s/index.php?page=post&s=view&id=%d", mApiEndpoint, image.id);
+          } else if (mApiSubtype == ApiSubtype.DANBOORU) {
+            image.webUrl = String.format(Locale.US, "%s/post/show/%d", mApiEndpoint, image.id);
+          } else if (mApiSubtype == ApiSubtype.SHIMMIE2) {
+            image.webUrl = String.format(Locale.US, "%s/post/view/%d", mApiEndpoint, image.id);
+          }
+
           // Add image to results.
           searchResult.images.add(image);
-        }	
-      }			
+        }
+      }
       // Get next XML element.
       eventType = xpp.next();
-    }	
+    }
     return searchResult;
   }
-  
+
   /**
    * Checks if API requires authentication.
-   * 
+   *
    * @return Returns true if the API require HTTP basic authentication
    */
   @Override
@@ -299,18 +248,18 @@ public class DanbooruLegacy implements BooruClient {
   @Override
   public Request<SearchResult> searchRequest(String query, int pid, Listener<SearchResult> listener, ErrorListener errorListener) {
     final String url;
-    
+
     if (mApiSubtype == ApiSubtype.DANBOORU) {
-      url = String.format(Locale.US, mApiEndpoint + "/post.xml?tags=%s&pid=%d&limit=%d", Uri.encode(query), pid+1, DEFAULT_LIMIT);
+      url = String.format(Locale.US, mApiEndpoint + "/post.xml?tags=%s&pid=%d&limit=%d", Uri.encode(query), pid + 1, DEFAULT_LIMIT);
     } else if (mApiSubtype == ApiSubtype.GELBOORU) {
       url = String.format(Locale.US, mApiEndpoint + "/index.php?page=dapi&s=post&q=index&tags=%s&pid=%d&limit=%d", Uri.encode(query), pid, DEFAULT_LIMIT);
     } else if (mApiSubtype == ApiSubtype.SHIMMIE2) {
-      url = String.format(Locale.US, mApiEndpoint + "/api/danbooru/find_posts/index.xml?tags=%s&page=%d&limit=%d", Uri.encode(query), pid+1, DEFAULT_LIMIT);
+      url = String.format(Locale.US, mApiEndpoint + "/api/danbooru/find_posts/index.xml?tags=%s&page=%d&limit=%d", Uri.encode(query), pid + 1, DEFAULT_LIMIT);
     } else {
       // Not implemented.
       return null;
     }
-    
+
     return new SearchResultRequest(url, query, listener, errorListener);
   }
 
@@ -320,7 +269,7 @@ public class DanbooruLegacy implements BooruClient {
   @Override
   public Request<SearchResult> searchRequest(String query, Listener<SearchResult> listener, ErrorListener errorListener) {
     final String url;
-    
+
     if (mApiSubtype == ApiSubtype.DANBOORU) {
       url = String.format(Locale.US, mApiEndpoint + "/post.xml?tags=%s&limit=%d", Uri.encode(query), DEFAULT_LIMIT);
     } else if (mApiSubtype == ApiSubtype.GELBOORU) {
@@ -331,8 +280,60 @@ public class DanbooruLegacy implements BooruClient {
       // Not implemented.
       return null;
     }
-    
+
     return new SearchResultRequest(url, query, listener, errorListener);
+  }
+
+  public static enum ApiSubtype {
+    SHIMMIE2,
+    GELBOORU,
+    DANBOORU
+  }
+
+  private static final class DateFormat {
+    public static final SimpleDateFormat GELBOORU = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
+    public static final SimpleDateFormat SHIMMIE2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+  }
+
+  private class SearchResultRequest extends Request<SearchResult> {
+    private final Listener<SearchResult> mListener;
+    private final String mQuery;
+
+    /**
+     * Creates a new HTTP GET Request
+     *
+     * @param url           URL to fetch
+     * @param listener      Listener to receive the {@link SearchResult} response
+     * @param errorListener Error listener, or null to ignore errors
+     */
+    public SearchResultRequest(String url, String query, Listener<SearchResult> listener, ErrorListener errorListener) {
+      super(Method.GET, url, errorListener);
+      mListener = listener;
+      mQuery = query;
+      setRequestQueue(mRequestQueue);
+    }
+
+    @Override
+    protected void deliverResponse(SearchResult response) {
+      // Append search query to response.
+      if (response != null)
+        response.query = mQuery;
+
+      if (mListener != null)
+        mListener.onResponse(response);
+    }
+
+    @Override
+    protected Response<SearchResult> parseNetworkResponse(NetworkResponse response) {
+      // Try parsing the XML or return error.
+      try {
+        return Response.success(parseSearchResultXML(new String(response.data, HttpHeaderParser.parseCharset(response.headers))),
+            HttpHeaderParser.parseCacheHeaders(response));
+      } catch (Exception e) {
+        return Response.error(new VolleyError("Error processing data."));
+      }
+    }
+
   }
 
 }
