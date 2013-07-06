@@ -38,11 +38,6 @@
   <string name="preference_category_imageViewer">Image Viewer</string>
   <string name="preference_keepScreenOn_title">Keep screen on</string>
 
-  <string name="preference_category_slideshow">Slideshow</string>
-  <string name="preference_slideshowDelay_title">Slideshow delay</string>
-  <string name="preference_slideshowDelay_summary">%ds</string>
-
-
   <string name="preference_category_services">Services</string>
   <!-- Default values -->
   <string name="preference_safetyRating_default">safe</string>

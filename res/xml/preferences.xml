@@ -25,15 +25,6 @@
       android:defaultValue="false"/>
   </PreferenceCategory>
   <PreferenceCategory
-    android:title="@string/preference_category_slideshow">
-    <pe.moe.nori.preferences.NumberPickerPreference
-      android:key="slideshow_delay"
-      android:title="@string/preference_slideshowDelay_title"
-      android:dialogLayout="@layout/preference_number_picker"
-      android:dialogTitle="@string/preference_slideshowDelay_title"
-      android:defaultValue="@integer/preference_slideshowDelay_default"/>
-  </PreferenceCategory>
-  <PreferenceCategory
     android:title="@string/preference_category_services">
   </PreferenceCategory>
 </PreferenceScreen>

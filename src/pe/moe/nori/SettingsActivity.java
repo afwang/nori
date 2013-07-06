@@ -6,7 +6,6 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import pe.moe.nori.preferences.NumberPickerPreference;
 
 public class SettingsActivity extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -46,10 +45,6 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Shar
     } else if (preference instanceof EditTextPreference) {
       EditTextPreference editTextPreference = (EditTextPreference) preference;
       preference.setSummary(editTextPreference.getText());
-    } else if (key.equals("slideshow_delay")) {
-      NumberPickerPreference numberPickerPreference = (NumberPickerPreference) preference;
-      preference.setSummary(String.format(getString(R.string.preference_slideshowDelay_summary),
-          numberPickerPreference.getValue()));
     }
   }
 }

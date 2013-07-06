@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <!-- Default slideshow delay -->
-  <integer name="preference_slideshowDelay_default">5</integer>
-</resources>
