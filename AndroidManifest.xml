@@ -7,6 +7,7 @@
   <uses-sdk
     android:minSdkVersion="10"
     android:targetSdkVersion="17"/>
+
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
@@ -33,6 +34,7 @@
       android:label="@string/activity_label_settings"/>
     <activity
       android:name="pe.moe.nori.ImageViewerActivity"
+      android:theme="@style/ImageViewerTheme"
       android:parentActivityName="pe.moe.nori.SearchActivity"
       android:label="@string/app_name"/>
   </application>

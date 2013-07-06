@@ -58,6 +58,8 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   /** Volley image lazyloader */
   private ImageLoader mImageLoader;
   private ViewPager mViewPager;
+  /** Used when fading out the ActionBar in #onPageScrollStateChanged */
+  private boolean mShouldToggleActionBar = false;
 
   private void downloadCurrentItem() {
     final DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
@@ -88,6 +90,9 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     // Dim system UI on Ice Cream Sandwich and above.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
       getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+
+    // Hide the ActionBar until user interacts with the activity.
+    getSupportActionBar().hide();
 
     // Get SearchResult and API settings from Intent.
     mSearchResult = getIntent().getParcelableExtra("pe.moe.nori.api.SearchResult");
@@ -143,7 +148,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
 
   @Override
   public void onPageScrolled(int i, float v, int i2) {
-
+    return;
   }
 
   @Override
@@ -167,7 +172,20 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
 
   @Override
   public void onPageScrollStateChanged(int i) {
-
+    // Toggle the ActionBar when the ViewPager is touched, but not scrolled in either direction.
+    if (i == 1) {
+      // ViewPager touched.
+      mShouldToggleActionBar = true;
+    } else if (i == 2) {
+      // ViewPager scrolled.
+      mShouldToggleActionBar = false;
+    } else if (i == 0 & mShouldToggleActionBar) {
+      // ViewPager touched, but not scrolled.
+      if (getSupportActionBar().isShowing())
+        getSupportActionBar().hide();
+      else
+        getSupportActionBar().show();
+    }
   }
 
   /** Adapter for the {@link ViewPager} used for flipping through the images. */
