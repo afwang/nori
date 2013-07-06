@@ -1,8 +1,11 @@
 package pe.moe.nori;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.util.LruCache;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -10,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
@@ -50,6 +55,24 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   private ImageLoader mImageLoader;
   private ViewPager mViewPager;
 
+  private void downloadCurrentItem() {
+    final DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+    final Image image = mSearchResult.images.get(mViewPager.getCurrentItem());
+    final String fileName = image.fileUrl.substring(image.fileUrl.lastIndexOf("/") + 1);
+
+    // Create download directory if it doesn't exist.
+    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
+
+    // Create and enqueue request.
+    final DownloadManager.Request request = new DownloadManager.Request(Uri.parse(image.fileUrl))
+        .setTitle(fileName)
+        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+        .setVisibleInDownloadsUi(false);
+    request.allowScanningByMediaScanner();
+    downloadManager.enqueue(request);
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -72,6 +95,23 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     if (savedInstanceState == null)
       mViewPager.setCurrentItem(getIntent().getIntExtra("pe.moe.nori.api.SearchResult.position", 0));
 
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getSupportMenuInflater().inflate(R.menu.imageviewer, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_download:
+        downloadCurrentItem();
+        return true;
+      default:
+        return false;
+    }
   }
 
   @Override
