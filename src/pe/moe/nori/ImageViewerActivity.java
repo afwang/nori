@@ -28,12 +28,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import pe.moe.nori.api.BooruClient;
 import pe.moe.nori.api.Image;
 import pe.moe.nori.api.SearchResult;
 import pe.moe.nori.providers.ServiceSettingsProvider;
+import pe.moe.nori.widgets.TouchImageViewPager;
+import pe.moe.nori.widgets.TouchNetworkImageView;
 
 public class ImageViewerActivity extends SherlockActivity implements ViewPager.OnPageChangeListener {
   /** Current SearchResult */
@@ -47,7 +48,6 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   /** Share {@link Intent} provider for the Share button */
   private ShareActionProvider mShareActionProvider = new ShareActionProvider(this);
   /** Bitmap LRU cache */
-  private LruCache<String, Bitmap> mBitmapLruCache = new LruCache<String, Bitmap>(4096) {
   private LruCache<String, Bitmap> mBitmapLruCache = new LruCache<String, Bitmap>(2048) {
     @Override
     protected int sizeOf(String key, Bitmap value) {
@@ -89,8 +89,6 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   /** Volley image lazyloader */
   private ImageLoader mImageLoader;
   private ViewPager mViewPager;
-  /** Used when fading out the ActionBar in #onPageScrollStateChanged */
-  private boolean mShouldToggleActionBar = false;
   /** This must be hidden when Pixiv ID isn't available for given item. */
   private MenuItem mViewOnPixivMenuItem;
 
@@ -141,7 +139,6 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     setContentView(R.layout.activity_imageviewer);
     mViewPager = (ViewPager) findViewById(R.id.pager);
     mViewPager.setAdapter(new SearchResultPagerAdapter(this, mSearchResult));
-    mViewPager.setOffscreenPageLimit(5);
     mViewPager.setOffscreenPageLimit(2);
     mViewPager.setOnPageChangeListener(this);
 
@@ -249,20 +246,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
 
   @Override
   public void onPageScrollStateChanged(int i) {
-    // Toggle the ActionBar when the ViewPager is touched, but not scrolled in either direction.
-    if (i == 1) {
-      // ViewPager touched.
-      mShouldToggleActionBar = true;
-    } else if (i == 2) {
-      // ViewPager scrolled.
-      mShouldToggleActionBar = false;
-    } else if (i == 0 & mShouldToggleActionBar) {
-      // ViewPager touched, but not scrolled.
-      if (getSupportActionBar().isShowing())
-        getSupportActionBar().hide();
-      else
-        getSupportActionBar().show();
-    }
+
   }
 
   /** Adapter for the {@link ViewPager} used for flipping through the images. */
@@ -277,15 +261,21 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     }
 
     @Override
-    public NetworkImageView instantiateItem(ViewGroup container, int position) {
+    public TouchNetworkImageView instantiateItem(ViewGroup container, int position) {
       // Create ImageView.
-      final NetworkImageView networkImageView = new NetworkImageView(mContext);
+      final TouchNetworkImageView networkImageView = new TouchNetworkImageView(mContext);
       networkImageView.setLayoutParams(new AbsListView.LayoutParams(ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT));
       networkImageView.setImageUrl(mSearchResult.images.get(position).fileUrl, mImageLoader);
 
       // Add ImageView to the View container.
       container.addView(networkImageView);
       return networkImageView;
+    }
+
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+      super.setPrimaryItem(container, position, object);
+      ((TouchImageViewPager)container).mCurrentView = ((TouchNetworkImageView)object);
     }
 
     @Override
