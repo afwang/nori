@@ -2,6 +2,7 @@ package pe.moe.nori;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.widget.AbsListView;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.ShareActionProvider;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
@@ -35,6 +37,8 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   private RequestQueue mRequestQueue;
   /** API client */
   private BooruClient mBooruClient;
+  /** Share {@link Intent} provider for the Share button */
+  private ShareActionProvider mShareActionProvider = new ShareActionProvider(this);
   /** Bitmap LRU cache */
   private LruCache<String, Bitmap> mBitmapLruCache = new LruCache<String, Bitmap>(4096) {
     @Override
@@ -122,6 +126,9 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getSupportMenuInflater().inflate(R.menu.imageviewer, menu);
+    // Set ActionProvider for the Share button.
+    mShareActionProvider = new ShareActionProvider(this);
+    menu.findItem(R.id.action_share).setActionProvider(mShareActionProvider);
     return true;
   }
 
@@ -152,9 +159,16 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
 
   @Override
   public void onPageSelected(int pos) {
+    final Image image = mSearchResult.images.get(pos);
+
+    // Set share intent for the share button.
+    Intent shareIntent = new Intent(Intent.ACTION_SEND)
+        .putExtra(Intent.EXTRA_TEXT, image.fileUrl)
+        .setType("text/plain");
+    mShareActionProvider.setShareIntent(shareIntent);
+
     // Set activity title.
     final StringBuilder stringBuilder = new StringBuilder();
-    final Image image = mSearchResult.images.get(pos);
     stringBuilder.append(image.id);
     stringBuilder.append(": ");
 
