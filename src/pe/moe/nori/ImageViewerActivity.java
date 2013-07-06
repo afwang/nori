@@ -197,6 +197,8 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     super.onLowMemory();
     // Trim bitmap cache to reduce memory usage.
     mBitmapLruCache.trimToSize(32);
+    // Destroy offscreen pages when low on memory.
+    mViewPager.setOffscreenPageLimit(0);
   }
 
   @Override
