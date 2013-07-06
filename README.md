@@ -5,4 +5,3 @@ Dependencies
 * [Android Support Library v4](http://developer.android.com/tools/extras/support-library.html)
 * [ActionBarSherlock](http://actionbarsherlock.com/)
 * [Volley](https://android.googlesource.com/platform/frameworks/volley/)
-* [SimonVT/android-number-picker](https://github.com/SimonVT/android-numberpicker)

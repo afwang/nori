@@ -1,9 +1,4 @@
 <resources>
   <dimen name="search_result_grid_spacing">2dp</dimen>
   <dimen name="search_result_column_width">100dp</dimen>
-  <dimen name="number_picker_dialog_padding">3dp</dimen>
-  <dimen name="number_picker_dialog_paddingLeft">8dp</dimen>
-  <dimen name="number_picker_dialog_paddingRight">8dp</dimen>
-  <dimen name="number_picker_dialog_messageMarginBottom">10dp</dimen>
-
 </resources>
