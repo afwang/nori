@@ -64,6 +64,8 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   private ViewPager mViewPager;
   /** Used when fading out the ActionBar in #onPageScrollStateChanged */
   private boolean mShouldToggleActionBar = false;
+  /** This must be hidden when Pixiv ID isn't available for given item. */
+  private MenuItem mViewOnPixivMenuItem;
 
   private void downloadCurrentItem() {
     final DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
@@ -126,8 +128,12 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getSupportMenuInflater().inflate(R.menu.imageviewer, menu);
+    mViewOnPixivMenuItem = menu.findItem(R.id.action_viewOnPixiv);
+    // Show "View on Pixiv" menu item if Pixiv ID is available.
+    if (mSearchResult.images.get(mViewPager.getCurrentItem()).pixivId != -1)
+      mViewOnPixivMenuItem.setVisible(true);
+
     // Set ActionProvider for the Share button.
-    mShareActionProvider = new ShareActionProvider(this);
     menu.findItem(R.id.action_share).setActionProvider(mShareActionProvider);
     return true;
   }
@@ -144,6 +150,11 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
       case R.id.action_viewOnWeb:
         startActivity(new Intent(Intent.ACTION_VIEW,
             Uri.parse(mSearchResult.images.get(mViewPager.getCurrentItem()).webUrl)));
+        return true;
+      case R.id.action_viewOnPixiv:
+        startActivity(new Intent(Intent.ACTION_VIEW,
+            Uri.parse("http://www.pixiv.net/member_illust.php?mode=medium&illust_id="
+                + Long.toString(mSearchResult.images.get(mViewPager.getCurrentItem()).pixivId))));
         return true;
       default:
         return false;
@@ -164,6 +175,13 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   @Override
   public void onPageSelected(int pos) {
     final Image image = mSearchResult.images.get(pos);
+
+    // Show "View on Pixiv" menu item if Pixiv id available.
+    if (mViewOnPixivMenuItem != null)
+      if (image.pixivId == -1L)
+        mViewOnPixivMenuItem.setVisible(false);
+      else
+        mViewOnPixivMenuItem.setVisible(true);
 
     // Set share intent for the share button.
     Intent shareIntent = new Intent(Intent.ACTION_SEND)

@@ -16,4 +16,9 @@
     android:id="@+id/action_viewOnWeb"
     android:title="@string/action_viewOnWeb"
     android:showAsAction="never"/>
+  <item
+    android:id="@+id/action_viewOnPixiv"
+    android:title="@string/action_viewOnPixiv"
+    android:showAsAction="never"
+    android:visible="false"/>
 </menu>

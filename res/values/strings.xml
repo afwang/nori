@@ -18,6 +18,7 @@
   <string name="action_download">Download</string>
   <string name="action_share">Share</string>
   <string name="action_viewOnWeb">View on Web</string>
+  <string name="action_viewOnPixiv">View on Pixiv</string>
 
   <!-- Obscenity ratings -->
   <string name="rating_safe">Safe</string>
