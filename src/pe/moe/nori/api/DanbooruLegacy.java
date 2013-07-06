@@ -20,9 +20,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Legacy Danbooru API client (Gelbooru/Konachan/Shimmie2) */
 public class DanbooruLegacy implements BooruClient {
+  private static final Pattern PIXIV_ID_FROM_URL_PATTERN =
+      Pattern.compile("http://(?:www|i\\d)\\.pixiv\\.net/.+?(?:illust_id=|img/.+?/)(\\d+)");
   private static final int DEFAULT_LIMIT = 100;
   private final RequestQueue mRequestQueue;
   private final String mApiEndpoint;
@@ -62,6 +66,24 @@ public class DanbooruLegacy implements BooruClient {
     // Set credentials.
     this.username = username;
     this.password = password;
+  }
+
+  /**
+   * Extract Pixiv ID from a source URL.
+   *
+   * @param sourceUrl {@link Image} source URL.
+   * @return Returns Pixiv ID extracted from given URL, or -1 if not found.
+   */
+  public static long getPixivIdFromSourceUrl(String sourceUrl) {
+    if (sourceUrl == null || sourceUrl.isEmpty())
+      return -1L;
+
+    final Matcher matcher = PIXIV_ID_FROM_URL_PATTERN.matcher(sourceUrl);
+    if (matcher.find()) {
+      return Long.parseLong(matcher.group(1));
+    }
+
+    return -1L;
   }
 
   /*
@@ -221,6 +243,8 @@ public class DanbooruLegacy implements BooruClient {
           } else if (mApiSubtype == ApiSubtype.SHIMMIE2) {
             image.webUrl = String.format(Locale.US, "%s/post/view/%d", mApiEndpoint, image.id);
           }
+          // Append Pixiv ID.
+          image.pixivId = getPixivIdFromSourceUrl(image.source);
 
           // Add image to results.
           searchResult.images.add(image);
