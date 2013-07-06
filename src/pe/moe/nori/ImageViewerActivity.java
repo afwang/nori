@@ -17,11 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
+import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.actionbarsherlock.widget.ShareActionProvider;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
@@ -37,6 +42,8 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   private RequestQueue mRequestQueue;
   /** API client */
   private BooruClient mBooruClient;
+  /** Pending API request */
+  private Request<SearchResult> mPendingRequest;
   /** Share {@link Intent} provider for the Share button */
   private ShareActionProvider mShareActionProvider = new ShareActionProvider(this);
   /** Bitmap LRU cache */
@@ -57,6 +64,25 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     @Override
     public void putBitmap(String url, Bitmap bitmap) {
       mBitmapLruCache.put(url, bitmap);
+    }
+  };
+  /** Response listener used for infinite scrolling. */
+  private Response.Listener<SearchResult> mSearchResultListener = new Response.Listener<SearchResult>() {
+    @Override
+    public void onResponse(SearchResult response) {
+      // Clear pending request and hide progress bar.
+      mPendingRequest = null;
+      setSupportProgressBarIndeterminateVisibility(false);
+      // Extend SearchResult and notify ViewPager adapter.
+      mSearchResult.extend(response);
+      mViewPager.getAdapter().notifyDataSetChanged();
+    }
+  };
+  /** API connection error listener */
+  private Response.ErrorListener mResponseErrorListener = new Response.ErrorListener() {
+    @Override
+    public void onErrorResponse(VolleyError error) {
+      Toast.makeText(ImageViewerActivity.this, R.string.error_connection, Toast.LENGTH_SHORT).show();
     }
   };
   /** Volley image lazyloader */
@@ -88,6 +114,9 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    // Request Window features.
+    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
     final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     if (sharedPreferences.getBoolean("imageViewer_keepScreenOn", false))
@@ -175,6 +204,15 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   @Override
   public void onPageSelected(int pos) {
     final Image image = mSearchResult.images.get(pos);
+
+    // Infinite scrolling
+    if (mPendingRequest == null && (mSearchResult.images.size() - pos) <= 3 && mSearchResult.hasMore()) {
+      // Create API request and add it to the queue.
+      setSupportProgressBarIndeterminateVisibility(true);
+      mPendingRequest = mBooruClient.searchRequest(mSearchResult.query, mSearchResult.pageNumber + 1,
+          mSearchResultListener, mResponseErrorListener);
+      mRequestQueue.add(mPendingRequest);
+    }
 
     // Show "View on Pixiv" menu item if Pixiv id available.
     if (mViewOnPixivMenuItem != null)
