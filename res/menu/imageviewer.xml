@@ -12,4 +12,8 @@
     android:title="@string/action_download"
     android:icon="@drawable/ic_action_download"
     android:showAsAction="ifRoom"/>
+  <item
+    android:id="@+id/action_viewOnWeb"
+    android:title="@string/action_viewOnWeb"
+    android:showAsAction="never"/>
 </menu>
