@@ -275,7 +275,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
       super.setPrimaryItem(container, position, object);
-      ((TouchImageViewPager)container).mCurrentView = ((TouchNetworkImageView)object);
+      ((TouchImageViewPager) container).mCurrentView = ((TouchNetworkImageView) object);
     }
 
     @Override
