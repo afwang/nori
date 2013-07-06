@@ -117,6 +117,9 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
+      case android.R.id.home:
+        onBackPressed();
+        return true;
       case R.id.action_download:
         downloadCurrentItem();
         return true;
