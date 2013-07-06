@@ -48,6 +48,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
   private ShareActionProvider mShareActionProvider = new ShareActionProvider(this);
   /** Bitmap LRU cache */
   private LruCache<String, Bitmap> mBitmapLruCache = new LruCache<String, Bitmap>(4096) {
+  private LruCache<String, Bitmap> mBitmapLruCache = new LruCache<String, Bitmap>(2048) {
     @Override
     protected int sizeOf(String key, Bitmap value) {
       // Convert size to kilobytes.
@@ -141,6 +142,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     mViewPager = (ViewPager) findViewById(R.id.pager);
     mViewPager.setAdapter(new SearchResultPagerAdapter(this, mSearchResult));
     mViewPager.setOffscreenPageLimit(5);
+    mViewPager.setOffscreenPageLimit(2);
     mViewPager.setOnPageChangeListener(this);
 
     // Load current position from Intent if not restored from instance state.
