@@ -98,8 +98,13 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     mViewPager.setOnPageChangeListener(this);
 
     // Load current position from Intent if not restored from instance state.
-    if (savedInstanceState == null)
-      mViewPager.setCurrentItem(getIntent().getIntExtra("pe.moe.nori.api.SearchResult.position", 0));
+    if (savedInstanceState == null) {
+      final int position = getIntent().getIntExtra("pe.moe.nori.api.SearchResult.position", 0);
+      mViewPager.setCurrentItem(position);
+      // Make sure OnPageChangeListener is called even when position == 0.
+      if (position == 0)
+        onPageSelected(0);
+    }
 
   }
 
