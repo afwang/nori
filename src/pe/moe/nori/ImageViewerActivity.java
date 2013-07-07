@@ -236,8 +236,6 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
 
     // Set activity title.
     final StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append(image.id);
-    stringBuilder.append(": ");
 
     for (int i = 0; i < image.generalTags.length; i++) {
       stringBuilder.append(image.generalTags[i] + " ");
