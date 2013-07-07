@@ -27,5 +27,12 @@
   </PreferenceCategory>
   <PreferenceCategory
     android:title="@string/preference_category_services">
+    <Preference
+      android:title="@string/preference_services_title"
+      android:summary="@string/preference_services_summary">
+      <intent
+        android:targetPackage="pe.moe.nori"
+        android:targetClass="pe.moe.nori.ServiceSettingsActivity"/>
+    </Preference>
   </PreferenceCategory>
 </PreferenceScreen>
