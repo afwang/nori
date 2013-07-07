@@ -37,6 +37,8 @@ import pe.moe.nori.widgets.TouchImageViewPager;
 import pe.moe.nori.widgets.TouchNetworkImageView;
 
 public class ImageViewerActivity extends SherlockActivity implements ViewPager.OnPageChangeListener {
+  /** Application settings */
+  private SharedPreferences mSharedPreferences;
   /** Current SearchResult */
   private SearchResult mSearchResult;
   /** HTTP request queue */
@@ -75,6 +77,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
       mPendingRequest = null;
       setSupportProgressBarIndeterminateVisibility(false);
       // Extend SearchResult and notify ViewPager adapter.
+      response.filter(mSharedPreferences.getString("search_safety_rating", getString(R.string.preference_safetyRating_default)));
       mSearchResult.extend(response);
       mViewPager.getAdapter().notifyDataSetChanged();
     }
@@ -127,6 +130,9 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
 
     // Hide the ActionBar until user interacts with the activity.
     getSupportActionBar().hide();
+
+    // Get shared preferences.
+    mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
     // Get SearchResult and API settings from Intent.
     mSearchResult = getIntent().getParcelableExtra("pe.moe.nori.api.SearchResult");
