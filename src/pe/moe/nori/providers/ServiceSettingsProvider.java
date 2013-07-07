@@ -142,7 +142,7 @@ public class ServiceSettingsProvider {
     }
   }
 
-  private static class DatabaseOpenHelper extends SQLiteOpenHelper {
+  public static class DatabaseOpenHelper extends SQLiteOpenHelper {
     public static final String SERVICE_SETTINGS_TABLE_NAME = "service_settings";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "name";
