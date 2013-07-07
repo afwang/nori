@@ -22,6 +22,7 @@
     <CheckBoxPreference
       android:key="imageViewer_keepScreenOn"
       android:title="@string/preference_keepScreenOn_title"
+      android:summary="@string/preference_keepScreenOn_summary"
       android:defaultValue="false"/>
   </PreferenceCategory>
   <PreferenceCategory
