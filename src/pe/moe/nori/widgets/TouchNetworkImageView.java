@@ -67,6 +67,7 @@ public class TouchNetworkImageView extends NetworkImageView {
   float velocity = 0;
   long lastPressTime = 0, lastDragTime = 0;
   boolean allowInert = false;
+  boolean hasBitmap = false;
   private Context mContext;
   private Timer mClickTimer;
   private OnClickListener mOnClickListener;
@@ -349,6 +350,7 @@ public class TouchNetworkImageView extends NetworkImageView {
   public void setImageBitmap(Bitmap bm) {
     super.setImageBitmap(bm);
     if (bm != null) {
+      hasBitmap = true;
       bmWidth = bm.getWidth();
       bmHeight = bm.getHeight();
     }

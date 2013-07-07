@@ -22,6 +22,7 @@ import android.graphics.PointF;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import com.actionbarsherlock.app.ActionBar;
 import pe.moe.nori.ImageViewerActivity;
 
 /** This class implements method to help <b>TouchImageView</b> fling, draggin and scaling. */
@@ -35,6 +36,16 @@ public class TouchImageViewPager extends ViewPager {
 
   public TouchImageViewPager(Context context, AttributeSet attrs) {
     super(context, attrs);
+  }
+
+  private void toggleActionBar() {
+    if (getContext() instanceof ImageViewerActivity) {
+      ActionBar actionBar = ((ImageViewerActivity) getContext()).getSupportActionBar();
+      if (actionBar.isShowing())
+        actionBar.hide();
+      else
+        actionBar.show();
+    }
   }
 
   private float[] handleMotionEvent(MotionEvent event) {
@@ -86,17 +97,11 @@ public class TouchImageViewPager extends ViewPager {
 
     float[] difference = handleMotionEvent(event);
 
-    if (difference != null && getContext() instanceof ImageViewerActivity
-        && difference[0] == 0 && difference[1] == 0) {
-      ImageViewerActivity imageViewerActivity = (ImageViewerActivity) getContext();
-      if (imageViewerActivity.getSupportActionBar().isShowing())
-        imageViewerActivity.getSupportActionBar().hide();
-      else
-        imageViewerActivity.getSupportActionBar().show();
-    }
+    if (difference != null && difference[0] == 0 && difference[1] == 0)
+      toggleActionBar();
 
 
-    if (mCurrentView.pagerCanScroll()) {
+    if (mCurrentView.pagerCanScroll() || !mCurrentView.hasBitmap) {
       return super.onInterceptTouchEvent(event);
     } else {
       if (difference != null && mCurrentView.onRightSide && difference[0] < 0) //move right
