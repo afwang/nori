@@ -2,8 +2,15 @@
 
   <style name="AppTheme" parent="Theme.Sherlock.Light"/>
 
-  <style name="ImageViewerTheme" parent="AppTheme">
+  <style name="ImageViewerActionBarStyle" parent="Widget.Sherlock.ActionBar">
+    <item name="android:background">@color/imageviewer_actionbar_background</item>
+  </style>
+
+  <style name="ImageViewerTheme" parent="Theme.Sherlock">
     <item name="android:windowActionBarOverlay">true</item>
     <item name="windowActionBarOverlay">true</item>
+    <item name="android:windowBackground">@color/imageviewer_window_background</item>
+    <item name="android:actionBarStyle">@style/ImageViewerActionBarStyle</item>
+    <item name="actionBarStyle">@style/ImageViewerActionBarStyle</item>
   </style>
 </resources>

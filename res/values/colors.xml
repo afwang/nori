@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <color name="background_image_loading">#dfdfdf</color>
+  <color name="imageviewer_window_background">#000000</color>
+  <color name="imageviewer_actionbar_background">#aa000000</color>
 </resources>
