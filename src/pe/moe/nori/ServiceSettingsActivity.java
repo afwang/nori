@@ -165,40 +165,6 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     }
   }
 
-  /** Adapter for the Service list {@link ListView} */
-  private static class ServiceSettingsCursorAdapter extends CursorAdapter {
-    private final LayoutInflater inflater;
-
-    /**
-     * Create a new adapter for the Service list {@link ListView}.
-     *
-     * @param context The context
-     * @param c       The cursor from which to get data
-     */
-    public ServiceSettingsCursorAdapter(Context context, Cursor c) {
-      super(context, c, false);
-      inflater = LayoutInflater.from(context);
-    }
-
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-      View v = inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
-      return v;
-    }
-
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-      TextView serviceName = (TextView) view.findViewById(android.R.id.text1);
-      TextView serviceSummary = (TextView) view.findViewById(android.R.id.text2);
-      serviceName.setText(cursor.getString(
-          cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_NAME)));
-      serviceSummary.setText(cursor.getString(
-          cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_API_URL)));
-    }
-  }
-
-  ;
-
   /** Asynchronously queries the database for a list of service settings. */
   private static class ServiceSettingsLoader extends AsyncTaskLoader<Cursor> {
     private final SQLiteOpenHelper dbHelper;
@@ -280,6 +246,8 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       }
     }
   }
+
+  ;
 
   /** Shows a dialog with a service settings editor */
   public static class ServiceSettingsDialog extends SherlockDialogFragment implements DialogInterface.OnClickListener,
@@ -414,6 +382,66 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
     @Override
     public void afterTextChanged(Editable s) {
+    }
+  }
+
+  /** Adapter for the Service list {@link ListView} */
+  private class ServiceSettingsCursorAdapter extends CursorAdapter {
+    private final LayoutInflater inflater;
+
+    /**
+     * Create a new adapter for the Service list {@link ListView}.
+     *
+     * @param context The context
+     * @param c       The cursor from which to get data
+     */
+    public ServiceSettingsCursorAdapter(Context context, Cursor c) {
+      super(context, c, false);
+      inflater = LayoutInflater.from(context);
+    }
+
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+      View v = inflater.inflate(R.layout.listitem_service, parent, false);
+      return v;
+    }
+
+    @Override
+    public void bindView(View view, final Context context, Cursor cursor) {
+      TextView serviceName = (TextView) view.findViewById(android.R.id.title);
+      TextView serviceSummary = (TextView) view.findViewById(android.R.id.summary);
+      ImageButton deleteButton = (ImageButton) view.findViewById(R.id.remove_button);
+      // This gets overriden in ImageButton's constructor.
+      deleteButton.setFocusable(false);
+      // Set OnClickListener for the remove button.
+      deleteButton.setOnClickListener(new RemoveServiceOnClickListener(cursor.getInt(cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_ID))));
+      // Set TextView content.
+      serviceName.setText(cursor.getString(
+          cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_NAME)));
+      serviceSummary.setText(cursor.getString(
+          cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_API_URL)));
+    }
+  }
+
+  /** OnClickListener for remove service buttons. */
+  private class RemoveServiceOnClickListener implements View.OnClickListener {
+    private final int mServiceId;
+
+    /**
+     * Creates a new {@link RemoveServiceOnClickListener}.
+     *
+     * @param serviceId ID of service that will get deleted when this listener gets triggered.
+     */
+    public RemoveServiceOnClickListener(int serviceId) {
+      mServiceId = serviceId;
+    }
+
+    @Override
+    public void onClick(View v) {
+      // Send broadcast to remove the service.
+      Intent broadcastIntent = new Intent("pe.moe.nori.providers.ServiceSettingsProvider.remove");
+      broadcastIntent.putExtra("pe.moe.nori.Service.id", mServiceId);
+      sendBroadcast(broadcastIntent);
     }
   }
 }

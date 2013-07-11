@@ -122,6 +122,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     public void onReceive(Context context, Intent intent) {
       // Reload service dropdown list and force default search.
       mSearchResult = null;
+      mSearchAdapter.notifyDataSetChanged();
       getSupportLoaderManager().getLoader(SERVICE_DROPDOWN_LOADER).forceLoad();
     }
   };

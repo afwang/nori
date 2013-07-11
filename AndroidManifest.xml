@@ -50,6 +50,9 @@
       <intent-filter>
         <action android:name="pe.moe.nori.services.ResourceTypeDetectService.result"/>
       </intent-filter>
+      <intent-filter>
+        <action android:name="pe.moe.nori.providers.ServiceSettingsProvider.remove"/>
+      </intent-filter>
     </receiver>
   </application>
 </manifest>

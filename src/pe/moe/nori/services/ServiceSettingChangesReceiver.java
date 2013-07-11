@@ -22,6 +22,34 @@ public class ServiceSettingChangesReceiver extends BroadcastReceiver {
         && intent.getIntExtra("status", -1) == ResourceTypeDetectService.STATUS_OK)
       // Insert/update (upsert) settings into database.
       upsertSettingsChange(context, intent.<ServiceSettingsProvider.ServiceSettings>getParcelableExtra("service_settings"));
+    else if (intent.getAction().equals("pe.moe.nori.providers.ServiceSettingsProvider.remove"))
+      // Remove given service from database.
+      removeService(context, intent.getIntExtra("pe.moe.nori.Service.id", -1));
+  }
+
+  /**
+   * Removes service with given ID.
+   *
+   * @param context   Context
+   * @param serviceId ID of service to be removed.
+   */
+  private void removeService(Context context, int serviceId) {
+    SQLiteOpenHelper dbHelper;
+    SQLiteDatabase database;
+
+    // Get database.
+    dbHelper = new ServiceSettingsProvider.DatabaseOpenHelper(context);
+    database = dbHelper.getWritableDatabase();
+
+    // Remove entry from database.
+    database.delete(ServiceSettingsProvider.DatabaseOpenHelper.SERVICE_SETTINGS_TABLE_NAME,
+        ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_ID + " = ?", new String[]{String.valueOf(serviceId)});
+
+    // Close database.
+    database.close();
+
+    // Notify activities that settings have changed.
+    sendUpdateBroadcast(context);
   }
 
   /**

@@ -32,6 +32,8 @@
   <string name="hint_resource_username">Username</string>
   <string name="hint_resource_passphrase">API Key</string>
 
+  <!-- Content descriptions -->
+  <string name="contentDescription_remove_service">Remove service</string>
 
   <!-- Obscenity ratings -->
   <string name="rating_safe">Safe</string>
