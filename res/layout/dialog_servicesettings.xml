@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+
+  <EditText
+    android:id="@+id/service_name"
+    android:inputType="text"
+    android:singleLine="true"
+    android:hint="@string/hint_resource_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"/>
+
+  <EditText
+    android:id="@+id/service_uri"
+    android:inputType="textUri"
+    android:singleLine="true"
+    android:hint="@string/hint_resource_address"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"/>
+
+  <EditText
+    android:id="@+id/service_username"
+    android:inputType="textNoSuggestions"
+    android:singleLine="true"
+    android:hint="@string/hint_resource_username"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:visibility="gone"/>
+
+  <EditText
+    android:id="@+id/service_passphrase"
+    android:inputType="textVisiblePassword"
+    android:singleLine="true"
+    android:hint="@string/hint_resource_passphrase"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:visibility="gone"/>
+
+</LinearLayout>

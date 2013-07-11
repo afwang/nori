@@ -20,6 +20,18 @@
   <string name="action_share">Share</string>
   <string name="action_viewOnWeb">View on Web</string>
   <string name="action_viewOnPixiv">View on Pixiv</string>
+  <string name="action_add_service">Add service</string>
+
+  <!-- Dialogs -->
+  <string name="dialog_title_add_service">Add service</string>
+  <string name="dialog_title_edit_service">Edit service</string>
+
+  <!-- Forms -->
+  <string name="hint_resource_address">Resource address</string>
+  <string name="hint_resource_name">Name</string>
+  <string name="hint_resource_username">Username</string>
+  <string name="hint_resource_passphrase">API Key</string>
+
 
   <!-- Obscenity ratings -->
   <string name="rating_safe">Safe</string>

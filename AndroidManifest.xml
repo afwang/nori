@@ -41,6 +41,15 @@
       android:name="pe.moe.nori.ServiceSettingsActivity"
       android:parentActivityName="pe.moe.nori.SettingsActivity"
       android:label="@string/activity_label_serviceSettings"/>
-  </application>
 
+    <service
+      android:name="pe.moe.nori.services.ResourceTypeDetectService"/>
+    <receiver
+      android:name=".services.ServiceSettingChangesReceiver"
+      android:exported="false">
+      <intent-filter>
+        <action android:name="pe.moe.nori.services.ResourceTypeDetectService.result"/>
+      </intent-filter>
+    </receiver>
+  </application>
 </manifest>

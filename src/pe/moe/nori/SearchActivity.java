@@ -5,8 +5,7 @@
  */
 package pe.moe.nori;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -117,6 +116,14 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   private BooruClient mBooruClient;
   /** Adapter for the ActionBar navigation dropdown */
   private ServiceDropdownAdapter mServiceDropdownAdapter;
+  /** Receiver listening for service settings changes */
+  private BroadcastReceiver mSettingsChangeReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      // Reload service dropdown list.
+      getSupportLoaderManager().getLoader(SERVICE_DROPDOWN_LOADER).forceLoad();
+    }
+  };
   /** Pending API request */
   private Request<SearchResult> mPendingRequest = null;
   /** Listener receiving parsed {@link SearchResult} responses from the API client */
@@ -218,6 +225,8 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     // Get action bar.
     mActionBar = getSupportActionBar();
+    // Register broadcast receivers.
+    registerReceiver(mSettingsChangeReceiver, new IntentFilter("pe.moe.nori.providers.ServiceSettingsProvider.update"));
     // Get service settings provider.
     mServiceSettingsProvider = new ServiceSettingsProvider(this);
     // Get shared preferences.
@@ -253,6 +262,13 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     super.onLowMemory();
     // Trim image cache.
     mLruCache.trimToSize(64);
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    // Unregister broadcast receivers.
+    unregisterReceiver(mSettingsChangeReceiver);
   }
 
   @Override

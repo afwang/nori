@@ -17,11 +17,11 @@ import java.util.List;
 
 
 public class ServiceSettingsProvider {
-  private static final int SERVICE_TYPE_DANBOORU = 0;
-  private static final int SERVICE_TYPE_DANBOORU_LEGACY = 1;
-  private static final int SERVICE_SUBTYPE_DANBOORU = 0;
-  private static final int SERVICE_SUBTYPE_GELBOORU = 1;
-  private static final int SERVICE_SUBTYPE_SHIMMIE2 = 2;
+  public static final int SERVICE_TYPE_DANBOORU = 0;
+  public static final int SERVICE_TYPE_DANBOORU_LEGACY = 1;
+  public static final int SERVICE_SUBTYPE_DANBOORU = 0;
+  public static final int SERVICE_SUBTYPE_GELBOORU = 1;
+  public static final int SERVICE_SUBTYPE_SHIMMIE2 = 2;
   private final Context mContext;
   private final SQLiteOpenHelper mDatabaseHelper;
 
