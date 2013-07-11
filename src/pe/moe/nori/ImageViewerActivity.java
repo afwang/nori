@@ -269,7 +269,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
       // Create ImageView.
       final TouchNetworkImageView networkImageView = new TouchNetworkImageView(mContext);
       networkImageView.setLayoutParams(new AbsListView.LayoutParams(ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT));
-      networkImageView.setImageUrl(mSearchResult.images.get(position).fileUrl, mImageLoader);
+      networkImageView.setImageUrl(mSearchResult.images.get(position).sampleUrl, mImageLoader);
 
       // Add ImageView to the View container.
       container.addView(networkImageView);
