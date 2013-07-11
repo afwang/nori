@@ -124,10 +124,6 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     if (sharedPreferences.getBoolean("imageViewer_keepScreenOn", false))
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-    // Dim system UI on Ice Cream Sandwich and above.
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-      getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-
     // Hide the ActionBar until user interacts with the activity.
     getSupportActionBar().hide();
 
