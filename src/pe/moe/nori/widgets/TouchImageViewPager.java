@@ -65,25 +65,33 @@ public class TouchImageViewPager extends ViewPager {
   @Override
   public boolean onTouchEvent(MotionEvent event) {
     if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
-      super.onTouchEvent(event);
+      try {
+        super.onTouchEvent(event);
+      } catch (IllegalArgumentException e) {
+
+      }
     }
 
     float[] difference = handleMotionEvent(event);
 
-    if (mCurrentView.pagerCanScroll()) {
-      return super.onTouchEvent(event);
-    } else {
-      if (difference != null && mCurrentView.onRightSide && difference[0] < 0) //move right
-      {
+    try {
+      if (mCurrentView.pagerCanScroll()) {
         return super.onTouchEvent(event);
+      } else {
+        if (difference != null && mCurrentView.onRightSide && difference[0] < 0) //move right
+        {
+          return super.onTouchEvent(event);
+        }
+        if (difference != null && mCurrentView.onLeftSide && difference[0] > 0) //move left
+        {
+          return super.onTouchEvent(event);
+        }
+        if (difference == null && (mCurrentView.onLeftSide || mCurrentView.onRightSide)) {
+          return super.onTouchEvent(event);
+        }
       }
-      if (difference != null && mCurrentView.onLeftSide && difference[0] > 0) //move left
-      {
-        return super.onTouchEvent(event);
-      }
-      if (difference == null && (mCurrentView.onLeftSide || mCurrentView.onRightSide)) {
-        return super.onTouchEvent(event);
-      }
+    } catch (IllegalArgumentException e) {
+
     }
 
     return false;
@@ -92,7 +100,11 @@ public class TouchImageViewPager extends ViewPager {
   @Override
   public boolean onInterceptTouchEvent(MotionEvent event) {
     if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
-      super.onInterceptTouchEvent(event);
+      try {
+        super.onInterceptTouchEvent(event);
+      } catch (IllegalArgumentException e) {
+
+      }
     }
 
     float[] difference = handleMotionEvent(event);
@@ -100,22 +112,26 @@ public class TouchImageViewPager extends ViewPager {
     if (difference != null && difference[0] == 0 && difference[1] == 0)
       toggleActionBar();
 
+    try {
+      if (mCurrentView.pagerCanScroll() || !mCurrentView.hasBitmap) {
+        return super.onInterceptTouchEvent(event);
+      } else {
+        if (difference != null && mCurrentView.onRightSide && difference[0] < 0) //move right
+        {
+          return super.onInterceptTouchEvent(event);
+        }
+        if (difference != null && mCurrentView.onLeftSide && difference[0] > 0) //move left
+        {
+          return super.onInterceptTouchEvent(event);
+        }
+        if (difference == null && (mCurrentView.onLeftSide || mCurrentView.onRightSide)) {
+          return super.onInterceptTouchEvent(event);
+        }
+      }
+    } catch (IllegalArgumentException e) {
 
-    if (mCurrentView.pagerCanScroll() || !mCurrentView.hasBitmap) {
-      return super.onInterceptTouchEvent(event);
-    } else {
-      if (difference != null && mCurrentView.onRightSide && difference[0] < 0) //move right
-      {
-        return super.onInterceptTouchEvent(event);
-      }
-      if (difference != null && mCurrentView.onLeftSide && difference[0] > 0) //move left
-      {
-        return super.onInterceptTouchEvent(event);
-      }
-      if (difference == null && (mCurrentView.onLeftSide || mCurrentView.onRightSide)) {
-        return super.onInterceptTouchEvent(event);
-      }
     }
+
     return false;
   }
 }
