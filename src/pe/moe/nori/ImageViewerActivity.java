@@ -240,8 +240,8 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     for (int i = 0; i < image.generalTags.length; i++) {
       stringBuilder.append(image.generalTags[i] + " ");
     }
-    if (stringBuilder.length() > 25) {
-      stringBuilder.setLength(24);
+    if (stringBuilder.length() > 45) {
+      stringBuilder.setLength(44);
       stringBuilder.append("…");
     }
 
