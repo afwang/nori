@@ -16,10 +16,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -28,7 +25,7 @@ import com.actionbarsherlock.view.Window;
 import pe.moe.nori.providers.ServiceSettingsProvider;
 import pe.moe.nori.services.ResourceTypeDetectService;
 
-public class ServiceSettingsActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ServiceSettingsActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
   /** Service settings cursor loader ID used in {@link LoaderManager} */
   public static final int SERVICE_SETTINGS_LOADER_ID = 0x00;
   /** Service list {@link ListView} */
@@ -67,7 +64,10 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
     // Set layout.
     setContentView(R.layout.activity_servicesettings);
+
+    // Set list onItemClickListener.
     mServiceListView = (ListView) findViewById(R.id.service_list);
+    mServiceListView.setOnItemClickListener(this);
 
     // Register broadcast receivers.
     registerReceiver(mResourceTypeBroadcastReceiver, new IntentFilter("pe.moe.nori.services.ResourceTypeDetectService.result"));
@@ -134,6 +134,34 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     if (loader.getId() == SERVICE_SETTINGS_LOADER_ID && mServiceSettingsCursor != null && !mServiceSettingsCursor.isClosed()) {
       // Close cursor.
       mServiceSettingsCursor.close();
+    }
+  }
+
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    // Create an instance of ServiceSettings from Cursor.
+    if (mServiceSettingsCursor != null && mServiceSettingsCursor.moveToPosition(position)) {
+      ServiceSettingsProvider.ServiceSettings serviceSettings = new ServiceSettingsProvider.ServiceSettings();
+      serviceSettings.id = mServiceSettingsCursor
+          .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_ID));
+      serviceSettings.name = mServiceSettingsCursor
+          .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_NAME));
+      serviceSettings.apiUrl = mServiceSettingsCursor
+          .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_API_URL));
+      serviceSettings.type = mServiceSettingsCursor
+          .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_TYPE));
+      serviceSettings.subtype = mServiceSettingsCursor
+          .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_SUBTYPE));
+      serviceSettings.requiresAuthentication = mServiceSettingsCursor
+          .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_REQUIRES_AUTHENTICATION)) == 1;
+      if (serviceSettings.requiresAuthentication) {
+        serviceSettings.username = mServiceSettingsCursor
+            .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_USERNAME));
+        serviceSettings.passphrase = mServiceSettingsCursor
+            .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_PASSPHRASE));
+      }
+      // Show dialog.
+      new ServiceSettingsDialog(serviceSettings).show(getSupportFragmentManager(), "ServiceSettingsDialog");
     }
   }
 
@@ -259,7 +287,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     /** Danbooru's API requires authentication. Used for showing authentication related fields when this is the service URL. */
     private static final String DANBOORU_URL = "http://danbooru.donmai.us";
     /** Service ID or null when adding a new service */
-    private Integer mServiceId;
+    private ServiceSettingsProvider.ServiceSettings mServiceSettings;
     /** Service name {@link EditText} control */
     private EditText mServiceName;
     /** Service URI {@link EditText} control */
@@ -276,25 +304,25 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     /**
      * Constructor used when editing existing services.
      *
-     * @param serviceId ID of service being edited.
+     * @param serviceSettings Service settings being edited.
      */
-    public ServiceSettingsDialog(Integer serviceId) {
-      mServiceId = serviceId;
+    public ServiceSettingsDialog(ServiceSettingsProvider.ServiceSettings serviceSettings) {
+      mServiceSettings = serviceSettings;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
       super.onSaveInstanceState(outState);
-      if (mServiceId != null)
-        // Save ID of service being edited.
-        outState.putInt("service_id", mServiceId);
+      if (mServiceSettings != null)
+        // Save service settings.
+        outState.putParcelable("service_settings", mServiceSettings);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
       // Restore ID of service being edited, if possible.
-      if (savedInstanceState != null && savedInstanceState.containsKey("service_id")) {
-        mServiceId = savedInstanceState.getInt("service_id");
+      if (savedInstanceState != null && savedInstanceState.containsKey("service_settings")) {
+        mServiceSettings = savedInstanceState.getParcelable("service_settings");
       }
 
       // Create a dialog builder.
@@ -309,8 +337,18 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       mServiceUsername = (EditText) dialogView.findViewById(R.id.service_username);
       mServicePassphrase = (EditText) dialogView.findViewById(R.id.service_passphrase);
 
+      // Fill dialog with existing data when editing a service.
+      if (mServiceSettings != null) {
+        mServiceName.setText(mServiceSettings.name);
+        mServiceUri.setText(mServiceSettings.apiUrl);
+        if (mServiceSettings.requiresAuthentication) {
+          mServiceUsername.setText(mServiceSettings.username);
+          mServicePassphrase.setText(mServiceSettings.passphrase);
+        }
+      }
+
       // Use a different title for adding new preferences and editing existing ones.
-      if (mServiceId == null)
+      if (mServiceSettings == null)
         builder.setTitle(R.string.dialog_title_add_service);
       else
         builder.setTitle(R.string.dialog_title_edit_service);
@@ -339,8 +377,8 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
       // Create a new ServiceSettings object and fill it with data.
       final ServiceSettingsProvider.ServiceSettings serviceSettings = new ServiceSettingsProvider.ServiceSettings();
-      if (mServiceId != null)
-        serviceSettings.id = mServiceId;
+      if (mServiceSettings != null)
+        serviceSettings.id = mServiceSettings.id;
       else
         serviceSettings.id = -1;
       serviceSettings.name = serviceName;

@@ -120,7 +120,8 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   private BroadcastReceiver mSettingsChangeReceiver = new BroadcastReceiver() {
     @Override
     public void onReceive(Context context, Intent intent) {
-      // Reload service dropdown list.
+      // Reload service dropdown list and force default search.
+      mSearchResult = null;
       getSupportLoaderManager().getLoader(SERVICE_DROPDOWN_LOADER).forceLoad();
     }
   };

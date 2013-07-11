@@ -68,7 +68,9 @@ public class ServiceSettingChangesReceiver extends BroadcastReceiver {
     if (serviceSettings.id < 0) {
       db.insert(ServiceSettingsProvider.DatabaseOpenHelper.SERVICE_SETTINGS_TABLE_NAME, null, contentValues);
     } else {
-      // TODO: Update database.
+      db.update(ServiceSettingsProvider.DatabaseOpenHelper.SERVICE_SETTINGS_TABLE_NAME, contentValues,
+          ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_ID + " = ?",
+          new String[]{Integer.toString(serviceSettings.id)});
     }
 
     // Close database.
