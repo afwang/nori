@@ -250,7 +250,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
   ;
 
   /** Shows a dialog with a service settings editor */
-  public static class ServiceSettingsDialog extends SherlockDialogFragment implements DialogInterface.OnClickListener,
+  public static class ServiceSettingsDialog extends SherlockDialogFragment implements View.OnClickListener,
       TextWatcher {
     /** Danbooru's API requires authentication. Used for showing authentication related fields when this is the service URL. */
     private static final String DANBOORU_URL = "http://danbooru.donmai.us";
@@ -295,7 +295,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
       // Create a dialog builder.
       AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity());
-      AlertDialog dialog;
+      final AlertDialog dialog;
 
       // Inflate dialog view and get View references.
       View dialogView = getSherlockActivity().getLayoutInflater().inflate(R.layout.dialog_servicesettings, null);
@@ -324,13 +324,41 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       // Set content view and button click listeners.
       builder.setView(dialogView);
       builder.setNegativeButton(android.R.string.cancel, null);
-      builder.setPositiveButton(android.R.string.ok, this);
+      builder.setPositiveButton(android.R.string.ok, null);
 
-      return builder.create();
+      dialog = builder.create();
+      dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+        @Override
+        public void onShow(DialogInterface d) {
+          dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(ServiceSettingsDialog.this);
+
+        }
+      });
+      return dialog;
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+      // Show authentication controls for danbooru's API.
+      if (mServiceUri.getText().toString().startsWith(DANBOORU_URL)) {
+        mServiceUsername.setVisibility(View.VISIBLE);
+        mServicePassphrase.setVisibility(View.VISIBLE);
+      } else {
+        mServiceUsername.setVisibility(View.GONE);
+        mServicePassphrase.setVisibility(View.GONE);
+      }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+    }
+
+    @Override
+    public void onClick(View v) {
       // Get form values.
       final String serviceName = mServiceName.getText().toString();
       final String serviceUri = mServiceUri.getText().toString();
@@ -340,7 +368,6 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       // Make sure fields aren't left empty.
       if (serviceName.isEmpty() || serviceUri.isEmpty()
           || (mServiceUsername.getVisibility() == View.VISIBLE && mServicePassphrase.getVisibility() == View.VISIBLE && (serviceUsername.isEmpty() || servicePassphrase.isEmpty())))
-        // TODO: Don't dismiss the dialog.
         return;
 
       // Create a new ServiceSettings object and fill it with data.
@@ -362,26 +389,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       serviceIntent.putExtra("service_settings", serviceSettings);
       getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
       getSherlockActivity().startService(serviceIntent);
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-      // Show authentication controls for danbooru's API.
-      if (mServiceUri.getText().toString().startsWith(DANBOORU_URL)) {
-        mServiceUsername.setVisibility(View.VISIBLE);
-        mServicePassphrase.setVisibility(View.VISIBLE);
-      } else {
-        mServiceUsername.setVisibility(View.GONE);
-        mServicePassphrase.setVisibility(View.GONE);
-      }
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
+      getDialog().dismiss();
     }
   }
 
