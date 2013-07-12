@@ -48,7 +48,7 @@
   <string name="preference_safetyRating_questionable">Questionable</string>
   <string name="preference_safetyRating_explicit">Explicit</string>
   <string name="preference_defaultQuery_title">Default query</string>
-  <string name="preference_defaultQuery_default">rating:safe</string>
+  <string name="preference_defaultQuery_default"></string>
 
   <string name="preference_category_imageViewer">Image Viewer</string>
   <string name="preference_keepScreenOn_title">Keep screen on</string>

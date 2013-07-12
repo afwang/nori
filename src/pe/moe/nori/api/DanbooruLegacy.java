@@ -105,7 +105,7 @@ public class DanbooruLegacy implements BooruClient {
    */
   @Override
   public String getDefaultQuery() {
-    return "rating:safe";
+    return "";
   }
 
   /**
@@ -216,10 +216,17 @@ public class DanbooruLegacy implements BooruClient {
 
           // More shimmie2 hacks.
           if (mApiSubtype == ApiSubtype.SHIMMIE2) {
+            // Image links need to be absolute.
+            image.fileUrl = mApiEndpoint + image.fileUrl;
+            image.previewUrl = mApiEndpoint + image.previewUrl;
+
             // Doesn't use sample files.
             image.sampleUrl = image.fileUrl;
             image.sampleHeight = image.height;
             image.sampleWidth = image.width;
+
+            // No parent IDs.
+            image.parentId = -1L;
 
             // Doesn't return thumbnail dimensions.
             // Pull request: https://github.com/shish/shimmie2/pull/301
