@@ -223,6 +223,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     // Get action bar.
     mActionBar = getSupportActionBar();
+    mActionBar.setIcon(R.drawable.ic_activity_default);
     // Register broadcast receivers.
     registerReceiver(mSettingsChangeReceiver, new IntentFilter("pe.moe.nori.providers.ServiceSettingsProvider.update"));
     // Get service settings provider.
