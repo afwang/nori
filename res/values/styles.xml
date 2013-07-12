@@ -4,6 +4,7 @@
 
   <style name="ImageViewerActionBarStyle" parent="Widget.Sherlock.ActionBar">
     <item name="android:background">@color/imageviewer_actionbar_background</item>
+    <item name="background">@color/imageviewer_actionbar_background</item>
   </style>
 
   <style name="ImageViewerTheme" parent="Theme.Sherlock">

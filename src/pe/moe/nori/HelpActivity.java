@@ -56,6 +56,7 @@ public class HelpActivity extends SherlockActivity {
     super.onCreate(savedInstanceState);
     // Request window features.
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+    setSupportProgressBarIndeterminateVisibility(false);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     // Create WebView, set event listeners and enable JavaScript.
@@ -67,6 +68,7 @@ public class HelpActivity extends SherlockActivity {
 
     // Show the WebView and load online help url.
     setContentView(mWebView);
+    setSupportProgressBarIndeterminateVisibility(false);
     mWebView.loadUrl(HELP_URL);
   }
 }

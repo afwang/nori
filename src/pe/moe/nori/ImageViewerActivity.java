@@ -106,10 +106,12 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     // Create and enqueue request.
     final DownloadManager.Request request = new DownloadManager.Request(Uri.parse(image.fileUrl))
         .setTitle(fileName)
-        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
         .setVisibleInDownloadsUi(false);
-    request.allowScanningByMediaScanner();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+      request.allowScanningByMediaScanner();
+      request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+    }
     downloadManager.enqueue(request);
   }
 
@@ -139,6 +141,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
 
     // Inflate content view.
     setContentView(R.layout.activity_imageviewer);
+    setSupportProgressBarIndeterminateVisibility(false);
     mViewPager = (ViewPager) findViewById(R.id.pager);
     mViewPager.setAdapter(new SearchResultPagerAdapter(this, mSearchResult));
     mViewPager.setOffscreenPageLimit(2);

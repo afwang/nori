@@ -31,6 +31,7 @@ import pe.moe.nori.api.BooruClient;
 import pe.moe.nori.api.Image;
 import pe.moe.nori.api.SearchResult;
 import pe.moe.nori.providers.ServiceSettingsProvider;
+import pe.moe.nori.widgets.SquaredNetworkImageView;
 
 import java.util.List;
 
@@ -180,9 +181,9 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       // Recycle view if possible.
       if (convertView == null) {
         // Create a new view.
-        networkImageView = new NetworkImageView(SearchActivity.this);
+        networkImageView = new SquaredNetworkImageView(SearchActivity.this);
         // Set properties.
-        networkImageView.setLayoutParams(new GridView.LayoutParams(mGridView.getColumnWidth(), mGridView.getColumnWidth()));
+        networkImageView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
         networkImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         networkImageView.setDefaultImageResId(R.color.background_image_loading);
       } else {
@@ -234,6 +235,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     mImageLoader = new ImageLoader(mRequestQueue, mImageCache);
     // Inflate views.
     setContentView(R.layout.activity_search);
+    setSupportProgressBarIndeterminateVisibility(false);
     // Get GridView and set adapter.
     mGridView = (GridView) findViewById(R.id.result_grid);
     mGridView.setAdapter(mSearchAdapter);

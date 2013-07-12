@@ -64,6 +64,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
     // Set layout.
     setContentView(R.layout.activity_servicesettings);
+    setSupportProgressBarIndeterminateVisibility(false);
 
     // Set list onItemClickListener.
     mServiceListView = (ListView) findViewById(R.id.service_list);
