@@ -37,16 +37,16 @@ public class ResourceTypeDetectService extends IntentService {
   protected void onHandleIntent(Intent intent) {
     final ServiceSettingsProvider.ServiceSettings settings = intent.getParcelableExtra("service_settings");
     final Uri uri = Uri.parse(settings.apiUrl);
+    final String uriScheme;
     final Intent broadcastIntent = new Intent("pe.moe.nori.services.ResourceTypeDetectService.result");
 
     // Validate the URL.
-    if (!uri.isHierarchical() || (!uri.getScheme().equalsIgnoreCase("http") && !uri.getScheme().equalsIgnoreCase("https"))
-        || uri.getHost() == null) {
+    if (uri.getHost() == null || uri.getScheme() == null) {
       sendBroadcast(broadcastIntent.putExtra("status", STATUS_INVALID_URI));
       return;
     }
     // Create a base URL, discarding any path and query the user may have supplied.
-    final String baseUrl = uri.getScheme() + "://" + uri.getAuthority();
+    final String baseUrl = uri.getScheme() + "://" + uri.getHost();
 
     // Loop over API paths.
     for (String apiPath : new String[]{API_PATH_DANBOORU, API_PATH_DANBOORU_LEGACY, API_PATH_GELBOORU, API_PATH_SHIMMIE2}) {

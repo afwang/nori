@@ -252,7 +252,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
   /** Shows a dialog with a service settings editor */
   public static class ServiceSettingsDialog extends SherlockDialogFragment implements View.OnClickListener,
-      TextWatcher {
+      TextWatcher, View.OnFocusChangeListener {
     /** Danbooru's API requires authentication. Used for showing authentication related fields when this is the service URL. */
     private static final String DANBOORU_URL = "http://danbooru.donmai.us";
     /** Service ID or null when adding a new service */
@@ -303,6 +303,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       mServiceName = (EditText) dialogView.findViewById(R.id.service_name);
       mServiceUri = (EditText) dialogView.findViewById(R.id.service_uri);
       mServiceUri.addTextChangedListener(this);
+      mServiceUri.setOnFocusChangeListener(this);
       mServiceUsername = (EditText) dialogView.findViewById(R.id.service_username);
       mServicePassphrase = (EditText) dialogView.findViewById(R.id.service_passphrase);
 
@@ -391,6 +392,14 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
       getSherlockActivity().startService(serviceIntent);
       getDialog().dismiss();
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+      // Provide hint to the user that the URL requires a scheme prefix.
+      if (hasFocus && mServiceUri.getText().toString().equals("")) {
+        mServiceUri.setText("http://");
+      }
     }
   }
 
