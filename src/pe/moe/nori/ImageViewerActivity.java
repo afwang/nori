@@ -144,7 +144,6 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     setSupportProgressBarIndeterminateVisibility(false);
     mViewPager = (ViewPager) findViewById(R.id.pager);
     mViewPager.setAdapter(new SearchResultPagerAdapter(this, mSearchResult));
-    mViewPager.setOffscreenPageLimit(2);
     mViewPager.setOnPageChangeListener(this);
 
     // Load current position from Intent if not restored from instance state.
@@ -199,8 +198,6 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
     super.onLowMemory();
     // Trim bitmap cache to reduce memory usage.
     mBitmapLruCache.trimToSize(32);
-    // Destroy offscreen pages when low on memory.
-    mViewPager.setOffscreenPageLimit(0);
   }
 
   @Override
