@@ -8,14 +8,6 @@ import com.android.volley.Response.Listener;
  * Imageboard service client interface.
  */
 public interface BooruClient {
-  /**
-   * Fetch a {@link CommentList} using Android Volley
-   * @param postId Post ID
-   * @param listener Listener to receive the {@link CommentList} response
-   * @param errorListener Error listener, or null to ignore errors
-   * @return Android Volley {@link Request}
-   */
-  public Request<CommentList> commentListRequest(long postId, Listener<CommentList> listener, ErrorListener errorListener);
   
   /**
    * Checks if current API endpoint requires authentication.

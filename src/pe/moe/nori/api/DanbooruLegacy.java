@@ -85,25 +85,6 @@ public class DanbooruLegacy implements BooruClient {
    * {@inheritDoc}
    */
   @Override
-  public Request<CommentList> commentListRequest(long postId, Listener<CommentList> listener, ErrorListener errorListener) {
-    final String url;
-
-    if (mApiSubtype == ApiSubtype.DANBOORU) {
-      url = String.format(Locale.US, mApiEndpoint + "/comment.xml?post_id=%d", postId);
-    } else if (mApiSubtype == ApiSubtype.GELBOORU) {
-      url = String.format(Locale.US, mApiEndpoint + "/index.php?page=dapi&s=comment&q=index&post_id=%d", postId);
-    } else {
-      // Shimmie doesn't implement this.
-      return null;
-    }
-
-    return null;
-  }
-
-  /*
-   * {@inheritDoc}
-   */
-  @Override
   public String getDefaultQuery() {
     return "";
   }

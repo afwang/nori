@@ -41,12 +41,6 @@ public class Danbooru implements BooruClient {
   }
 
   @Override
-  public Request<CommentList> commentListRequest(long postId, Listener<CommentList> listener, ErrorListener errorListener) {
-    // TODO implement me
-    return null;
-  }
-
-  @Override
   public String getDefaultQuery() {
     return "rating:safe";
   }
