@@ -48,7 +48,6 @@
   <string name="preference_safetyRating_questionable">Questionable</string>
   <string name="preference_safetyRating_explicit">Explicit</string>
   <string name="preference_defaultQuery_title">Default query</string>
-  <string name="preference_defaultQuery_default"></string>
 
   <string name="preference_category_imageViewer">Image Viewer</string>
   <string name="preference_keepScreenOn_title">Keep screen on</string>
@@ -57,9 +56,5 @@
   <string name="preference_category_services">Services</string>
   <string name="preference_services_title">Manage imageboards</string>
   <string name="preference_services_summary">Add, edit or remove imageboards</string>
-
-  <!-- Default values -->
-  <string name="preference_safetyRating_default">safe</string>
-
 
 </resources>
