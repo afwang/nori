@@ -67,9 +67,6 @@ public class ResourceTypeDetectService extends IntentService {
           if (apiPath.equals(API_PATH_DANBOORU)) {
             settings.type = ServiceSettingsProvider.SERVICE_TYPE_DANBOORU;
             settings.subtype = ServiceSettingsProvider.SERVICE_SUBTYPE_DANBOORU;
-          } else if (apiPath.equals(API_PATH_DANBOORU_LEGACY)) {
-            settings.type = ServiceSettingsProvider.SERVICE_TYPE_DANBOORU_LEGACY;
-            settings.subtype = ServiceSettingsProvider.SERVICE_SUBTYPE_DANBOORU;
           } else if (apiPath.equals(API_PATH_GELBOORU)) {
             settings.type = ServiceSettingsProvider.SERVICE_TYPE_DANBOORU_LEGACY;
             settings.subtype = ServiceSettingsProvider.SERVICE_SUBTYPE_GELBOORU;

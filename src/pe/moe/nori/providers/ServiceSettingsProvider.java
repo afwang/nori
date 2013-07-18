@@ -10,7 +10,8 @@ import android.support.v4.content.AsyncTaskLoader;
 import com.android.volley.RequestQueue;
 import pe.moe.nori.api.BooruClient;
 import pe.moe.nori.api.Danbooru;
-import pe.moe.nori.api.DanbooruLegacy;
+import pe.moe.nori.api.Gelbooru;
+import pe.moe.nori.api.Shimmie;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,12 +107,10 @@ public class ServiceSettingsProvider {
       if (settings.type == SERVICE_TYPE_DANBOORU)
         return new Danbooru(requestQueue, settings.username, settings.passphrase);
       else if (settings.type == SERVICE_TYPE_DANBOORU_LEGACY) {
-        if (settings.subtype == SERVICE_SUBTYPE_DANBOORU)
-          return new DanbooruLegacy(settings.apiUrl, DanbooruLegacy.ApiSubtype.DANBOORU, requestQueue);
-        else if (settings.subtype == SERVICE_SUBTYPE_GELBOORU)
-          return new DanbooruLegacy(settings.apiUrl, DanbooruLegacy.ApiSubtype.GELBOORU, requestQueue);
+        if (settings.subtype == SERVICE_SUBTYPE_GELBOORU)
+          return new Gelbooru(settings.apiUrl, requestQueue);
         else if (settings.subtype == SERVICE_SUBTYPE_SHIMMIE2)
-          return new DanbooruLegacy(settings.apiUrl, DanbooruLegacy.ApiSubtype.SHIMMIE2, requestQueue);
+          return new Shimmie(settings.apiUrl, requestQueue);
       }
 
       return null;
