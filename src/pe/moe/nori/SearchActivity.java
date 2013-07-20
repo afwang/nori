@@ -186,6 +186,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
         networkImageView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
         networkImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         networkImageView.setDefaultImageResId(R.color.background_image_loading);
+        networkImageView.setErrorImageResId(android.R.color.white);
       } else {
         // Recycle old view.
         networkImageView = (NetworkImageView) convertView;

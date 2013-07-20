@@ -31,6 +31,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import com.android.volley.toolbox.NetworkImageView;
+import pe.moe.nori.R;
 
 import java.lang.ref.WeakReference;
 import java.util.Timer;
@@ -98,6 +99,14 @@ public class TouchNetworkImageView extends NetworkImageView {
 
   public void setZoomToOriginalSize(boolean zoomToOriginalSize) {
     this.zoomToOriginalSize = zoomToOriginalSize;
+  }
+
+  @Override
+  public void setImageResource(int resId) {
+    if (resId == R.drawable.ic_load_error) {
+      setScaleType(ScaleType.FIT_XY);
+    }
+    super.setImageResource(resId);
   }
 
   protected void init() {

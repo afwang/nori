@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -265,6 +266,7 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
       // Create ImageView.
       final TouchNetworkImageView networkImageView = new TouchNetworkImageView(mContext);
       networkImageView.setLayoutParams(new AbsListView.LayoutParams(ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT));
+      networkImageView.setErrorImageResId(R.drawable.ic_load_error);
       networkImageView.setImageUrl(mSearchResult.images.get(position).sampleUrl, mImageLoader);
 
       // Add ImageView to the View container.
