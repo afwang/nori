@@ -22,7 +22,7 @@ public class ResourceTypeDetectService extends IntentService {
   /** Expected API path for Danbooru 2.x APIs */
   private static final String API_PATH_DANBOORU = "/posts.xml";
   /** Expected API path for Danbooru 1.x APIs */
-  private static final String API_PATH_DANBOORU_LEGACY = "/post.xml";
+  private static final String API_PATH_DANBOORU_LEGACY = "/post/index.xml";
   /** Expected API path for Gelbooru APIs */
   private static final String API_PATH_GELBOORU = "/index.php?page=dapi&s=post&q=index";
   /** Expected API path for Shimmie2 APIs */
@@ -70,6 +70,9 @@ public class ResourceTypeDetectService extends IntentService {
           } else if (apiPath.equals(API_PATH_GELBOORU)) {
             settings.type = ServiceSettingsProvider.SERVICE_TYPE_DANBOORU_LEGACY;
             settings.subtype = ServiceSettingsProvider.SERVICE_SUBTYPE_GELBOORU;
+          } else if (apiPath.equals(API_PATH_DANBOORU_LEGACY)) {
+            settings.type = ServiceSettingsProvider.SERVICE_TYPE_DANBOORU_LEGACY;
+            settings.subtype = ServiceSettingsProvider.SERVICE_SUBTYPE_DANBOORU;
           } else if (apiPath.equals(API_PATH_SHIMMIE2)) {
             settings.type = ServiceSettingsProvider.SERVICE_TYPE_DANBOORU_LEGACY;
             settings.subtype = ServiceSettingsProvider.SERVICE_SUBTYPE_SHIMMIE2;

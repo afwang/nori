@@ -8,10 +8,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.content.AsyncTaskLoader;
 import com.android.volley.RequestQueue;
-import pe.moe.nori.api.BooruClient;
-import pe.moe.nori.api.Danbooru;
-import pe.moe.nori.api.Gelbooru;
-import pe.moe.nori.api.Shimmie;
+import pe.moe.nori.api.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +106,8 @@ public class ServiceSettingsProvider {
       else if (settings.type == SERVICE_TYPE_DANBOORU_LEGACY) {
         if (settings.subtype == SERVICE_SUBTYPE_GELBOORU)
           return new Gelbooru(settings.apiUrl, requestQueue);
+        else if (settings.subtype == SERVICE_TYPE_DANBOORU)
+          return new DanbooruLegacy(settings.apiUrl, requestQueue);
         else if (settings.subtype == SERVICE_SUBTYPE_SHIMMIE2)
           return new Shimmie(settings.apiUrl, requestQueue);
       }
