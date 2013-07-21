@@ -258,13 +258,29 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     /** Service ID or null when adding a new service */
     private ServiceSettingsProvider.ServiceSettings mServiceSettings;
     /** Service name {@link EditText} control */
-    private EditText mServiceName;
+    private AutoCompleteTextView mServiceName;
     /** Service URI {@link EditText} control */
     private EditText mServiceUri;
     /** Service username {@link EditText} control. Shown only when service requires authentication */
     private EditText mServiceUsername;
     /** Service passphrase (API key) {@link EditText} control. Shown only when service requires authentication */
     private EditText mServicePassphrase;
+    /** Service names used for autocomplete. */
+    private String[] mAutocompleteServiceNames;
+    /** Service URIs used for autocomplete. */
+    private String[] mAutocompleteServiceUris;
+    /** Automatically fills in Service URL when user selects a service name suggetion */
+    private AdapterView.OnItemClickListener mOnSuggestionClickListener = new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        final String serviceName = (String) parent.getItemAtPosition(position);
+        for (int i = 0; i < mAutocompleteServiceNames.length; i++) {
+          if (mAutocompleteServiceNames[i].equals(serviceName)) {
+            mServiceUri.setText(mAutocompleteServiceUris[i]);
+          }
+        }
+      }
+    };
 
     /** Default constructor */
     public ServiceSettingsDialog() {
@@ -294,13 +310,21 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
         mServiceSettings = savedInstanceState.getParcelable("service_settings");
       }
 
+      // Load autocomplete arrays.
+      mAutocompleteServiceNames = getResources().getStringArray(R.array.service_names);
+      mAutocompleteServiceUris = getResources().getStringArray(R.array.service_urls);
+
       // Create a dialog builder.
       AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity());
       final AlertDialog dialog;
 
       // Inflate dialog view and get View references.
       View dialogView = getSherlockActivity().getLayoutInflater().inflate(R.layout.dialog_servicesettings, null);
-      mServiceName = (EditText) dialogView.findViewById(R.id.service_name);
+      mServiceName = (AutoCompleteTextView) dialogView.findViewById(R.id.service_name);
+      mServiceName.setAdapter(new ArrayAdapter<String>(getSherlockActivity(),
+          android.R.layout.simple_dropdown_item_1line, mAutocompleteServiceNames));
+      mServiceName.setThreshold(1);
+      mServiceName.setOnItemClickListener(mOnSuggestionClickListener);
       mServiceUri = (EditText) dialogView.findViewById(R.id.service_uri);
       mServiceUri.addTextChangedListener(this);
       mServiceUri.setOnFocusChangeListener(this);

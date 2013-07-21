@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Lists of services used for suggestions in ServiceSettingsActivity -->
+
+  <string-array name="service_names">
+    <item>Danbooru</item>
+    <item>Safebooru</item>
+    <item>Gelbooru</item>
+    <item>YukkuriBooru</item>
+    <item>behoimi</item>
+    <item>3dbooru</item>
+    <item>dollbooru</item>
+  </string-array>
+
+  <string-array name="service_urls">
+    <item>http://danbooru.donmai.us</item>
+    <item>http://safebooru.org</item>
+    <item>http://gelbooru.com</item>
+    <item>http://yukkuri.booru.org</item>
+    <item>http://behoimi.org</item>
+    <item>http://behoimi.org</item>
+    <item>http://dollbooru.org</item>
+  </string-array>
+</resources>
