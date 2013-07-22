@@ -3,16 +3,15 @@ package pe.moe.nori.fragments;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import pe.moe.nori.R;
+import pe.moe.nori.SearchActivity;
 import pe.moe.nori.api.Image;
 
 import java.util.ArrayList;
@@ -52,9 +51,11 @@ public class TagListDialogFragment extends SherlockDialogFragment {
 
     // Create ListView.
     ListView listView = new ListView(getSherlockActivity());
+    TagListAdapter tagListAdapter = new TagListAdapter(getSherlockActivity(), mImage);
     listView.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-    listView.setAdapter(new TagListAdapter(getSherlockActivity(), mImage));
+    listView.setAdapter(tagListAdapter);
+    listView.setOnItemClickListener(tagListAdapter.onTagClickListener);
 
     // Create dialog.
     AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity());
@@ -67,6 +68,17 @@ public class TagListDialogFragment extends SherlockDialogFragment {
     private final Image mImage;
     private final ArrayList<String> mTagList;
     private final Context mContext;
+    /** Starts search when tag is clicked */
+    public AdapterView.OnItemClickListener onTagClickListener = new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // Search for tag.
+        final Intent intent = new Intent(mContext, SearchActivity.class);
+        intent.setAction(Intent.ACTION_SEARCH);
+        intent.putExtra("pe.moe.nori.Search.query", getItem(position));
+        mContext.startActivity(intent);
+      }
+    };
 
     /**
      * Create a new TagListAdapter
