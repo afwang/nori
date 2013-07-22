@@ -60,7 +60,16 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       // * App is first created (mSearchResult == null).
       // * A new service was picked from the dropdown menu (itemId != mPref...).
       if (mBooruClient != null && (mSearchResult == null || itemId != mPreferences.getLong("last_service_dropdown_index", 0)))
-        doSearch(mSharedPreferences.getString("search_default_query", mBooruClient.getDefaultQuery()));
+        if (getIntent() != null && getIntent().getAction() == Intent.ACTION_SEARCH && getIntent().hasExtra("pe.moe.nori.Search.query")) {
+          final String query = getIntent().getStringExtra("pe.moe.nori.Search.query");
+
+          doSearch(query);
+          mSearchViewItem.expandActionView();
+          ((SearchView) mSearchViewItem.getActionView()).setQuery(query, false);
+          mSearchViewItem.getActionView().clearFocus();
+        } else {
+          doSearch(mSharedPreferences.getString("search_default_query", mBooruClient.getDefaultQuery()));
+        }
 
       // Remember dropdown state to be restored when app is relaunched.
       mPreferences.edit().putLong("last_service_dropdown_index", itemId).apply();
