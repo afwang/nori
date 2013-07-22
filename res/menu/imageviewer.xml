@@ -13,6 +13,10 @@
     android:icon="@drawable/ic_action_download"
     android:showAsAction="ifRoom"/>
   <item
+    android:id="@+id/action_showTags"
+    android:title="@string/action_show_tags"
+    android:showAsAction="never"/>
+  <item
     android:id="@+id/action_viewOnWeb"
     android:title="@string/action_viewOnWeb"
     android:showAsAction="never"/>

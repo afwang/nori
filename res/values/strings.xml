@@ -21,6 +21,7 @@
   <string name="action_viewOnWeb">View on Web</string>
   <string name="action_viewOnPixiv">View on Pixiv</string>
   <string name="action_add_service">Add service</string>
+  <string name="action_show_tags">Tags</string>
 
   <!-- Dialogs -->
   <string name="dialog_title_add_service">Add service</string>
