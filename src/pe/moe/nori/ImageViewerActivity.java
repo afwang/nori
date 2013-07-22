@@ -17,9 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
-import android.widget.ImageView;
 import android.widget.Toast;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
@@ -33,11 +32,12 @@ import com.android.volley.toolbox.Volley;
 import pe.moe.nori.api.BooruClient;
 import pe.moe.nori.api.Image;
 import pe.moe.nori.api.SearchResult;
+import pe.moe.nori.fragments.TagListDialogFragment;
 import pe.moe.nori.providers.ServiceSettingsProvider;
 import pe.moe.nori.widgets.TouchImageViewPager;
 import pe.moe.nori.widgets.TouchNetworkImageView;
 
-public class ImageViewerActivity extends SherlockActivity implements ViewPager.OnPageChangeListener {
+public class ImageViewerActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener {
   /** Application settings */
   private SharedPreferences mSharedPreferences;
   /** Current SearchResult */
@@ -179,6 +179,10 @@ public class ImageViewerActivity extends SherlockActivity implements ViewPager.O
         return true;
       case R.id.action_download:
         downloadCurrentItem();
+        return true;
+      case R.id.action_showTags:
+        new TagListDialogFragment(mSearchResult.images.get(mViewPager.getCurrentItem())).show(getSupportFragmentManager(),
+            "TagListDialog");
         return true;
       case R.id.action_viewOnWeb:
         startActivity(new Intent(Intent.ACTION_VIEW,
