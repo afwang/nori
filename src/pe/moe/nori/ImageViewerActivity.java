@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.v4.util.LruCache;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -50,24 +49,15 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
   private Request<SearchResult> mPendingRequest;
   /** Share {@link Intent} provider for the Share button */
   private ShareActionProvider mShareActionProvider = new ShareActionProvider(this);
-  /** Bitmap LRU cache */
-  private LruCache<String, Bitmap> mBitmapLruCache = new LruCache<String, Bitmap>(2048) {
-    @Override
-    protected int sizeOf(String key, Bitmap value) {
-      // Convert size to kilobytes.
-      return (int) ((long) value.getRowBytes() * (long) value.getHeight() / 1024);
-    }
-  };
   /** Volley image cache */
   private ImageLoader.ImageCache mImageCache = new ImageLoader.ImageCache() {
     @Override
     public Bitmap getBitmap(String url) {
-      return mBitmapLruCache.get(url);
+      return null;
     }
 
     @Override
     public void putBitmap(String url, Bitmap bitmap) {
-      mBitmapLruCache.put(url, bitmap);
     }
   };
   /** Response listener used for infinite scrolling. */
@@ -196,13 +186,6 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
       default:
         return false;
     }
-  }
-
-  @Override
-  public void onLowMemory() {
-    super.onLowMemory();
-    // Trim bitmap cache to reduce memory usage.
-    mBitmapLruCache.trimToSize(32);
   }
 
   @Override
