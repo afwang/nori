@@ -145,7 +145,20 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
       if (position == 0)
         onPageSelected(0);
     }
+  }
 
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    mSearchResult = intent.getParcelableExtra("pe.moe.nori.api.SearchResult");
+    mBooruClient = ServiceSettingsProvider.ServiceSettings.createClient(mRequestQueue,
+        intent.<ServiceSettingsProvider.ServiceSettings>getParcelableExtra("pe.moe.nori.api.Settings"));
+    mViewPager.getAdapter().notifyDataSetChanged();
+    final int position = intent.getIntExtra("pe.moe.nori.api.SearchResult.position", 0);
+    mViewPager.setCurrentItem(position);
+    // Make sure OnPageChangeListener is called even when position == 0
+    if (position == 0)
+      onPageSelected(0);
   }
 
   @Override

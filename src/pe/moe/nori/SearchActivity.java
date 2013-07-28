@@ -258,6 +258,18 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
   }
 
   @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    if (intent != null && intent.getAction().equals(Intent.ACTION_SEARCH) && intent.hasExtra("pe.moe.nori.Search.query")) {
+      final String query = intent.getStringExtra("pe.moe.nori.Search.query");
+      doSearch(query);
+      mSearchViewItem.expandActionView();
+      ((SearchView) mSearchViewItem.getActionView()).setQuery(query, false);
+      mSearchViewItem.getActionView().clearFocus();
+    }
+  }
+
+  @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
 
