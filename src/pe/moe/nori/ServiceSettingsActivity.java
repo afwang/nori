@@ -392,8 +392,8 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       final String servicePassphrase = mServicePassphrase.getText().toString();
 
       // Make sure fields aren't left empty.
-      if (serviceName.isEmpty() || serviceUri.isEmpty()
-          || (mServiceUsername.getVisibility() == View.VISIBLE && mServicePassphrase.getVisibility() == View.VISIBLE && (serviceUsername.isEmpty() || servicePassphrase.isEmpty())))
+      if (serviceName.isEmpty() || serviceUri.isEmpty() || (serviceUsername.isEmpty() && !servicePassphrase.isEmpty())
+          || (servicePassphrase.isEmpty() && !serviceUsername.isEmpty()))
         return;
 
       // Create a new ServiceSettings object and fill it with data.
