@@ -60,7 +60,8 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       // * App is first created (mSearchResult == null).
       // * A new service was picked from the dropdown menu (itemId != mPref...).
       if (mBooruClient != null && (mSearchResult == null || itemId != mPreferences.getLong("last_service_dropdown_index", 0)))
-        if (getIntent() != null && getIntent().getAction() == Intent.ACTION_SEARCH && getIntent().hasExtra("pe.moe.nori.Search.query")) {
+        if (itemId == mPreferences.getLong("last_service_dropdown_index", 0) &&
+            getIntent() != null && getIntent().getAction() == Intent.ACTION_SEARCH && getIntent().hasExtra("pe.moe.nori.Search.query")) {
           final String query = getIntent().getStringExtra("pe.moe.nori.Search.query");
 
           doSearch(query);
