@@ -6,7 +6,7 @@
 
   <uses-sdk
     android:minSdkVersion="10"
-    android:targetSdkVersion="17"/>
+    android:targetSdkVersion="18"/>
 
   <supports-screens android:largeScreens="true"/>
   <supports-screens android:xlargeScreens="true"/>
