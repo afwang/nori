@@ -53,6 +53,7 @@ public class ResourceTypeDetectService extends IntentService {
       try {
         // Create a new HTTP connection.
         HttpURLConnection connection = (HttpURLConnection) new URL(baseUrl + apiPath).openConnection();
+        connection.setInstanceFollowRedirects(false);
         connection.setRequestMethod("GET");
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(5000);
