@@ -17,6 +17,7 @@
  */
 package pe.moe.nori.widgets;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -30,14 +31,14 @@ import android.util.FloatMath;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import com.android.volley.toolbox.NetworkImageView;
-import pe.moe.nori.R;
+import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class TouchNetworkImageView extends NetworkImageView {
+@SuppressLint("NewApi")
+public class TouchImageView extends ImageView {
 
   static final long DOUBLE_PRESS_INTERVAL = 600;
   static final float FRICTION = 0.9f;
@@ -68,7 +69,6 @@ public class TouchNetworkImageView extends NetworkImageView {
   float velocity = 0;
   long lastPressTime = 0, lastDragTime = 0;
   boolean allowInert = false;
-  boolean hasBitmap = false;
   private Context mContext;
   private Timer mClickTimer;
   private OnClickListener mOnClickListener;
@@ -77,7 +77,7 @@ public class TouchNetworkImageView extends NetworkImageView {
   // Scale mode on DoubleTap
   private boolean zoomToOriginalSize = false;
 
-  public TouchNetworkImageView(Context context) {
+  public TouchImageView(Context context) {
     super(context);
     super.setClickable(true);
     this.mContext = context;
@@ -85,7 +85,7 @@ public class TouchNetworkImageView extends NetworkImageView {
     init();
   }
 
-  public TouchNetworkImageView(Context context, AttributeSet attrs) {
+  public TouchImageView(Context context, AttributeSet attrs) {
     super(context, attrs);
     super.setClickable(true);
     this.mContext = context;
@@ -101,14 +101,6 @@ public class TouchNetworkImageView extends NetworkImageView {
     this.zoomToOriginalSize = zoomToOriginalSize;
   }
 
-  @Override
-  public void setImageResource(int resId) {
-    if (resId == R.drawable.ic_load_error) {
-      setScaleType(ScaleType.FIT_XY);
-    }
-    super.setImageResource(resId);
-  }
-
   protected void init() {
     mTimerHandler = new TimeHandler(this);
     matrix.setTranslate(1f, 1f);
@@ -120,28 +112,28 @@ public class TouchNetworkImageView extends NetworkImageView {
     }
     setOnTouchListener(new OnTouchListener() {
       @Override
-      public boolean onTouch(View v, MotionEvent rawEvent) {
+      public boolean onTouch(View v, MotionEvent event) {
         if (mScaleDetector != null) {
-          ((ScaleGestureDetector) mScaleDetector).onTouchEvent(rawEvent);
+          ((ScaleGestureDetector) mScaleDetector).onTouchEvent(event);
         }
         fillMatrixXY();
-        PointF curr = new PointF(rawEvent.getX(), rawEvent.getY());
+        PointF curr = new PointF(event.getX(), event.getY());
 
-        switch (rawEvent.getAction() & MotionEvent.ACTION_MASK) {
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
           case MotionEvent.ACTION_DOWN:
             allowInert = false;
             savedMatrix.set(matrix);
-            last.set(rawEvent.getX(), rawEvent.getY());
+            last.set(event.getX(), event.getY());
             start.set(last);
             mode = DRAG;
 
             break;
           case MotionEvent.ACTION_POINTER_DOWN:
-            oldDist = spacing(rawEvent);
+            oldDist = spacing(event);
             //Log.d(TAG, "oldDist=" + oldDist);
             if (oldDist > 10f) {
               savedMatrix.set(matrix);
-              midPoint(mid, rawEvent);
+              midPoint(mid, event);
               mode = ZOOM;
               //Log.d(TAG, "mode=ZOOM");
             }
@@ -149,8 +141,8 @@ public class TouchNetworkImageView extends NetworkImageView {
           case MotionEvent.ACTION_UP:
             allowInert = true;
             mode = NONE;
-            int xDiff = (int) Math.abs(rawEvent.getX() - start.x);
-            int yDiff = (int) Math.abs(rawEvent.getY() - start.y);
+            int xDiff = (int) Math.abs(event.getX() - start.x);
+            int yDiff = (int) Math.abs(event.getY() - start.y);
 
             if (xDiff < CLICK && yDiff < CLICK) {
 
@@ -186,7 +178,7 @@ public class TouchNetworkImageView extends NetworkImageView {
             mode = NONE;
             velocity = 0;
             savedMatrix.set(matrix);
-            oldDist = spacing(rawEvent);
+            oldDist = spacing(event);
             //Log.d(TAG, "mode=NONE");
             break;
 
@@ -205,8 +197,8 @@ public class TouchNetworkImageView extends NetworkImageView {
               lastDelta.set(deltaX, deltaY);
               last.set(curr.x, curr.y);
             } else if (mScaleDetector == null && mode == ZOOM) {
-              float newDist = spacing(rawEvent);
-              if (rawEvent.getPointerCount() < 2) break;
+              float newDist = spacing(event);
+              if (event.getPointerCount() < 2) break;
               //There is one serious trouble: when you scaling with two fingers, then pick up first finger of gesture, ACTION_MOVE being called.
               //Magic number 50 for this case
               if (10 > Math.abs(oldDist - newDist) || Math.abs(oldDist - newDist) > 50) break;
@@ -233,7 +225,7 @@ public class TouchNetworkImageView extends NetworkImageView {
                   }
                 }
               } else {
-                PointF mid = midPointF(rawEvent);
+                PointF mid = midPointF(event);
                 matrix.postScale(mScaleFactor, mScaleFactor, mid.x, mid.y);
                 fillMatrixXY();
                 if (mScaleFactor < 1) {
@@ -358,11 +350,8 @@ public class TouchNetworkImageView extends NetworkImageView {
   @Override
   public void setImageBitmap(Bitmap bm) {
     super.setImageBitmap(bm);
-    if (bm != null) {
-      hasBitmap = true;
-      bmWidth = bm.getWidth();
-      bmHeight = bm.getHeight();
-    }
+    bmWidth = bm.getWidth();
+    bmHeight = bm.getHeight();
   }
 
   @Override
@@ -427,17 +416,21 @@ public class TouchNetworkImageView extends NetworkImageView {
   }
 
   static class TimeHandler extends Handler {
-    private final WeakReference<TouchNetworkImageView> mService;
+    private final WeakReference<TouchImageView> mService;
 
-    TimeHandler(TouchNetworkImageView view) {
-      mService = new WeakReference<TouchNetworkImageView>(view);
+    TimeHandler(TouchImageView view) {
+      mService = new WeakReference<TouchImageView>(view);
 
     }
 
     @Override
     public void handleMessage(Message msg) {
-      mService.get().performClick();
-      if (mService.get().mOnClickListener != null) mService.get().mOnClickListener.onClick(mService.get());
+      // Create a strong reference.
+      final TouchImageView service = mService.get();
+      if (service != null) {
+        mService.get().performClick();
+        if (mService.get().mOnClickListener != null) mService.get().mOnClickListener.onClick(mService.get());
+      }
     }
   }
 

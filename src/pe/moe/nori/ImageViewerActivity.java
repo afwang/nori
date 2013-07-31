@@ -1,21 +1,16 @@
 package pe.moe.nori;
 
 import android.app.DownloadManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AbsListView;
 import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -26,15 +21,15 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import pe.moe.nori.api.BooruClient;
 import pe.moe.nori.api.Image;
 import pe.moe.nori.api.SearchResult;
 import pe.moe.nori.fragments.TagListDialogFragment;
 import pe.moe.nori.providers.ServiceSettingsProvider;
+import pe.moe.nori.widgets.BasePagerAdapter;
 import pe.moe.nori.widgets.TouchImageViewPager;
-import pe.moe.nori.widgets.TouchNetworkImageView;
+import pe.moe.nori.widgets.UrlTouchImageView;
 
 public class ImageViewerActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener {
   /** Application settings */
@@ -49,17 +44,6 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
   private Request<SearchResult> mPendingRequest;
   /** Share {@link Intent} provider for the Share button */
   private ShareActionProvider mShareActionProvider = new ShareActionProvider(this);
-  /** Volley image cache */
-  private ImageLoader.ImageCache mImageCache = new ImageLoader.ImageCache() {
-    @Override
-    public Bitmap getBitmap(String url) {
-      return null;
-    }
-
-    @Override
-    public void putBitmap(String url, Bitmap bitmap) {
-    }
-  };
   /** Response listener used for infinite scrolling. */
   private Response.Listener<SearchResult> mSearchResultListener = new Response.Listener<SearchResult>() {
     @Override
@@ -80,8 +64,6 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
       Toast.makeText(ImageViewerActivity.this, R.string.error_connection, Toast.LENGTH_SHORT).show();
     }
   };
-  /** Volley image lazyloader */
-  private ImageLoader mImageLoader;
   private ViewPager mViewPager;
   /** This must be hidden when Pixiv ID isn't available for given item. */
   private MenuItem mViewOnPixivMenuItem;
@@ -128,13 +110,12 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
     mRequestQueue = Volley.newRequestQueue(this);
     mBooruClient = ServiceSettingsProvider.ServiceSettings.createClient(mRequestQueue,
         getIntent().<ServiceSettingsProvider.ServiceSettings>getParcelableExtra("pe.moe.nori.api.Settings"));
-    mImageLoader = new ImageLoader(mRequestQueue, mImageCache);
 
     // Inflate content view.
     setContentView(R.layout.activity_imageviewer);
     setSupportProgressBarIndeterminateVisibility(false);
     mViewPager = (ViewPager) findViewById(R.id.pager);
-    mViewPager.setAdapter(new SearchResultPagerAdapter(this, mSearchResult));
+    mViewPager.setAdapter(new SearchResultPagerAdapter());
     mViewPager.setOnPageChangeListener(this);
 
     // Load current position from Intent if not restored from instance state.
@@ -251,51 +232,29 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
   }
 
   /** Adapter for the {@link ViewPager} used for flipping through the images. */
-  private class SearchResultPagerAdapter extends PagerAdapter {
-    private final Context mContext;
-    private final SearchResult mSearchResult;
-
-    public SearchResultPagerAdapter(Context context, SearchResult searchResult) {
-      // Set search result and context.
-      this.mSearchResult = searchResult;
-      this.mContext = context;
-    }
-
-    @Override
-    public TouchNetworkImageView instantiateItem(ViewGroup container, int position) {
-      // Create ImageView.
-      final TouchNetworkImageView networkImageView = new TouchNetworkImageView(mContext);
-      networkImageView.setLayoutParams(new AbsListView.LayoutParams(ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT));
-      networkImageView.setErrorImageResId(R.drawable.ic_load_error);
-      networkImageView.setImageUrl(mSearchResult.images.get(position).sampleUrl, mImageLoader);
-
-      // Add ImageView to the View container.
-      container.addView(networkImageView);
-      return networkImageView;
-    }
+  private class SearchResultPagerAdapter extends BasePagerAdapter {
 
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
       super.setPrimaryItem(container, position, object);
-      ((TouchImageViewPager) container).mCurrentView = ((TouchNetworkImageView) object);
-    }
-
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-      // Remove View from the container.
-      container.removeView((View) object);
+      ((TouchImageViewPager) container).mCurrentView = ((UrlTouchImageView) object).getImageView();
     }
 
     @Override
     public int getCount() {
-      return mSearchResult.images.size();
+      if (mSearchResult != null)
+        return mSearchResult.images.size();
+      else
+        return 0;
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object o) {
-      // Checks if View corresponds to the given object returned from #instantiateItem()
-      // Just check if view == o, since #instantiateItem() returns the view anyways.
-      return view == o;
+    public Object instantiateItem(ViewGroup container, int position) {
+      final UrlTouchImageView iv = new UrlTouchImageView(ImageViewerActivity.this);
+      iv.setUrl(mSearchResult.images.get(position).sampleUrl);
+      iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+      container.addView(iv, 0);
+      return iv;
     }
   }
 }
