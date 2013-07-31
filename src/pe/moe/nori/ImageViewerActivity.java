@@ -251,9 +251,9 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
       final UrlTouchImageView iv = new UrlTouchImageView(ImageViewerActivity.this);
-      iv.setUrl(mSearchResult.images.get(position).sampleUrl);
       iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
       container.addView(iv, 0);
+      iv.setUrl(mSearchResult.images.get(position));
       return iv;
     }
   }

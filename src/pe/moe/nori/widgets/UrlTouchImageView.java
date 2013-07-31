@@ -26,6 +26,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import pe.moe.nori.R;
+import pe.moe.nori.api.Image;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -70,19 +71,19 @@ public class UrlTouchImageView extends RelativeLayout {
     this.addView(mProgressBar);
   }
 
-  public void setUrl(String imageUrl)
+  public void setUrl(Image image)
   {
-    new ImageLoadTask().execute(imageUrl);
+    new ImageLoadTask().execute(image);
   }
   //No caching load
-  public class ImageLoadTask extends AsyncTask<String, Integer, Bitmap>
+  public class ImageLoadTask extends AsyncTask<Image, Integer, Bitmap>
   {
     @Override
-    protected Bitmap doInBackground(String... strings) {
-      String url = strings[0];
+    protected Bitmap doInBackground(Image... images) {
+      Image image = images[0];
       Bitmap bm = null;
       try {
-        URL aURL = new URL(url);
+        URL aURL = new URL(image.sampleUrl);
         URLConnection conn = aURL.openConnection();
         conn.connect();
         InputStream is = conn.getInputStream();
@@ -97,7 +98,9 @@ public class UrlTouchImageView extends RelativeLayout {
             publishProgress((int)(progressValue * 100));
           }
         });
-        bm = BitmapFactory.decodeStream(bis);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = calculateInSampleSize(image, getWidth(), getHeight());
+        bm = BitmapFactory.decodeStream(bis, null, options);
         bis.close();
         is.close();
       } catch (Exception e) {
@@ -128,5 +131,26 @@ public class UrlTouchImageView extends RelativeLayout {
     {
       mProgressBar.setProgress(values[0]);
     }
+  }
+
+  public static int calculateInSampleSize(
+      Image image, int reqWidth, int reqHeight) {
+    float bitmapWidth = image.sampleWidth;
+    float bitmapHeight = image.sampleHeight;
+
+    int bitmapResolution = (int) (bitmapWidth * bitmapHeight);
+    int targetResolution = (reqWidth * reqHeight) / 2;
+
+    int sampleSize = 1;
+
+    if (targetResolution == 0) {
+      return sampleSize;
+    }
+
+    for (int i = 1; (bitmapResolution / i) > targetResolution; i *= 2) {
+      sampleSize = i;
+    }
+
+    return sampleSize;
   }
 }
