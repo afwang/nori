@@ -21,6 +21,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Debug;
 import android.util.AttributeSet;
 import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
@@ -140,7 +142,7 @@ public class UrlTouchImageView extends RelativeLayout {
     float bitmapHeight = image.sampleHeight;
 
     int bitmapResolution = (int) (bitmapWidth * bitmapHeight);
-    int targetResolution = (reqWidth * reqHeight) / 2;
+    int targetResolution = (reqWidth * reqHeight);
 
     int sampleSize = 1;
 
@@ -148,10 +150,27 @@ public class UrlTouchImageView extends RelativeLayout {
       return sampleSize;
     }
 
-    for (int i = 1; (bitmapResolution / i) > targetResolution; i *= 2) {
+    for (int i = 1; ((bitmapResolution / i) > targetResolution) || !checkBitmapFitsInMemory(bitmapResolution / sampleSize); i *= 2) {
       sampleSize = i;
     }
 
     return sampleSize;
+  }
+
+  public static boolean checkBitmapFitsInMemory(long reqsize){
+    long allocNativeHeap = Debug.getNativeHeapAllocatedSize();
+
+    final long heapPad=(long) Math.max(4*1024*1024,Runtime.getRuntime().maxMemory()*0.1);
+
+    // Bitmaps don't use native heap on honeycomb and above.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+    if (((reqsize*6) + allocNativeHeap + heapPad) >= Runtime.getRuntime().maxMemory())
+      return false;
+    } else {
+       if (reqsize*6 >= Runtime.getRuntime().freeMemory())
+        return false;
+    }
+    return true;
+
   }
 }
