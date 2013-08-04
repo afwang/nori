@@ -100,6 +100,7 @@ public class UrlTouchImageView extends RelativeLayout {
         });
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = calculateInSampleSize(image, getWidth(), getHeight());
+        options.inPurgeable = true;
         bm = BitmapFactory.decodeStream(bis, null, options);
         bis.close();
         is.close();
