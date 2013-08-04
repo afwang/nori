@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
+import com.google.analytics.tracking.android.EasyTracker;
 import pe.moe.nori.adapters.ServiceDropdownAdapter;
 import pe.moe.nori.api.BooruClient;
 import pe.moe.nori.api.Image;
@@ -268,6 +269,18 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       ((SearchView) mSearchViewItem.getActionView()).setQuery(query, false);
       mSearchViewItem.getActionView().clearFocus();
     }
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    EasyTracker.getInstance().activityStart(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    EasyTracker.getInstance().activityStop(this);
   }
 
   @Override

@@ -6,6 +6,7 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.google.analytics.tracking.android.EasyTracker;
 
 public class SettingsActivity extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -13,6 +14,18 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Shar
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     addPreferencesFromResource(R.xml.preferences);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    EasyTracker.getInstance().activityStart(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    EasyTracker.getInstance().activityStop(this);
   }
 
   @Override

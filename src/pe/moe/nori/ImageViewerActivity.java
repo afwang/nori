@@ -22,6 +22,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.google.analytics.tracking.android.EasyTracker;
 import pe.moe.nori.api.BooruClient;
 import pe.moe.nori.api.Image;
 import pe.moe.nori.api.SearchResult;
@@ -140,6 +141,18 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
     // Make sure OnPageChangeListener is called even when position == 0
     if (position == 0)
       onPageSelected(0);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    EasyTracker.getInstance().activityStart(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    EasyTracker.getInstance().activityStop(this);
   }
 
   @Override

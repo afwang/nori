@@ -22,6 +22,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.google.analytics.tracking.android.EasyTracker;
 import pe.moe.nori.providers.ServiceSettingsProvider;
 import pe.moe.nori.services.ResourceTypeDetectService;
 
@@ -76,6 +77,18 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
     // Start loaders.
     getSupportLoaderManager().initLoader(SERVICE_SETTINGS_LOADER_ID, null, this);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    EasyTracker.getInstance().activityStart(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    EasyTracker.getInstance().activityStop(this);
   }
 
   @Override
