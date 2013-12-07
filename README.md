@@ -5,5 +5,4 @@ Nori is an open-source Danbooru API client for Android. It supports both the leg
 Dependencies
 ------------
 * [Android Support Library v4](http://developer.android.com/tools/extras/support-library.html)
-* [ActionBarSherlock](http://actionbarsherlock.com/)
 * [Volley](https://android.googlesource.com/platform/frameworks/volley/)
