@@ -42,7 +42,6 @@
       android:label="@string/activity_label_settings"/>
     <activity
       android:name="pe.moe.nori.ImageViewerActivity"
-      android:hardwareAccelerated="false"
       android:icon="@drawable/ic_activity_default"
       android:theme="@style/ImageViewerTheme"
       android:parentActivityName="pe.moe.nori.SearchActivity"
