@@ -17,12 +17,12 @@
  */
 package pe.moe.nori.widgets;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.PointF;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import com.actionbarsherlock.app.ActionBar;
 import pe.moe.nori.ImageViewerActivity;
 
 /** This class implements method to help <b>TouchImageView</b> fling, draggin and scaling. */
@@ -113,7 +113,7 @@ public class TouchImageViewPager extends ViewPager {
 
   private void toggleActionBar() {
     if (getContext() instanceof ImageViewerActivity) {
-      ActionBar actionBar = ((ImageViewerActivity) getContext()).getSupportActionBar();
+      ActionBar actionBar = ((ImageViewerActivity) getContext()).getActionBar();
       if (actionBar.isShowing())
         actionBar.hide();
       else

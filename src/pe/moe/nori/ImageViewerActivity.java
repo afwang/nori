@@ -1,5 +1,6 @@
 package pe.moe.nori;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,14 +10,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.*;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -32,7 +28,7 @@ import pe.moe.nori.widgets.BasePagerAdapter;
 import pe.moe.nori.widgets.TouchImageViewPager;
 import pe.moe.nori.widgets.UrlTouchImageView;
 
-public class ImageViewerActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener {
+public class ImageViewerActivity extends Activity implements ViewPager.OnPageChangeListener {
   /** Application settings */
   private SharedPreferences mSharedPreferences;
   /** Current SearchResult */
@@ -51,7 +47,7 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
     public void onResponse(SearchResult response) {
       // Clear pending request and hide progress bar.
       mPendingRequest = null;
-      setSupportProgressBarIndeterminateVisibility(false);
+      setProgressBarIndeterminateVisibility(false);
       // Extend SearchResult and notify ViewPager adapter.
       response.filter(mSharedPreferences.getString("search_safety_rating", getString(R.string.preference_safetyRating_default)));
       mSearchResult.extend(response);
@@ -101,7 +97,7 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     // Hide the ActionBar until user interacts with the activity.
-    getSupportActionBar().hide();
+    getActionBar().hide();
 
     // Get shared preferences.
     mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -114,7 +110,7 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
 
     // Inflate content view.
     setContentView(R.layout.activity_imageviewer);
-    setSupportProgressBarIndeterminateVisibility(false);
+    setProgressBarIndeterminateVisibility(false);
     mViewPager = (ViewPager) findViewById(R.id.pager);
     mViewPager.setAdapter(new SearchResultPagerAdapter());
     mViewPager.setOnPageChangeListener(this);
@@ -157,7 +153,7 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    getSupportMenuInflater().inflate(R.menu.imageviewer, menu);
+    getMenuInflater().inflate(R.menu.imageviewer, menu);
     mViewOnPixivMenuItem = menu.findItem(R.id.action_viewOnPixiv);
     // Show "View on Pixiv" menu item if Pixiv ID is available.
     if (mSearchResult.images.get(mViewPager.getCurrentItem()).pixivId != -1)
@@ -178,7 +174,7 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
         downloadCurrentItem();
         return true;
       case R.id.action_showTags:
-        new TagListDialogFragment(mSearchResult.images.get(mViewPager.getCurrentItem())).show(getSupportFragmentManager(),
+        new TagListDialogFragment(mSearchResult.images.get(mViewPager.getCurrentItem())).show(getFragmentManager(),
             "TagListDialog");
         return true;
       case R.id.action_viewOnWeb:
@@ -206,7 +202,7 @@ public class ImageViewerActivity extends SherlockFragmentActivity implements Vie
     // Infinite scrolling
     if (mPendingRequest == null && (mSearchResult.images.size() - pos) <= 3 && mSearchResult.hasMore()) {
       // Create API request and add it to the queue.
-      setSupportProgressBarIndeterminateVisibility(true);
+      setProgressBarIndeterminateVisibility(true);
       mPendingRequest = mBooruClient.searchRequest(mSearchResult.query, mSearchResult.pageNumber + 1,
           mSearchResultListener, mResponseErrorListener);
       mRequestQueue.add(mPendingRequest);

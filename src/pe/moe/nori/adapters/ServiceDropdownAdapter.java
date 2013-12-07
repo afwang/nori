@@ -2,7 +2,6 @@ package pe.moe.nori.adapters;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
-import pe.moe.nori.R;
 import pe.moe.nori.providers.ServiceSettingsProvider;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 public class ServiceDropdownAdapter extends ArrayAdapter<ServiceSettingsProvider.ServiceSettings> {
 
   public ServiceDropdownAdapter(Context context, List<ServiceSettingsProvider.ServiceSettings> objects) {
-    super(context, R.layout.sherlock_spinner_dropdown_item, android.R.id.text1, objects);
+    super(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, objects);
   }
 
   @Override

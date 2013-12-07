@@ -1,24 +1,17 @@
 package pe.moe.nori;
 
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.*;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.util.LruCache;
 import android.text.InputType;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.LruCache;
+import android.view.*;
 import android.widget.*;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
-import com.actionbarsherlock.widget.SearchView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,7 +29,7 @@ import pe.moe.nori.widgets.SquaredNetworkImageView;
 
 import java.util.List;
 
-public class SearchActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>>, AbsListView.OnScrollListener, SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
+public class SearchActivity extends Activity implements LoaderManager.LoaderCallbacks<List<ServiceSettingsProvider.ServiceSettings>>, AbsListView.OnScrollListener, SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
   /** Unique ID for the navigation dropdown {@link Loader} */
   private static final int SERVICE_DROPDOWN_LOADER = 0x00;
   /** Overrides the default behavior to clear the {@link SearchView} when collapsed. */
@@ -130,7 +123,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       // Reload service dropdown list and force default search.
       mSearchResult = null;
       mSearchAdapter.notifyDataSetChanged();
-      getSupportLoaderManager().getLoader(SERVICE_DROPDOWN_LOADER).forceLoad();
+      getLoaderManager().getLoader(SERVICE_DROPDOWN_LOADER).forceLoad();
     }
   };
   /** Pending API request */
@@ -140,7 +133,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     @Override
     public void onResponse(SearchResult response) {
       // Hide progress bar.
-      setSupportProgressBarIndeterminateVisibility(false);
+      setProgressBarIndeterminateVisibility(false);
 
       // Clear pending request.
       mPendingRequest = null;
@@ -160,7 +153,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     @Override
     public void onErrorResponse(VolleyError error) {
       // Hide progress bar.
-      setSupportProgressBarIndeterminateVisibility(false);
+      setProgressBarIndeterminateVisibility(false);
       // Log error.
       Log.e("SearchResultFetch", error.toString());
       // Show error notification to the user.
@@ -221,7 +214,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     mSearchResult = null;
     mSearchAdapter.notifyDataSetChanged();
     // Show progress bar.
-    setSupportProgressBarIndeterminateVisibility(true);
+    setProgressBarIndeterminateVisibility(true);
     // Create and add request to queue.
     mPendingRequest = mBooruClient.searchRequest(query, mSearchResultListener, mErrorListener);
     mRequestQueue.add(mBooruClient.searchRequest(query, mSearchResultListener, mErrorListener));
@@ -234,7 +227,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     // Request window manager features.
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     // Get action bar.
-    mActionBar = getSupportActionBar();
+    mActionBar = getActionBar();
     mActionBar.setIcon(R.drawable.ic_activity_default);
     // Register broadcast receivers.
     registerReceiver(mSettingsChangeReceiver, new IntentFilter("pe.moe.nori.providers.ServiceSettingsProvider.update"));
@@ -248,14 +241,14 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     mImageLoader = new ImageLoader(mRequestQueue, mImageCache);
     // Inflate views.
     setContentView(R.layout.activity_search);
-    setSupportProgressBarIndeterminateVisibility(false);
+    setProgressBarIndeterminateVisibility(false);
     // Get GridView and set adapter.
     mGridView = (GridView) findViewById(R.id.result_grid);
     mGridView.setAdapter(mSearchAdapter);
     mGridView.setOnScrollListener(this);
     mGridView.setOnItemClickListener(this);
     // Get loader manager and setup navigation dropdown.
-    final LoaderManager mLoaderManager = getSupportLoaderManager();
+    final LoaderManager mLoaderManager = getLoaderManager();
     mLoaderManager.initLoader(SERVICE_DROPDOWN_LOADER, null, this).forceLoad();
   }
 
@@ -323,7 +316,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
     super.onCreateOptionsMenu(menu);
 
     // Inflate menu.
-    final MenuInflater inflater = getSupportMenuInflater();
+    final MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.search, menu);
     // Find SearchView.
     mSearchViewItem = menu.findItem(R.id.action_search);
@@ -400,7 +393,7 @@ public class SearchActivity extends SherlockFragmentActivity implements LoaderMa
       if (mBooruClient == null || mSearchResult == null || !mSearchResult.hasMore())
         return;
       // Create API request and add it to queue.
-      setSupportProgressBarIndeterminateVisibility(true);
+      setProgressBarIndeterminateVisibility(true);
       mPendingRequest = mBooruClient.searchRequest(mSearchResult.query, mSearchResult.pageNumber + 1, mSearchResultListener, mErrorListener);
       mRequestQueue.add(mPendingRequest);
     }

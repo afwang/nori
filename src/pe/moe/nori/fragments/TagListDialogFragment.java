@@ -1,15 +1,15 @@
 package pe.moe.nori.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import pe.moe.nori.R;
 import pe.moe.nori.SearchActivity;
 import pe.moe.nori.api.Image;
@@ -17,7 +17,7 @@ import pe.moe.nori.api.Image;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class TagListDialogFragment extends SherlockDialogFragment {
+public class TagListDialogFragment extends DialogFragment {
   /** Image */
   private Image mImage;
 
@@ -50,15 +50,15 @@ public class TagListDialogFragment extends SherlockDialogFragment {
     }
 
     // Create ListView.
-    ListView listView = new ListView(getSherlockActivity());
-    TagListAdapter tagListAdapter = new TagListAdapter(getSherlockActivity(), mImage);
+    ListView listView = new ListView(getActivity());
+    TagListAdapter tagListAdapter = new TagListAdapter(getActivity(), mImage);
     listView.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
     listView.setAdapter(tagListAdapter);
     listView.setOnItemClickListener(tagListAdapter.onTagClickListener);
 
     // Create dialog.
-    AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity());
+    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setView(listView);
     return builder.create();
   }
@@ -116,10 +116,10 @@ public class TagListDialogFragment extends SherlockDialogFragment {
       if (mImage.copyrightTags != null && position < mImage.copyrightTags.length)
         textView.setTextColor(mContext.getResources().getColor(R.color.tag_copyright));
       else if (mImage.characterTags != null &&
-          position < (mImage.copyrightTags == null ? 0 : mImage.copyrightTags.length) + mImage.characterTags.length)
+        position < (mImage.copyrightTags == null ? 0 : mImage.copyrightTags.length) + mImage.characterTags.length)
         textView.setTextColor(mContext.getResources().getColor(R.color.tag_character));
       else if (mImage.artistTags != null &&
-          position < (mImage.copyrightTags == null ? 0 : mImage.copyrightTags.length) + (mImage.characterTags == null ? 0 : mImage.characterTags.length) + mImage.artistTags.length)
+        position < (mImage.copyrightTags == null ? 0 : mImage.copyrightTags.length) + (mImage.characterTags == null ? 0 : mImage.characterTags.length) + mImage.artistTags.length)
         textView.setTextColor(mContext.getResources().getColor(R.color.tag_artist));
     }
 
@@ -141,8 +141,8 @@ public class TagListDialogFragment extends SherlockDialogFragment {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       // Inflate TextView
-      final TextView textView = (TextView) ((SherlockFragmentActivity) mContext).getLayoutInflater()
-          .inflate(android.R.layout.simple_list_item_1, parent, false);
+      final TextView textView = (TextView) ((Activity) mContext).getLayoutInflater()
+        .inflate(android.R.layout.simple_list_item_1, parent, false);
 
       // Set color and text.
       setItemTextColor(position, textView);

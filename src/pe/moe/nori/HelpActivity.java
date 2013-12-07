@@ -1,18 +1,18 @@
 package pe.moe.nori;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.google.analytics.tracking.android.EasyTracker;
 
-public class HelpActivity extends SherlockActivity {
+public class HelpActivity extends Activity {
   /** Online help URL */
   private static final String HELP_URL = "http://vomitcuddle.github.io/nori";
   /** Updates the progress bar */
@@ -23,9 +23,9 @@ public class HelpActivity extends SherlockActivity {
 
       // Set the value for the ActionBar progress bar.
       if (newProgress < 100)
-        setSupportProgressBarIndeterminateVisibility(true);
+        setProgressBarIndeterminateVisibility(true);
       if (newProgress == 100)
-        setSupportProgressBarIndeterminateVisibility(false);
+        setProgressBarIndeterminateVisibility(false);
     }
 
   };
@@ -44,7 +44,7 @@ public class HelpActivity extends SherlockActivity {
     switch (item.getItemId()) {
       case android.R.id.home:
         // ActionBar back button.
-        if ((getSupportActionBar().getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) != 0)
+        if ((getActionBar().getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) != 0)
           onBackPressed();
         return true;
       default:
@@ -57,8 +57,8 @@ public class HelpActivity extends SherlockActivity {
     super.onCreate(savedInstanceState);
     // Request window features.
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-    setSupportProgressBarIndeterminateVisibility(false);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    setProgressBarIndeterminateVisibility(false);
+    getActionBar().setDisplayHomeAsUpEnabled(true);
 
     // Create WebView, set event listeners and enable JavaScript.
     final WebView mWebView = new WebView(this);
@@ -69,7 +69,7 @@ public class HelpActivity extends SherlockActivity {
 
     // Show the WebView and load online help url.
     setContentView(mWebView);
-    setSupportProgressBarIndeterminateVisibility(false);
+    setProgressBarIndeterminateVisibility(false);
     mWebView.loadUrl(HELP_URL);
   }
 

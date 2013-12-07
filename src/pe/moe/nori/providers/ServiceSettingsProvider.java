@@ -1,12 +1,12 @@
 package pe.moe.nori.providers;
 
+import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.content.AsyncTaskLoader;
 import com.android.volley.RequestQueue;
 import pe.moe.nori.api.*;
 

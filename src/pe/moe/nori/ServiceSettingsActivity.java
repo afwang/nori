@@ -1,32 +1,20 @@
 package pe.moe.nori;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.*;
 import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.google.analytics.tracking.android.EasyTracker;
 import pe.moe.nori.providers.ServiceSettingsProvider;
 import pe.moe.nori.services.ResourceTypeDetectService;
 
-public class ServiceSettingsActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
+public class ServiceSettingsActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
   /** Service settings cursor loader ID used in {@link LoaderManager} */
   public static final int SERVICE_SETTINGS_LOADER_ID = 0x00;
   /** Service list {@link ListView} */
@@ -39,7 +27,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     public void onReceive(Context context, Intent intent) {
       final int status = intent.getIntExtra("status", 0);
       // Hide progress bar.
-      setSupportProgressBarIndeterminateVisibility(false);
+      setProgressBarIndeterminateVisibility(false);
       // Status toast.
       if (status == ResourceTypeDetectService.STATUS_RESOURCE_NOT_FOUND)
         Toast.makeText(ServiceSettingsActivity.this, "No resource found at given URL", Toast.LENGTH_SHORT).show();
@@ -54,7 +42,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     @Override
     public void onReceive(Context context, Intent intent) {
       // Reload service list.
-      getSupportLoaderManager().getLoader(SERVICE_SETTINGS_LOADER_ID).forceLoad();
+      getLoaderManager().getLoader(SERVICE_SETTINGS_LOADER_ID).forceLoad();
     }
   };
 
@@ -65,7 +53,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
     // Set layout.
     setContentView(R.layout.activity_servicesettings);
-    setSupportProgressBarIndeterminateVisibility(false);
+    setProgressBarIndeterminateVisibility(false);
 
     // Set list onItemClickListener.
     mServiceListView = (ListView) findViewById(R.id.service_list);
@@ -76,7 +64,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     registerReceiver(mSettingsChangedReceiver, new IntentFilter("pe.moe.nori.providers.ServiceSettingsProvider.update"));
 
     // Start loaders.
-    getSupportLoaderManager().initLoader(SERVICE_SETTINGS_LOADER_ID, null, this);
+    getLoaderManager().initLoader(SERVICE_SETTINGS_LOADER_ID, null, this);
   }
 
   @Override
@@ -101,7 +89,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    getSupportMenuInflater().inflate(R.menu.servicesettings, menu);
+    getMenuInflater().inflate(R.menu.servicesettings, menu);
     return true;
   }
 
@@ -114,7 +102,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
         return true;
       case R.id.action_add_service:
         // Show a dialog with service settings form.
-        new ServiceSettingsDialog(null).show(getSupportFragmentManager(), "ServiceSettingsDialog");
+        new ServiceSettingsDialog(null).show(getFragmentManager(), "ServiceSettingsDialog");
         return true;
       default:
         return false;
@@ -157,25 +145,25 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     if (mServiceSettingsCursor != null && mServiceSettingsCursor.moveToPosition(position)) {
       ServiceSettingsProvider.ServiceSettings serviceSettings = new ServiceSettingsProvider.ServiceSettings();
       serviceSettings.id = mServiceSettingsCursor
-          .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_ID));
+        .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_ID));
       serviceSettings.name = mServiceSettingsCursor
-          .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_NAME));
+        .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_NAME));
       serviceSettings.apiUrl = mServiceSettingsCursor
-          .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_API_URL));
+        .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_API_URL));
       serviceSettings.type = mServiceSettingsCursor
-          .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_TYPE));
+        .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_TYPE));
       serviceSettings.subtype = mServiceSettingsCursor
-          .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_SUBTYPE));
+        .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_SUBTYPE));
       serviceSettings.requiresAuthentication = mServiceSettingsCursor
-          .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_REQUIRES_AUTHENTICATION)) == 1;
+        .getInt(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_REQUIRES_AUTHENTICATION)) == 1;
       if (serviceSettings.requiresAuthentication) {
         serviceSettings.username = mServiceSettingsCursor
-            .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_USERNAME));
+          .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_USERNAME));
         serviceSettings.passphrase = mServiceSettingsCursor
-            .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_PASSPHRASE));
+          .getString(mServiceSettingsCursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_PASSPHRASE));
       }
       // Show dialog.
-      new ServiceSettingsDialog(serviceSettings).show(getSupportFragmentManager(), "ServiceSettingsDialog");
+      new ServiceSettingsDialog(serviceSettings).show(getFragmentManager(), "ServiceSettingsDialog");
     }
   }
 
@@ -228,10 +216,8 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
     @Override
     public Cursor loadInBackground() {
       // Query database.
-      Cursor c = database.query(ServiceSettingsProvider.DatabaseOpenHelper.SERVICE_SETTINGS_TABLE_NAME, null, null, null,
-          null, null, null);
-
-      return c;
+      return database.query(ServiceSettingsProvider.DatabaseOpenHelper.SERVICE_SETTINGS_TABLE_NAME, null, null, null,
+        null, null, null);
     }
 
     @Override
@@ -264,8 +250,8 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
   ;
 
   /** Shows a dialog with a service settings editor */
-  public static class ServiceSettingsDialog extends SherlockDialogFragment implements View.OnClickListener,
-      TextWatcher, View.OnFocusChangeListener {
+  public static class ServiceSettingsDialog extends DialogFragment implements View.OnClickListener,
+    TextWatcher, View.OnFocusChangeListener {
     /** Danbooru's API requires authentication. Used for showing authentication related fields when this is the service URL. */
     private static final String DANBOORU_URL = "http://danbooru.donmai.us";
     /** Service ID or null when adding a new service */
@@ -328,14 +314,14 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       mAutocompleteServiceUris = getResources().getStringArray(R.array.service_urls);
 
       // Create a dialog builder.
-      AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity());
+      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       final AlertDialog dialog;
 
       // Inflate dialog view and get View references.
-      View dialogView = getSherlockActivity().getLayoutInflater().inflate(R.layout.dialog_servicesettings, null);
+      View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_servicesettings, null);
       mServiceName = (AutoCompleteTextView) dialogView.findViewById(R.id.service_name);
-      mServiceName.setAdapter(new ArrayAdapter<String>(getSherlockActivity(),
-          android.R.layout.simple_dropdown_item_1line, mAutocompleteServiceNames));
+      mServiceName.setAdapter(new ArrayAdapter<String>(getActivity(),
+        android.R.layout.simple_dropdown_item_1line, mAutocompleteServiceNames));
       mServiceName.setThreshold(1);
       mServiceName.setOnItemClickListener(mOnSuggestionClickListener);
       mServiceUri = (EditText) dialogView.findViewById(R.id.service_uri);
@@ -406,7 +392,7 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
 
       // Make sure fields aren't left empty.
       if (serviceName.isEmpty() || serviceUri.isEmpty() || (serviceUsername.isEmpty() && !servicePassphrase.isEmpty())
-          || (servicePassphrase.isEmpty() && !serviceUsername.isEmpty()))
+        || (servicePassphrase.isEmpty() && !serviceUsername.isEmpty()))
         return;
 
       // Create a new ServiceSettings object and fill it with data.
@@ -424,10 +410,10 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       }
 
       // Send a broadcast to ResourceTypeDetectService for resource auto-detection and additional validation.
-      final Intent serviceIntent = new Intent(getSherlockActivity(), ResourceTypeDetectService.class);
+      final Intent serviceIntent = new Intent(getActivity(), ResourceTypeDetectService.class);
       serviceIntent.putExtra("service_settings", serviceSettings);
-      getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
-      getSherlockActivity().startService(serviceIntent);
+      getActivity().setProgressBarIndeterminateVisibility(true);
+      getActivity().startService(serviceIntent);
       getDialog().dismiss();
     }
 
@@ -472,9 +458,9 @@ public class ServiceSettingsActivity extends SherlockFragmentActivity implements
       deleteButton.setOnClickListener(new RemoveServiceOnClickListener(cursor.getInt(cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_ID))));
       // Set TextView content.
       serviceName.setText(cursor.getString(
-          cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_NAME)));
+        cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_NAME)));
       serviceSummary.setText(cursor.getString(
-          cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_API_URL)));
+        cursor.getColumnIndex(ServiceSettingsProvider.DatabaseOpenHelper.COLUMN_API_URL)));
     }
   }
 
