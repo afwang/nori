@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <!-- Default values for preferences -->
-  <string name="preference_defaultQuery_default"/>
-  <string name="preference_safetyRating_default">safe</string>
-</resources>
