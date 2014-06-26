@@ -1,6 +1,5 @@
 package pe.moe.nori;
 
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +8,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.*;
 import android.widget.ShareActionProvider;
@@ -23,12 +26,11 @@ import pe.moe.nori.api.BooruClient;
 import pe.moe.nori.api.Image;
 import pe.moe.nori.api.SearchResult;
 import pe.moe.nori.fragments.TagListDialogFragment;
+import pe.moe.nori.fragments.TouchImageViewerFragment;
 import pe.moe.nori.providers.ServiceSettingsProvider;
-import pe.moe.nori.widgets.BasePagerAdapter;
 import pe.moe.nori.widgets.TouchImageViewPager;
-import pe.moe.nori.widgets.UrlTouchImageView;
 
-public class ImageViewerActivity extends Activity implements ViewPager.OnPageChangeListener {
+public class ImageViewerActivity extends FragmentActivity implements ViewPager.OnPageChangeListener {
   /** Application settings */
   private SharedPreferences mSharedPreferences;
   /** Current SearchResult */
@@ -112,7 +114,7 @@ public class ImageViewerActivity extends Activity implements ViewPager.OnPageCha
     setContentView(R.layout.activity_imageviewer);
     setProgressBarIndeterminateVisibility(false);
     mViewPager = (ViewPager) findViewById(R.id.pager);
-    mViewPager.setAdapter(new SearchResultPagerAdapter());
+    mViewPager.setAdapter(new SearchResultPagerAdapter(getSupportFragmentManager()));
     mViewPager.setOnPageChangeListener(this);
 
     // Load current position from Intent if not restored from instance state.
@@ -174,7 +176,7 @@ public class ImageViewerActivity extends Activity implements ViewPager.OnPageCha
         downloadCurrentItem();
         return true;
       case R.id.action_showTags:
-        new TagListDialogFragment(mSearchResult.images.get(mViewPager.getCurrentItem())).show(getFragmentManager(),
+        new TagListDialogFragment(mSearchResult.images.get(mViewPager.getCurrentItem())).show(getSupportFragmentManager(),
             "TagListDialog");
         return true;
       case R.id.action_viewOnWeb:
@@ -225,7 +227,7 @@ public class ImageViewerActivity extends Activity implements ViewPager.OnPageCha
     final StringBuilder stringBuilder = new StringBuilder();
 
     for (int i = 0; i < image.generalTags.length; i++) {
-      stringBuilder.append(image.generalTags[i] + " ");
+      stringBuilder.append(image.generalTags[i]).append(" ");
     }
     if (stringBuilder.length() > 45) {
       stringBuilder.setLength(44);
@@ -241,12 +243,16 @@ public class ImageViewerActivity extends Activity implements ViewPager.OnPageCha
   }
 
   /** Adapter for the {@link ViewPager} used for flipping through the images. */
-  private class SearchResultPagerAdapter extends BasePagerAdapter {
+  private class SearchResultPagerAdapter extends FragmentStatePagerAdapter {
+
+    public SearchResultPagerAdapter(FragmentManager fm) {
+      super(fm);
+    }
 
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
       super.setPrimaryItem(container, position, object);
-      ((TouchImageViewPager) container).mCurrentView = ((UrlTouchImageView) object).getImageView();
+      ((TouchImageViewPager) container).mCurrentView = ((TouchImageViewerFragment)object).getImageView();
     }
 
     @Override
@@ -258,12 +264,8 @@ public class ImageViewerActivity extends Activity implements ViewPager.OnPageCha
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-      final UrlTouchImageView iv = new UrlTouchImageView(ImageViewerActivity.this);
-      iv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-      container.addView(iv, 0);
-      iv.setUrl(mSearchResult.images.get(position));
-      return iv;
+    public Fragment getItem(int i) {
+      return new TouchImageViewerFragment(mSearchResult.images.get(i));
     }
   }
 }
