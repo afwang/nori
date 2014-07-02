@@ -72,6 +72,20 @@ public class Tag implements Comparable<Tag>, Parcelable {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || ((Object) this).getClass() != o.getClass()) return false;
+
+    Tag tag = (Tag) o;
+    return name.equals(tag.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
+
+  @Override
   public int compareTo(Tag another) {
     return this.name.compareTo(another.getName());
   }
@@ -95,6 +109,21 @@ public class Tag implements Comparable<Tag>, Parcelable {
   public void writeToParcel(Parcel p, int flags) {
     p.writeString(name);
     p.writeInt(type.ordinal());
+  }
+
+  /**
+   * Convert an array of tags into a querystring suitable for use with {@link com.cuddlesoft.nori.api.clients.SearchClient#search(String)}.
+   *
+   * @param tags Tags
+   * @return A space-separated list of tags.
+   */
+  public static String arrayAsString(Tag[] tags) {
+    final StringBuilder sb = new StringBuilder();
+    for (Tag tag : tags) {
+      sb.append(tag.name).append(" ");
+    }
+    // Return string while trimming final trailing space.
+    return sb.toString().trim();
   }
 
   /**
