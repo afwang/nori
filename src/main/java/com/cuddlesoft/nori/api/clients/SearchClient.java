@@ -35,6 +35,13 @@ public interface SearchClient {
   public SearchResult search(String tags, int pid) throws IOException;
 
   /**
+   * Get a SFW default query to search for when an app is launched.
+   *
+   * @return Safe-for-work query to search for when an app is launched.
+   */
+  public String getDefaultQuery();
+
+  /**
    * Check if the API server requires or supports optional authentication.
    * <p/>
    * This is used in the API server settings activity as follows:
