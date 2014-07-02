@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion "android-L"
     buildToolsVersion "20.0.0"
 
     defaultConfig {
         applicationId "com.cuddlesoft.nori"
-        minSdkVersion 15
-        targetSdkVersion 19
+        minSdkVersion 10
+        targetSdkVersion "L"
         versionCode 1
         versionName "2.0.0-${gitRevision()}"
     }
