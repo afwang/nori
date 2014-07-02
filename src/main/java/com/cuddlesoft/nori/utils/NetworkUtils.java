@@ -27,8 +27,8 @@ public abstract class NetworkUtils {
    * @return true if low-resolution images should be used.
    */
   public static boolean shouldFetchImageSamples(Context context) {
-    // [!] Note that the low-resolution images aren't actually that bad unless the user zooms in on them.
-    // [!] They're meant for cases where the original image is much larger than an average desktop browser window.
+    // Note that the low-resolution images aren't actually that bad unless the user zooms in on them.
+    // They're meant for cases where the original image is much larger than an average desktop browser window.
 
     // Check screen resolution.
     if (context.getResources().getDisplayMetrics().density <= 1.0) {
@@ -61,7 +61,7 @@ public abstract class NetworkUtils {
    */
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   private static boolean isActiveNetworkMetered(ConnectivityManager cm) {
-    return Build.VERSION.SDK_INT >= 16 && cm.isActiveNetworkMetered();
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && cm.isActiveNetworkMetered();
   }
 
   /**
