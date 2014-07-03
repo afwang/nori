@@ -79,9 +79,9 @@ public class Image implements Parcelable {
   /** Thumbnail URL. */
   public String previewUrl;
   /** Thumbnail width. */
-  public int previewWidth;
+  public int previewWidth = 0;
   /** Thumbnail height */
-  public int previewHeight;
+  public int previewHeight = 0;
 
   // Samples are medium-resolution images downsized for viewing on the web.
   // Usually no more than ~1000px width.
@@ -89,9 +89,9 @@ public class Image implements Parcelable {
   /** Sample URL. */
   public String sampleUrl;
   /** Sample width. */
-  public int sampleWidth;
+  public int sampleWidth = 0;
   /** Sample height. */
-  public int sampleHeight;
+  public int sampleHeight = 0;
 
   /** Image tags. */
   public Tag[] tags;
@@ -124,20 +124,20 @@ public class Image implements Parcelable {
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     // Serialize data into a Parcel.
-    dest.writeString(fileUrl);
-    dest.writeInt(width);
-    dest.writeInt(height);
-    dest.writeString(previewUrl);
-    dest.writeInt(previewWidth);
-    dest.writeInt(previewHeight);
-    dest.writeString(sampleUrl);
-    dest.writeInt(sampleWidth);
-    dest.writeInt(sampleHeight);
-    dest.writeTypedArray(tags, 0);
-    dest.writeString(id);
-    dest.writeString(parentId);
-    dest.writeString(webUrl);
-    dest.writeString(pixivId);
+    dest.writeString(fileUrl); //
+    dest.writeInt(width); //
+    dest.writeInt(height); //
+    dest.writeString(previewUrl); //
+    dest.writeInt(previewWidth); //
+    dest.writeInt(previewHeight); //
+    dest.writeString(sampleUrl); //
+    dest.writeInt(sampleWidth); //
+    dest.writeInt(sampleHeight); //
+    dest.writeTypedArray(tags, 0); //
+    dest.writeString(id); //
+    dest.writeString(parentId); //
+    dest.writeString(webUrl); //
+    dest.writeString(pixivId); //
     dest.writeInt(obscenityRating.ordinal());
     dest.writeInt(score);
     dest.writeString(source);
@@ -179,7 +179,27 @@ public class Image implements Parcelable {
     /** Image is explicit and not safe for work. */
     EXPLICIT,
     /** Rating is unknown or has not been set. */
-    UNKNOWN
+    UNDEFINED;
+
+    /**
+     * Get a ObscenityRating from a raw String representation returned by the API.
+     *
+     * @param s String returned by the API.
+     * @return ObscenityRating for given value.
+     */
+    public static ObscenityRating fromString(String s) {
+      // Convert string to lower-case and look at first character only.
+      switch (s.toLowerCase().charAt(0)) {
+        case 's':
+          return ObscenityRating.SAFE;
+        case 'q':
+          return ObscenityRating.QUESTIONABLE;
+        case 'e':
+          return ObscenityRating.EXPLICIT;
+        default:
+          return ObscenityRating.UNDEFINED;
+      }
+    }
   }
 
 }

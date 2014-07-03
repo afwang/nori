@@ -117,13 +117,45 @@ public class Tag implements Comparable<Tag>, Parcelable {
    * @param tags Tags
    * @return A space-separated list of tags.
    */
-  public static String arrayAsString(Tag[] tags) {
+  public static String stringFromArray(Tag[] tags) {
     final StringBuilder sb = new StringBuilder();
     for (Tag tag : tags) {
       sb.append(tag.name).append(" ");
     }
     // Return string while trimming final trailing space.
     return sb.toString().trim();
+  }
+
+  /**
+   * Create a Tag array from a space-separated list of tags.
+   * Sets type for each tag to {@link Tag.Type#GENERAL}.
+   *
+   * @param query Space-separated list of tags.
+   * @return Tag array from given String.
+   * @see #arrayFromString(String, com.cuddlesoft.nori.api.Tag.Type)
+   */
+  public static Tag[] arrayFromString(String query) {
+    return arrayFromString(query, Type.GENERAL);
+  }
+
+  /**
+   * Create a Tag array from a space-separated list of tags.
+   *
+   * @param query Space-separated list of tags.
+   * @param type  Type to set for each tag.
+   * @return Tag array from given String.
+   * @see #arrayFromString(String)
+   */
+  public static Tag[] arrayFromString(String query, Tag.Type type) {
+    // Split the space-separated string into a String array.
+    final String[] strings = query.split(" ");
+
+    // Convert each String into a Tag object.
+    final Tag[] tags = new Tag[strings.length];
+    for (int i = 0; i < strings.length; i++) {
+      tags[i] = new Tag(strings[i], type);
+    }
+    return tags;
   }
 
   /**

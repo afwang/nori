@@ -58,11 +58,13 @@ public class SearchResult implements Parcelable {
    * @param images List of images included in this SearchResult.
    * @param query  Tags used to retrieve this query.
    * @param count  Total number of results in this SearchResult, including any pages that have not been fetched yet.
+   * @param offset Current paging offset. (ie. page number)
    */
-  public SearchResult(Image[] images, Tag[] query, long count) {
+  public SearchResult(Image[] images, Tag[] query, long count, long offset) {
     this.images = Arrays.asList(images);
     this.query = query.clone();
     this.count = count;
+    this.offset = offset;
   }
 
   /**
@@ -124,7 +126,6 @@ public class SearchResult implements Parcelable {
       }
     });
   }
-
 
   /**
    * Add more images to this SearchResult.
