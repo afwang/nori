@@ -36,4 +36,18 @@ public class DanbooruLegacyTest extends AndroidTestCase {
     assertThat(searchResult.getQuery()[1].getName()).isEqualTo("shared_scarf");
     assertThat(searchResult.hasNextPage()).isTrue();
   }
+
+  public void testSearchUsingTagsAndOffset() throws Throwable {
+    // TODO: Ideally this should be mocked, so testing doesn't rely on external APIs.
+    // Create a new client connected to the Danbooru API.
+    final SearchClient client = new DanbooruLegacy("http://danbooru.donmai.us");
+    // Retrieve search results.
+    final SearchResult page1 = client.search("yuri shared_scarf", 0);
+    final SearchResult page2 = client.search("yuri shared_scarf", 1);
+
+    // Make sure that the results differ.
+    assertThat(page1.getImages()).isNotEmpty();
+    assertThat(page2.getImages()).isNotEmpty();
+    assertThat(page1.getImages()[0].id).isNotEqualTo(page2.getImages()[0].id);
+  }
 }
