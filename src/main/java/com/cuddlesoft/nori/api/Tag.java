@@ -147,13 +147,17 @@ public class Tag implements Comparable<Tag>, Parcelable {
    * @see #arrayFromString(String)
    */
   public static Tag[] arrayFromString(String query, Tag.Type type) {
+    // Return empty array for empty strings.
+    if (query == null || query.isEmpty()) {
+      return new Tag[0];
+    }
     // Split the space-separated string into a String array.
-    final String[] strings = query.split(" ");
+    final String[] strings = query.trim().split(" ");
 
     // Convert each String into a Tag object.
     final Tag[] tags = new Tag[strings.length];
     for (int i = 0; i < strings.length; i++) {
-      tags[i] = new Tag(strings[i], type);
+        tags[i] = new Tag(strings[i], type);
     }
     return tags;
   }

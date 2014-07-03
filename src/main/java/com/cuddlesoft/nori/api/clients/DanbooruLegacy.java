@@ -41,7 +41,7 @@ public class DanbooruLegacy implements SearchClient {
    */
   private static final int DEFAULT_LIMIT = 100;
   /** Parser used to read the date format used by this API. */
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
   /** OkHTTP Client. */
   private final OkHttpClient okHttpClient = new OkHttpClient();
   /** URL to the HTTP API Endpoint - the server implementing the API. */
@@ -107,7 +107,7 @@ public class DanbooruLegacy implements SearchClient {
     final Response response = okHttpClient.newCall(request).execute();
     final String body = response.body().string();
 
-    // Returned parsed SearchResult.
+    // Return parsed SearchResult.
     return parseXMLResponse(body, tags);
   }
 
