@@ -28,6 +28,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,7 +46,7 @@ public class DanbooruLegacy implements SearchClient {
   /** OkHTTP Client. */
   private final OkHttpClient okHttpClient = new OkHttpClient();
   /** URL to the HTTP API Endpoint - the server implementing the API. */
-  private final String apiEndpoint;
+  protected final String apiEndpoint;
   /** Username used for authentication. (optional) */
   private final String username;
   /** Password used for authentication. (optional) */
@@ -179,9 +180,9 @@ public class DanbooruLegacy implements SearchClient {
               } else if (name.equals("md5")) {
                 image.md5 = value;
               } else if (name.equals("created_at")) {
-                image.createdAt = DATE_FORMAT.parse(value);
+                image.createdAt = dateFromString(value);
               }
-             }
+            }
 
             // Append values not returned by the API.
             image.webUrl = webUrlFromId(image.id);
@@ -235,6 +236,16 @@ public class DanbooruLegacy implements SearchClient {
    */
   protected String webUrlFromId(String id) {
     return apiEndpoint + "/post/show/" + id;
+  }
+
+  /**
+   * Create a {@link java.util.Date} object from String date representation used by this API.
+   *
+   * @param date Date string.
+   * @return Date converted from given String.
+   */
+  protected Date dateFromString(String date) throws ParseException {
+    return DATE_FORMAT.parse(date);
   }
 
   /**
