@@ -6,17 +6,16 @@
 
 package com.cuddlesoft.nori.test;
 
-import com.cuddlesoft.nori.api.clients.Danbooru;
 import com.cuddlesoft.nori.api.clients.SearchClient;
+import com.cuddlesoft.nori.api.clients.Shimmie;
 
 /**
- * Tests for the Danbooru 2.x API.
+ * Tests for the Shimmie2 API client.
  */
-public class DanbooruTests extends SearchClientTestCase {
-  // TODO: Test API key authentication.
+public class ShimmieTests extends SearchClientTestCase {
 
   @Override
   protected SearchClient createSearchClient() {
-    return new Danbooru("http://danbooru.donmai.us");
+    return new Shimmie("http://dollbooru.org");
   }
 }

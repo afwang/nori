@@ -92,7 +92,7 @@ public class ImageTests extends AndroidTestCase {
     else
       assertThat(image.source).isNotEmpty();
     assertThat(image.md5).hasSize(32); // MD5 hashes are always 32 characters long.
-    assertThat(image.createdAt).isNotNull();
+    assertThat(image.createdAt).overridingErrorMessage("createdAt null for image: %s", image.webUrl).isNotNull();
   }
 
 }
