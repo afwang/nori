@@ -179,7 +179,7 @@ public class DanbooruLegacy implements SearchClient {
                 image.score = Integer.parseInt(value);
               } else if (name.equals("md5")) {
                 image.md5 = value;
-              } else if (name.equals("created_at")) {
+              } else if (name.equals("created_at") || name.equals("date")) {
                 image.createdAt = dateFromString(value);
               }
             }

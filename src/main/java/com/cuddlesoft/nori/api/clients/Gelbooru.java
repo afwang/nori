@@ -36,6 +36,11 @@ public class Gelbooru extends DanbooruLegacy {
   }
 
   @Override
+  protected String webUrlFromId(String id) {
+    return String.format(Locale.US, "%s/index.php?page=post&s=view&id=%s", apiEndpoint, id);
+  }
+
+  @Override
   protected Date dateFromString(String date) throws ParseException {
     // Override Danbooru 1.x date format.
     return DATE_FORMAT.parse(date);
