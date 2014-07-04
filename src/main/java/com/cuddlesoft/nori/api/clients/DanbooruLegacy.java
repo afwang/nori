@@ -122,8 +122,6 @@ public class DanbooruLegacy implements SearchClient {
   protected SearchResult parseXMLResponse(String body, String tags) throws IOException {
     // Create variables to hold the values as XML is being parsed.
     final List<Image> imageList = new ArrayList<>(DEFAULT_LIMIT);
-    int count = 0;
-    int offset = 0;
 
     try {
       // Create an XML parser factory and disable namespace awareness for security reasons.
@@ -195,16 +193,6 @@ public class DanbooruLegacy implements SearchClient {
             }
             // Add Image to search result.
             imageList.add(image);
-          } else if (xpp.getName().equals("posts")) {
-            // <posts> is the root XML tag.
-            // Its attributes contain useful metadata, such as total result count and current offset.
-            for (int i = 0; i < xpp.getAttributeCount(); i++) {
-              if (xpp.getAttributeName(i).equals("count")) {
-                count = Integer.parseInt(xpp.getAttributeValue(i));
-              } else if (xpp.getAttributeName(i).equals("offset")) {
-                offset = Integer.parseInt(xpp.getAttributeValue(i));
-              }
-            }
           }
         }
         // Get next XMLPullParser event.
@@ -216,10 +204,8 @@ public class DanbooruLegacy implements SearchClient {
       // (Throwing an XmlPullParserException would be fine, until dealing with an API using JSON, etc.)
       throw new IOException(e);
     }
-    // Set count if not returned by the API.
-    count = (count == 0) ? imageList.size() : count;
     // Create and return a SearchResult.
-    return new SearchResult(imageList.toArray(new Image[imageList.size()]), Tag.arrayFromString(tags), count, offset);
+    return new SearchResult(imageList.toArray(new Image[imageList.size()]), Tag.arrayFromString(tags));
   }
 
   @Override

@@ -36,8 +36,6 @@ public class SearchResult implements Parcelable {
   /** List of {@link Image}s included in this SearchResult. */
   private final List<Image> images;
 
-  /** Total number of images in this SearchResult, including pages that have not been fetched yet. */
-  private int count;
   /** Current offset. Used for paging. */
   private int offset = 0;
 
@@ -54,14 +52,11 @@ public class SearchResult implements Parcelable {
    *
    * @param images List of images included in this SearchResult.
    * @param query  Tags used to retrieve this query.
-   * @param count  Total number of results in this SearchResult, including any pages that have not been fetched yet.
-   * @param offset Current paging offset. (ie. page number)
    */
-  public SearchResult(Image[] images, Tag[] query, int count, int offset) {
-    this.images = Arrays.asList(images);
+  public SearchResult(Image[] images, Tag[] query) {
+    // Have to use the ArrayList constructor because the Lists returned by Arrays.asList are not resizable which is a bummer for filtering.
+    this.images = new ArrayList<>(Arrays.asList(images));
     this.query = query.clone();
-    this.count = count;
-    this.offset = offset;
   }
 
   /**
@@ -71,7 +66,6 @@ public class SearchResult implements Parcelable {
    */
   protected SearchResult(Parcel parcel) {
     this.images = parcel.createTypedArrayList(Image.CREATOR);
-    this.count = parcel.readInt();
     this.offset = parcel.readInt();
     this.query = parcel.createTypedArray(Tag.CREATOR);
     this.hasNextPage = (parcel.readByte() == 0x01);
@@ -150,17 +144,6 @@ public class SearchResult implements Parcelable {
   }
 
   /**
-   * Return total number of images in this SearchResult, including result pages that have not been fetched yet.
-   * Note that some APIs don't return total result counts with their search results.
-   * Don't expect this value to be accurate, unless you know that the API you're using returns accurate result counts.
-   *
-   * @return Total number of images in this SearchResult.
-   */
-  public long getResultCount() {
-    return count;
-  }
-
-  /**
    * Get the current paging offset.
    * The way this value works varies greatly between APIs.
    * Some APIs use page numbers, some APIs use mySQL-style index offsets.
@@ -216,7 +199,6 @@ public class SearchResult implements Parcelable {
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeTypedList(images);
-    dest.writeInt(count);
     dest.writeInt(offset);
     dest.writeTypedArray(query, 0);
     dest.writeByte((byte) (hasNextPage ? 0x01 : 0x00));

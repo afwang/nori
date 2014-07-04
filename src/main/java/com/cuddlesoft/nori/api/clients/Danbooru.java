@@ -211,7 +211,7 @@ public class Danbooru implements SearchClient {
       throw new IOException(e);
     }
 
-    return new SearchResult(imageList.toArray(new Image[imageList.size()]), Tag.arrayFromString(tags), imageList.size(), 0);
+    return new SearchResult(imageList.toArray(new Image[imageList.size()]), Tag.arrayFromString(tags));
   }
 
   /**

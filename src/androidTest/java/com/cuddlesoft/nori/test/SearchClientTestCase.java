@@ -33,7 +33,6 @@ public abstract class SearchClientTestCase extends AndroidTestCase {
     }
 
     // Check rests of the values.
-    assertThat(result.getResultCount()).isPositive();
     assertThat(result.getCurrentOffset()).isEqualTo(0L);
     assertThat(result.getQuery()).hasSize(1);
     assertThat(result.getQuery()[0].getName()).isEqualTo("tagme");
