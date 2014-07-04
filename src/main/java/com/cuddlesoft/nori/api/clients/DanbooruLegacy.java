@@ -122,8 +122,8 @@ public class DanbooruLegacy implements SearchClient {
   protected SearchResult parseXMLResponse(String body, String tags) throws IOException {
     // Create variables to hold the values as XML is being parsed.
     final List<Image> imageList = new ArrayList<>(DEFAULT_LIMIT);
-    long count = 0;
-    long offset = 0;
+    int count = 0;
+    int offset = 0;
 
     try {
       // Create an XML parser factory and disable namespace awareness for security reasons.
@@ -200,9 +200,9 @@ public class DanbooruLegacy implements SearchClient {
             // Its attributes contain useful metadata, such as total result count and current offset.
             for (int i = 0; i < xpp.getAttributeCount(); i++) {
               if (xpp.getAttributeName(i).equals("count")) {
-                count = Long.parseLong(xpp.getAttributeValue(i));
+                count = Integer.parseInt(xpp.getAttributeValue(i));
               } else if (xpp.getAttributeName(i).equals("offset")) {
-                offset = Long.parseLong(xpp.getAttributeValue(i));
+                offset = Integer.parseInt(xpp.getAttributeValue(i));
               }
             }
           }

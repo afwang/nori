@@ -36,13 +36,10 @@ public class SearchResult implements Parcelable {
   /** List of {@link Image}s included in this SearchResult. */
   private final List<Image> images;
 
-  // As of July 2014, the total number of images on Danbooru and related sites is quickly
-  // approaching Integer.MAX_VALUE. Better be safe than sorry and use 64-bit values (longs) for both
-  // count and offset.
   /** Total number of images in this SearchResult, including pages that have not been fetched yet. */
-  private long count;
+  private int count;
   /** Current offset. Used for paging. */
-  private long offset = 0L;
+  private int offset = 0;
 
   /** List of tags originally used to retrieve this SearchResult. */
   private final Tag[] query;
@@ -60,7 +57,7 @@ public class SearchResult implements Parcelable {
    * @param count  Total number of results in this SearchResult, including any pages that have not been fetched yet.
    * @param offset Current paging offset. (ie. page number)
    */
-  public SearchResult(Image[] images, Tag[] query, long count, long offset) {
+  public SearchResult(Image[] images, Tag[] query, int count, int offset) {
     this.images = Arrays.asList(images);
     this.query = query.clone();
     this.count = count;
@@ -74,8 +71,8 @@ public class SearchResult implements Parcelable {
    */
   protected SearchResult(Parcel parcel) {
     this.images = parcel.createTypedArrayList(Image.CREATOR);
-    this.count = parcel.readLong();
-    this.offset = parcel.readLong();
+    this.count = parcel.readInt();
+    this.offset = parcel.readInt();
     this.query = parcel.createTypedArray(Tag.CREATOR);
     this.hasNextPage = (parcel.readByte() == 0x01);
   }
@@ -136,7 +133,7 @@ public class SearchResult implements Parcelable {
    * @param images Images to add.
    * @param offset Current paging offset. (ie. page number)
    */
-  public void addImages(Image[] images, long offset) {
+  public void addImages(Image[] images, int offset) {
     // Add images to list.
     this.images.addAll(Arrays.asList(images));
     // Set new offset.
@@ -219,8 +216,8 @@ public class SearchResult implements Parcelable {
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeTypedList(images);
-    dest.writeLong(count);
-    dest.writeLong(offset);
+    dest.writeInt(count);
+    dest.writeInt(offset);
     dest.writeTypedArray(query, 0);
     dest.writeByte((byte) (hasNextPage ? 0x01 : 0x00));
   }
