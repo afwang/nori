@@ -151,7 +151,7 @@ public class Image implements Parcelable {
    * @param url Pixiv URL.
    * @return Pixiv ID. Null if an ID could not be matched.
    */
-  public static String getPixivIDFromUrl(String url) {
+  public static String getPixivIdFromUrl(String url) {
     // Make sure the URL isn't empty or null.
     if (url == null || url.isEmpty()) {
       return null;

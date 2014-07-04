@@ -6,12 +6,14 @@
 
 package com.cuddlesoft.nori.test;
 
+import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.cuddlesoft.nori.api.Image;
 import com.cuddlesoft.nori.api.Tag;
 
+import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -34,7 +36,78 @@ public class ImageTests extends AndroidTestCase {
   /** RegEx pattern for matching numerical Strings (used for IDs). */
   private static final Pattern integerPattern = Pattern.compile("^\\d+$");
 
-  // TODO: Check parceling images.
+  /** Test the {@link Image#writeToParcel(android.os.Parcel, int)} method. */
+  public void testWriteToParcel() throws Throwable {
+    final Image original = getImageWithTestData();
+    final Image unParceled;
+    final Bundle bundle = new Bundle();
+
+    // Parcel and un-parcel the original image.
+    bundle.putParcelable("image", original);
+    unParceled = bundle.getParcelable("image");
+
+    // Verify data in the un-parceled Image object.
+    verifyImage(unParceled);
+    assertThat(unParceled.fileUrl).isEqualTo(original.fileUrl);
+    assertThat(unParceled.width).isEqualTo(original.width);
+    assertThat(unParceled.height).isEqualTo(original.height);
+    assertThat(unParceled.previewUrl).isEqualTo(original.previewUrl);
+    assertThat(unParceled.previewWidth).isEqualTo(original.previewWidth);
+    assertThat(unParceled.previewHeight).isEqualTo(original.previewHeight);
+    assertThat(unParceled.sampleUrl).isEqualTo(original.sampleUrl);
+    assertThat(unParceled.sampleWidth).isEqualTo(original.sampleWidth);
+    assertThat(unParceled.sampleHeight).isEqualTo(original.sampleHeight);
+    assertThat(unParceled.tags).containsOnly(original.tags);
+    assertThat(unParceled.id).isEqualTo(original.id);
+    assertThat(unParceled.parentId).isEqualTo(original.parentId);
+    assertThat(unParceled.webUrl).isEqualTo(original.webUrl);
+    assertThat(unParceled.pixivId).isEqualTo(original.pixivId);
+    assertThat(unParceled.obscenityRating).isEqualTo(original.obscenityRating);
+    assertThat(unParceled.score).isEqualTo(original.score);
+    assertThat(unParceled.md5).isEqualTo(original.md5);
+    assertThat(unParceled.createdAt).isEqualTo(original.createdAt);
+  }
+
+  /** Tests the {@link Image#getPixivIdFromUrl(String)} method. */
+  public void testGetPixivIdFromUrl() throws Throwable {
+    assertThat(Image.getPixivIdFromUrl("http://www.pixiv.net/member_illust.php?mode=medium&illust_id=44466677")).isEqualTo("44466677");
+  }
+
+  /** Tests the {@link com.cuddlesoft.nori.api.Image.ObscenityRating#fromString(String)} method. */
+  public void testObscenityRatingFromString() throws Throwable {
+    assertThat(Image.ObscenityRating.fromString("Safe")).isEqualTo(Image.ObscenityRating.SAFE);
+    assertThat(Image.ObscenityRating.fromString("Questionable")).isEqualTo(Image.ObscenityRating.QUESTIONABLE);
+    assertThat(Image.ObscenityRating.fromString("Explicit")).isEqualTo(Image.ObscenityRating.EXPLICIT);
+    assertThat(Image.ObscenityRating.fromString("Undefined")).isEqualTo(Image.ObscenityRating.UNDEFINED);
+  }
+
+  /**
+   * Get an image with made-up data suitable for testing.
+   */
+  private static Image getImageWithTestData() {
+    final Image image = new Image();
+    image.fileUrl = "http://awesomeboorusite.org/data/images/image.png";
+    image.width = 1000;
+    image.height = 900;
+    image.previewUrl = "http://awesomeboorusite.org/data/previews/image.png";
+    image.previewWidth = 150;
+    image.previewHeight = 130;
+    image.sampleUrl = "http://awesomeboorusite.org/data/samples/image.png";
+    image.sampleWidth = 850;
+    image.sampleHeight = 800;
+    image.tags = new Tag[]{new Tag("duck", Tag.Type.GENERAL), new Tag("revolutionary_girl_utena", Tag.Type.COPYRIGHT)};
+    image.id = "123456";
+    image.parentId = "123455";
+    image.webUrl = "http://awesomeboorusite.org/post/view/image";
+    image.pixivId = "111222333";
+    image.obscenityRating = Image.ObscenityRating.SAFE;
+    image.score = 23;
+    image.source = "http://pixiv.com/duck.png";
+    image.md5 = "cfaf278e8f522c72644cee2a753d2845";
+    image.createdAt = new Date(1398902400);
+
+    return image;
+  }
 
   /**
    * Verify validity of an {@link com.cuddlesoft.nori.api.Image} object.

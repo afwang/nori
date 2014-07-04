@@ -186,7 +186,7 @@ public class DanbooruLegacy implements SearchClient {
 
             // Append values not returned by the API.
             image.webUrl = webUrlFromId(image.id);
-            image.pixivId = Image.getPixivIDFromUrl(image.source);
+            image.pixivId = Image.getPixivIdFromUrl(image.source);
             // Use original file if low-resolution sample does not exist.
             if (image.sampleUrl == null) {
               image.sampleUrl = image.fileUrl;
