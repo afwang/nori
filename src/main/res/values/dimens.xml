@@ -1,0 +1,11 @@
+<!--
+  ~ This file is part of nori.
+  ~ Copyright (c) 2014 vomitcuddle <shinku@dollbooru.org>
+  ~ License: ISC
+  -->
+
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+</resources>
