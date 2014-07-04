@@ -27,14 +27,7 @@ android {
 }
 
 dependencies {
-    // HTTP Client library from Square. (http://square.github.io/okhttp/)
-    compile 'com.squareup.okhttp:okhttp:2.0.+'
-    // Apache utility library for dealing with Collections.
-    compile 'org.apache.commons:commons-collections4:4.0'
-
-    // Android port of FEST for easier unit testing.
-    androidTestCompile 'org.easytesting:fest-assert-core:2.0M10'
-    //androidTestCompile 'com.squareup:fest-android:1.0.+'
+    compile project (':norilib')
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
