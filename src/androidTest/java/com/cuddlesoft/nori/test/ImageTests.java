@@ -38,7 +38,8 @@ public class ImageTests extends AndroidTestCase {
 
   /** Test the {@link Image#writeToParcel(android.os.Parcel, int)} method. */
   public void testWriteToParcel() throws Throwable {
-    final Image original = getImageWithTestData();
+    final Image original = getMockImage(Image.ObscenityRating.SAFE,
+        new Tag("duck", Tag.Type.GENERAL), new Tag("revolutionary_girl_utena", Tag.Type.ARTIST));
     final Image unParceled;
     final Bundle bundle = new Bundle();
 
@@ -81,10 +82,8 @@ public class ImageTests extends AndroidTestCase {
     assertThat(Image.ObscenityRating.fromString("Undefined")).isEqualTo(Image.ObscenityRating.UNDEFINED);
   }
 
-  /**
-   * Get an image with made-up data suitable for testing.
-   */
-  private static Image getImageWithTestData() {
+  /** Get an Image suitable for testing. */
+  static Image getMockImage(Image.ObscenityRating obscenityRating, Tag... tags) {
     final Image image = new Image();
     image.fileUrl = "http://awesomeboorusite.org/data/images/image.png";
     image.width = 1000;
@@ -95,12 +94,12 @@ public class ImageTests extends AndroidTestCase {
     image.sampleUrl = "http://awesomeboorusite.org/data/samples/image.png";
     image.sampleWidth = 850;
     image.sampleHeight = 800;
-    image.tags = new Tag[]{new Tag("duck", Tag.Type.GENERAL), new Tag("revolutionary_girl_utena", Tag.Type.COPYRIGHT)};
+    image.tags = tags.clone();
     image.id = "123456";
     image.parentId = "123455";
     image.webUrl = "http://awesomeboorusite.org/post/view/image";
     image.pixivId = "111222333";
-    image.obscenityRating = Image.ObscenityRating.SAFE;
+    image.obscenityRating = obscenityRating;
     image.score = 23;
     image.source = "http://pixiv.com/duck.png";
     image.md5 = "cfaf278e8f522c72644cee2a753d2845";

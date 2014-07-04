@@ -12,6 +12,7 @@ import android.os.Parcelable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class SearchResult implements Parcelable {
    *
    * @param tags Tags to remove.
    */
-  public void filter(final Tag[] tags) {
+  public void filter(final Tag... tags) {
     // Don't waste time filtering against an empty array.
     if (tags == null || tags.length == 0) {
       return;
@@ -101,7 +102,7 @@ public class SearchResult implements Parcelable {
    *
    * @param obscenityRatings Obscenity ratings to remove.
    */
-  public void filter(final Image.ObscenityRating[] obscenityRatings) {
+  public void filter(final Image.ObscenityRating... obscenityRatings) {
     // Don't waste time filtering against an empty array.
     if (obscenityRatings == null || obscenityRatings.length == 0) {
       return;
@@ -152,7 +153,7 @@ public class SearchResult implements Parcelable {
    *
    * @return Current paging offset.
    */
-  public long getCurrentOffset() {
+  public int getCurrentOffset() {
     return offset;
   }
 
