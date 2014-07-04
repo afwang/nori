@@ -54,6 +54,16 @@ public abstract class SearchClientTestCase extends AndroidTestCase {
     assertThat(page1.getImages()[0].id).isNotEqualTo(page2.getImages()[0].id);
   }
 
+  public void testGetDefaultQuery() throws Throwable {
+    final SearchClient client = createSearchClient();
+    assertThat(client.getDefaultQuery()).isNotNull();
+  }
+
+  public void testRequiredAuthentication() throws Throwable {
+    final SearchClient client = createSearchClient();
+    assertThat(client.getDefaultQuery()).isNotNull();
+  }
+
   protected abstract SearchClient createSearchClient();
 
 }

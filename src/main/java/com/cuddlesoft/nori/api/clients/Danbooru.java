@@ -42,9 +42,9 @@ public class Danbooru implements SearchClient {
    */
   private static final int DEFAULT_LIMIT = 100;
   /** Thumbnail size set if not returned by the API. */
-  public static final int THUMBNAIL_SIZE = 150;
+  private static final int THUMBNAIL_SIZE = 150;
   /** Sample size set if not returned by the API. */
-  public static final int SAMPLE_SIZE = 850;
+  private static final int SAMPLE_SIZE = 850;
   /** Parser used to read the date format used by this API. */
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
   /** OkHTTP Client. */

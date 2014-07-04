@@ -86,7 +86,6 @@ public class ImageTests extends AndroidTestCase {
 
     // Misc stuff.
     assertThat(image.obscenityRating).isNotNull();
-    assertThat(image.score).isGreaterThanOrEqualTo(0);
     if (image.source == null || image.source.isEmpty())
       Log.w(TAG, String.format(Locale.US, "No source for image: %s", image.webUrl));
     else
