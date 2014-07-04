@@ -74,15 +74,18 @@ public class Tag implements Comparable<Tag>, Parcelable {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || ((Object) this).getClass() != o.getClass()) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     Tag tag = (Tag) o;
-    return name.equals(tag.name);
+
+    return !(name != null ? !name.equals(tag.name) : tag.name != null) && type == tag.type;
   }
 
   @Override
   public int hashCode() {
-    return name.hashCode();
+    int result = name != null ? name.hashCode() : 0;
+    result = 31 * result + (type != null ? type.hashCode() : 0);
+    return result;
   }
 
   @Override
