@@ -4,7 +4,7 @@
  * License: ISC
  */
 
-package com.cuddlesoft.nori.utils;
+package com.cuddlesoft.nori.util;
 
 import android.annotation.TargetApi;
 import android.content.Context;
