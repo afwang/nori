@@ -1,0 +1,15 @@
+<!--
+  ~ This file is part of nori.
+  ~ Copyright (c) 2014 vomitcuddle <shinku@dollbooru.org>
+  ~ License: ISC
+  -->
+
+<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+          android:id="@+id/image_grid"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:horizontalSpacing="@dimen/searchResultGrid_spacing"
+          android:verticalSpacing="@dimen/searchResultGrid_spacing"
+          android:numColumns="auto_fit"
+          android:columnWidth="@dimen/searchResultGrid_columnWidth"
+          android:stretchMode="columnWidth" />

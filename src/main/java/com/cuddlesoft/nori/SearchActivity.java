@@ -18,6 +18,8 @@ import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
+import com.cuddlesoft.nori.fragment.SearchResultGridFragment;
+import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.SearchResult;
 import com.cuddlesoft.norilib.clients.Gelbooru;
 import com.cuddlesoft.norilib.clients.SearchClient;
@@ -27,7 +29,7 @@ import java.io.IOException;
 import io.github.vomitcuddle.SearchViewAllowEmpty.SearchView;
 
 /** Searches for images and displays the results in a scrollable grid of thumbnails. */
-public class SearchActivity extends ActionBarActivity {
+public class SearchActivity extends ActionBarActivity implements SearchResultGridFragment.OnSearchResultGridFragmentInteractionListener {
   /** LogCat tag (used for filtering log output). */
   private static final String TAG = "com.cuddlesoft.nori.SearchActivity";
   /** Search API Client. */
@@ -36,6 +38,8 @@ public class SearchActivity extends ActionBarActivity {
   private SearchView searchView;
   /** Search callback currently awaiting a response from the Search API. */
   private SearchResultCallback searchCallback;
+  /** Search result grid fragment shown in this activity. */
+  private SearchResultGridFragment searchResultGridFragment;
 
   /**
    * Set up the action bar SearchView and its event handlers.
@@ -69,6 +73,8 @@ public class SearchActivity extends ActionBarActivity {
       searchCallback.cancel();
       searchCallback = null;
     }
+    // Remove results from the search result grid fragment.
+    searchResultGridFragment.setSearchResult(null);
     // Show progress bar in ActionBar.
     setSupportProgressBarIndeterminate(true);
     // Request search result from API client.
@@ -85,6 +91,8 @@ public class SearchActivity extends ActionBarActivity {
     supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     // Inflate views.
     setContentView(R.layout.activity_search);
+    // Get search result grid fragment from fragment manager.
+    searchResultGridFragment = (SearchResultGridFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_searchResultGrid);
     // Search for default query on first launch.
     if (savedInstanceState == null) {
       doSearch(searchClient.getDefaultQuery());
@@ -113,6 +121,11 @@ public class SearchActivity extends ActionBarActivity {
     return super.onOptionsItemSelected(item);
   }
 
+  @Override
+  public void onImageSelected(Image image) {
+    // TODO: Implement me.
+  }
+
   /** Listens for queries submitted to the action bar {@link android.support.v7.widget.SearchView}. */
   private class SearchViewListener implements SearchView.OnQueryTextListener {
 
@@ -138,11 +151,11 @@ public class SearchActivity extends ActionBarActivity {
 
     @Override
     public void onFailure(IOException e) {
-      // TODO: Remove logging.
+      // Log failure.
       Log.e(TAG, String.format("Error occurred when fetching query: %s", e.toString()));
       if (!isCancelled) {
         // Show error message to user.
-        Toast.makeText(SearchActivity.this, String.format(getString(R.string.toast_network_error), e.getLocalizedMessage()), Toast.LENGTH_LONG).show();
+        Toast.makeText(SearchActivity.this, String.format(getString(R.string.toast_networkError), e.getLocalizedMessage()), Toast.LENGTH_LONG).show();
         // Clear callback and hide progress indicator in Action Bar.
         setSupportProgressBarIndeterminate(false);
         searchCallback = null;
@@ -152,11 +165,11 @@ public class SearchActivity extends ActionBarActivity {
     @Override
     public void onSuccess(SearchResult searchResult) {
       if (!isCancelled) {
-        // FIXME: Remove logging.
-        Log.i(TAG, String.format("Search result received with %d images", searchResult.getImages().length));
         // Clear callback and hide progress indicator in Action Bar.
         setSupportProgressBarIndeterminate(false);
         searchCallback = null;
+        // Show search result.
+        searchResultGridFragment.setSearchResult(searchResult);
       }
     }
 

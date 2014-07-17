@@ -27,11 +27,23 @@ android {
 }
 
 dependencies {
-    compile project(':norilib')
-    compile project(':SearchViewAllowEmpty')
-
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    // Support libraries.
     compile 'com.android.support:appcompat-v7:19.+'
+    compile 'com.android.support:support-v4:19.+'
+
+    // Third-party libraries.
+    // An HTTP+SPDY client for Android and Java applications. http://square.github.io/okhttp/
+    compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
+    // A powerful image downloading and caching library for Android http://square.github.io/picasso/
+    compile 'com.squareup.picasso:picasso:2.3.2'
+
+    // Project dependencies.
+    compile project(':norilib') // https://github.com/vomitcuddle/norilib
+    compile project(':SearchViewAllowEmpty') // https://github.com/vomitcuddle/SearchViewAllowEmpty
+
+    // *.jar files.
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 // Used to append Git commit hash to version names.
