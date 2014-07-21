@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,18 +32,22 @@ import io.github.vomitcuddle.SearchViewAllowEmpty.SearchView;
 public class SearchActivity extends ActionBarActivity implements SearchResultGridFragment.OnSearchResultGridFragmentInteractionListener {
   /** LogCat tag (used for filtering log output). */
   private static final String TAG = "com.cuddlesoft.nori.SearchActivity";
-  /** Identifier used for preserving current search query in {@link #onSaveInstanceState(android.os.Bundle)}. */
+  /** Identifier used to preserve current search query in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_SEARCH_QUERY = "com.cuddlesoft.nori.SearchQuery";
+  /** Identifier used to preserve iconified/expanded state of the SearchView in {@link #onSaveInstanceState(android.os.Bundle)}. */
+  private static final String BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED = "com.cuddlesoft.nori.SearchView.isIconified";
   /** Search API Client. */
   private SearchClient searchClient;
+  /** Search view menu item. */
+  private MenuItem searchMenuItem;
   /** Action bar search view. */
   private SearchView searchView;
   /** Search callback currently awaiting a response from the Search API. */
   private SearchResultCallback searchCallback;
   /** Search result grid fragment shown in this activity. */
   private SearchResultGridFragment searchResultGridFragment;
-  /** Last query shown in SearchView to keep when preserving state in {@link #onSaveInstanceState(android.os.Bundle)}. */
-  private CharSequence searchQuery;
+  /** Bundle used when restoring saved instance state (after screen rotation, app restored from background, etc.) */
+  private Bundle savedInstanceState;
 
   /**
    * Set up the action bar SearchView and its event handlers.
@@ -53,8 +56,8 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
    */
   private void setUpSearchView(Menu menu) {
     // Get SearchView from the Menu item.
-    MenuItem searchItem = menu.findItem(R.id.action_search);
-    searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+    searchMenuItem = menu.findItem(R.id.action_search);
+    searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
     // Set SearchView attributes.
     searchView.setFocusable(false);
     searchView.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER);
@@ -62,10 +65,16 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
       // Force ASCII keyboard on foreign input methods. (API 16+)
       searchView.setImeOptions(EditorInfo.IME_ACTION_SEARCH | EditorInfo.IME_FLAG_FORCE_ASCII);
     }
-    // If possible, show search query restored from saved instance state.
-    // This is used to preserve current search query across screen rotations.
-    if (searchQuery != null && !TextUtils.isEmpty(searchQuery)) {
-      searchView.setQuery(searchQuery, false);
+    // Restore state from saved instance state bundle (after screen rotation, app restored from background, etc.)
+    if (savedInstanceState != null) {
+      if (savedInstanceState.containsKey(BUNDLE_ID_SEARCH_QUERY)) {
+        // Restore search query from saved instance state.
+        searchView.setQuery(savedInstanceState.getCharSequence(BUNDLE_ID_SEARCH_QUERY), false);
+      }
+      // Restore iconified/expanded search view state from saved instance state.
+      if (savedInstanceState.getBoolean(BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED, false)) {
+        MenuItemCompat.expandActionView(searchMenuItem);
+      }
     }
     // Set event listener responding to submitted queries.
     SearchView.OnQueryTextListener searchViewHandler = new SearchViewListener();
@@ -112,18 +121,17 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   @Override
   protected void onRestoreInstanceState(Bundle savedInstanceState) {
     super.onRestoreInstanceState(savedInstanceState);
-    // Restore search query from saved instance state.
-    if (savedInstanceState.containsKey(BUNDLE_ID_SEARCH_QUERY)) {
-     searchQuery = savedInstanceState.getCharSequence(BUNDLE_ID_SEARCH_QUERY);
-    }
+    // Make saved instance state available to other methods.
+    this.savedInstanceState = savedInstanceState;
   }
 
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    // Preserve current search query.
-    if (!TextUtils.isEmpty(searchView.getQuery())) {
+    // Preserve SearchView state.
+    if (searchView != null) {
       outState.putCharSequence(BUNDLE_ID_SEARCH_QUERY, searchView.getQuery());
+      outState.putBoolean(BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED, MenuItemCompat.isActionViewExpanded(searchMenuItem));
     }
   }
 
@@ -168,8 +176,6 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
 
     @Override
     public boolean onQueryTextChange(String s) {
-      // Save text to be preserved across instance states.
-      SearchActivity.this.searchQuery = s;
       // Return false to perform the default action of showing any suggestions available.
       return false;
     }
