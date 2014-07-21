@@ -6,6 +6,7 @@
 
 package com.cuddlesoft.nori;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -168,7 +169,11 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
 
   @Override
   public void onImageSelected(Image image) {
-    // TODO: Implement me.
+    // Open ImageViewerActivity.
+    final Intent intent = new Intent(SearchActivity.this, ImageViewerActivity.class);
+    intent.putExtra("com.cuddlesoft.nori.SearchResult", searchResultGridFragment.getSearchResult());
+    intent.putExtra("com.cuddlesoft.nori.Image", image);
+    startActivity(intent);
   }
 
   @Override

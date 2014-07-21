@@ -84,6 +84,14 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
   }
 
   /**
+   * Get search result displayed by this fragment.
+   * @return Search result shown in this fragment.
+   */
+  public SearchResult getSearchResult() {
+    return this.searchResult;
+  }
+
+  /**
    * Update the SearchResult displayed by this fragment.
    * @param searchResult Search result. Set to null to hide the current search result.
    */
