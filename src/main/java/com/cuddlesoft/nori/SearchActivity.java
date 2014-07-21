@@ -35,7 +35,9 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   /** Identifier used to preserve current search query in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_SEARCH_QUERY = "com.cuddlesoft.nori.SearchQuery";
   /** Identifier used to preserve iconified/expanded state of the SearchView in {@link #onSaveInstanceState(android.os.Bundle)}. */
-  private static final String BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED = "com.cuddlesoft.nori.SearchView.isIconified";
+  private static final String BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED = "com.cuddlesoft.nori.SearchView.isExpanded";
+  /** Identifier used to preserve search view focused state. */
+  private static final String BUNDLE_ID_SEARCH_VIEW_IS_FOCUSED = "com.cuddlesoft.nori.SearchView.isFocused";
   /** Search API Client. */
   private SearchClient searchClient;
   /** Search view menu item. */
@@ -74,6 +76,10 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
       // Restore iconified/expanded search view state from saved instance state.
       if (savedInstanceState.getBoolean(BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED, false)) {
         MenuItemCompat.expandActionView(searchMenuItem);
+        // Restore focus state.
+        if (!savedInstanceState.getBoolean(BUNDLE_ID_SEARCH_VIEW_IS_FOCUSED, false)) {
+          searchView.clearFocus();
+        }
       }
     }
     // Set event listener responding to submitted queries.
@@ -132,6 +138,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     if (searchView != null) {
       outState.putCharSequence(BUNDLE_ID_SEARCH_QUERY, searchView.getQuery());
       outState.putBoolean(BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED, MenuItemCompat.isActionViewExpanded(searchMenuItem));
+      outState.putBoolean(BUNDLE_ID_SEARCH_VIEW_IS_FOCUSED, searchView.isFocused());
     }
   }
 
