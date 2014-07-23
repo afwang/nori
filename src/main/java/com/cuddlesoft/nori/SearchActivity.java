@@ -9,6 +9,7 @@ package com.cuddlesoft.nori;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.WindowCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
 import android.util.Log;
@@ -102,7 +103,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     // Remove results from the search result grid fragment.
     searchResultGridFragment.setSearchResult(null);
     // Show progress bar in ActionBar.
-    setSupportProgressBarIndeterminate(true);
+    setSupportProgressBarIndeterminateVisibility(true);
     // Request search result from API client.
     searchCallback = new SearchResultCallback();
     searchClient.search(query, searchCallback);
@@ -177,7 +178,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
       return;
     }
     // Show progress bar in ActionBar.
-    setSupportProgressBarIndeterminate(true);
+    setSupportProgressBarIndeterminateVisibility(true);
     // Request search result from API client.
     searchCallback = new SearchResultCallback(searchResult);
     searchClient.search(Tag.stringFromArray(searchResult.getQuery()), searchResult.getCurrentOffset()+1, searchCallback);
@@ -227,7 +228,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
         // Show error message to user.
         Toast.makeText(SearchActivity.this, String.format(getString(R.string.toast_networkError), e.getLocalizedMessage()), Toast.LENGTH_LONG).show();
         // Clear callback and hide progress indicator in Action Bar.
-        setSupportProgressBarIndeterminate(false);
+        setSupportProgressBarIndeterminateVisibility(false);
         searchCallback = null;
       }
     }
@@ -236,7 +237,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     public void onSuccess(SearchResult searchResult) {
       if (!isCancelled) {
         // Clear callback and hide progress indicator in Action Bar.
-        setSupportProgressBarIndeterminate(false);
+        setSupportProgressBarIndeterminateVisibility(false);
         searchCallback = null;
         if (this.searchResult != null) {
           // Extend existing search result for endless scrolling.
