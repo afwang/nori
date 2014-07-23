@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -23,7 +24,7 @@ import com.cuddlesoft.norilib.SearchResult;
 import com.squareup.picasso.Picasso;
 
 /** Shows images from a {@link SearchResult} as a scrollable grid of thumbnails. */
-public class SearchResultGridFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class SearchResultGridFragment extends Fragment implements AdapterView.OnItemClickListener, AbsListView.OnScrollListener {
   /** Identifier used for saving currently displayed search result in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
   /** Interface used for communication with parent class. */
@@ -49,8 +50,7 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
 
     @Override
     public long getItemId(int position) {
-      // Item ID == position.
-      return position;
+      return Long.valueOf(getItem(position).id);
     }
 
     @Override
@@ -109,6 +109,7 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
     // Set adapter for GridView.
     GridView gridView = (GridView) view.findViewById(R.id.image_grid);
     gridView.setAdapter(gridAdapter);
+    gridView.setOnScrollListener(this);
     gridView.setOnItemClickListener(this);
     // Return inflated view.
     return view;
@@ -166,6 +167,19 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
     }
   }
 
+  @Override
+  public void onScrollStateChanged(AbsListView view, int scrollState) {}
+
+  @Override
+  public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+    // Implement endless scrolling.
+    // Fetch more images if near the end of the list and more images are available for the SearchResult.
+    if ((totalItemCount - visibleItemCount) <= (firstVisibleItem + 10) && searchResult != null
+        && searchResult.hasNextPage() && mListener != null) {
+      mListener.fetchMoreImages(searchResult);
+    }
+  }
+
   public interface OnSearchResultGridFragmentInteractionListener {
     /**
      * Called when {@link com.cuddlesoft.norilib.Image} in the search result grid is selected by the user.
@@ -173,6 +187,14 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
      * @param image Image selected.
      */
     public void onImageSelected(Image image);
+
+    /**
+     * Called when the user scrolls the thumbnail {@link android.widget.GridView} near the end and more images should be fetched
+     * to implement "endless scrolling".
+     *
+     * @param searchResult Search result for which more images should be fetched.
+     */
+    public void fetchMoreImages(SearchResult searchResult);
   }
 
 }

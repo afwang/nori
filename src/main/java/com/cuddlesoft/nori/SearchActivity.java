@@ -169,6 +169,11 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     // TODO: Implement me.
   }
 
+  @Override
+  public void fetchMoreImages(SearchResult searchResult) {
+    
+  }
+
   /** Listens for queries submitted to the action bar {@link android.support.v7.widget.SearchView}. */
   private class SearchViewListener implements SearchView.OnQueryTextListener {
 
