@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.cuddlesoft.nori.fragment.SearchResultGridFragment;
 import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.SearchResult;
+import com.cuddlesoft.norilib.Tag;
 import com.cuddlesoft.norilib.clients.Gelbooru;
 import com.cuddlesoft.norilib.clients.SearchClient;
 
@@ -171,7 +172,15 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
 
   @Override
   public void fetchMoreImages(SearchResult searchResult) {
-    
+    // Ignore request if there is another API request pending.
+    if (searchCallback != null) {
+      return;
+    }
+    // Show progress bar in ActionBar.
+    setSupportProgressBarIndeterminate(true);
+    // Request search result from API client.
+    searchCallback = new SearchResultCallback(searchResult);
+    searchClient.search(Tag.stringFromArray(searchResult.getQuery()), searchResult.getCurrentOffset()+1, searchCallback);
   }
 
   /** Listens for queries submitted to the action bar {@link android.support.v7.widget.SearchView}. */
@@ -197,6 +206,18 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   private class SearchResultCallback implements SearchClient.SearchCallback {
     /** Callback cancelled and should no longer respond to received SearchResult. */
     private boolean isCancelled = false;
+    /** Search result to extend when fetching more images for endless scrolling. */
+    private final SearchResult searchResult;
+
+    /** Default constructor. */
+    public SearchResultCallback() {
+      this.searchResult = null;
+    }
+
+    /** Constructor used to add more images to an existing SearchResult to implement endless scrolling. */
+    public SearchResultCallback(SearchResult searchResult) {
+      this.searchResult = searchResult;
+    }
 
     @Override
     public void onFailure(IOException e) {
@@ -217,8 +238,14 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
         // Clear callback and hide progress indicator in Action Bar.
         setSupportProgressBarIndeterminate(false);
         searchCallback = null;
-        // Show search result.
-        searchResultGridFragment.setSearchResult(searchResult);
+        if (this.searchResult != null) {
+          // Extend existing search result for endless scrolling.
+          this.searchResult.addImages(searchResult.getImages(), searchResult.getCurrentOffset());
+          searchResultGridFragment.setSearchResult(this.searchResult);
+        } else {
+          // Show search result.
+          searchResultGridFragment.setSearchResult(searchResult);
+        }
       }
     }
 
