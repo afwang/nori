@@ -5,6 +5,9 @@
 
     <!-- Needed to access the internet -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Needed to assess network condition and decide whether to download high resolution images
+    by default. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"

@@ -41,6 +41,10 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   private static final String BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED = "com.cuddlesoft.nori.SearchView.isExpanded";
   /** Identifier used to preserve search view focused state. */
   private static final String BUNDLE_ID_SEARCH_VIEW_IS_FOCUSED = "com.cuddlesoft.nori.SearchView.isFocused";
+  /** Identifier used to send the active {@link com.cuddlesoft.norilib.SearchResult} to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
+  public static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
+  /** Identifier used to send the position of the selected {@link com.cuddlesoft.norilib.Image} to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
+  public static final String BUNDLE_ID_IMAGE_INDEX = "com.cuddlesoft.nori.ImageIndex";
   /** Search API Client. */
   private SearchClient searchClient;
   /** Search view menu item. */
@@ -168,11 +172,11 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   }
 
   @Override
-  public void onImageSelected(Image image) {
+  public void onImageSelected(Image image, int position) {
     // Open ImageViewerActivity.
     final Intent intent = new Intent(SearchActivity.this, ImageViewerActivity.class);
-    intent.putExtra("com.cuddlesoft.nori.SearchResult", searchResultGridFragment.getSearchResult());
-    intent.putExtra("com.cuddlesoft.nori.Image", image);
+    intent.putExtra(BUNDLE_ID_IMAGE_INDEX, position);
+    intent.putExtra(BUNDLE_ID_SEARCH_RESULT, searchResultGridFragment.getSearchResult());
     startActivity(intent);
   }
 

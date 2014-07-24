@@ -85,6 +85,7 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
 
   /**
    * Get search result displayed by this fragment.
+   *
    * @return Search result shown in this fragment.
    */
   public SearchResult getSearchResult() {
@@ -93,6 +94,7 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
 
   /**
    * Update the SearchResult displayed by this fragment.
+   *
    * @param searchResult Search result. Set to null to hide the current search result.
    */
   public void setSearchResult(SearchResult searchResult) {
@@ -121,17 +123,6 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
     gridView.setOnItemClickListener(this);
     // Return inflated view.
     return view;
-  }
-
-  /**
-   * Called when an image in the search result {@link android.widget.GridView} is selected.
-   *
-   * @param image Image selected.
-   */
-  public void onImageSelected(Image image) {
-    if (mListener != null) {
-      mListener.onImageSelected(image);
-    }
   }
 
   @Override
@@ -171,12 +162,13 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
   public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
     if (mListener != null) {
       // Notify parent activity that image has been clicked.
-      mListener.onImageSelected((Image) gridAdapter.getItem(position));
+      mListener.onImageSelected((Image) gridAdapter.getItem(position), position);
     }
   }
 
   @Override
-  public void onScrollStateChanged(AbsListView view, int scrollState) {}
+  public void onScrollStateChanged(AbsListView view, int scrollState) {
+  }
 
   @Override
   public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
@@ -192,9 +184,10 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
     /**
      * Called when {@link com.cuddlesoft.norilib.Image} in the search result grid is selected by the user.
      *
-     * @param image Image selected.
+     * @param image    Image selected.
+     * @param position Index of the image in the {@link SearchResult}.
      */
-    public void onImageSelected(Image image);
+    public void onImageSelected(Image image, int position);
 
     /**
      * Called when the user scrolls the thumbnail {@link android.widget.GridView} near the end and more images should be fetched
