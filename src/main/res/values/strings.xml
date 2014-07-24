@@ -3,11 +3,15 @@
 
     <string name="app_name">Nori</string>
 
+    <!-- Activity titles -->
+    <!-- (Image ID): (Image tags) -->
+    <string name="activity_image_viewer_titleFormat" formatted="false">%s: %s</string>
+
     <!-- Action bar items -->
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
 
     <!-- Toast notifications -->
-    <string name="toast_networkError">Network error: %s</string>
+    <string name="toast_networkError" formatted="false">Network error: %s</string>
 
 </resources>

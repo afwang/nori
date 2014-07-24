@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of nori.
+  ~ Copyright (c) 2014 vomitcuddle <shinku@dollbooru.org>
+  ~ License: ISC
+  -->
+
+<resources>
+    <!-- Maximum length of the image metadata string shown in ImageViewerActivity's title. -->
+    <integer name="activity_image_viewer_titleMaxLength">45</integer>
+</resources>
