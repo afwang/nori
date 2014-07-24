@@ -118,7 +118,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     // TODO: Implement API server picker.
-    searchClient = new Gelbooru("http://safebooru.org");
+    searchClient = new Gelbooru("http://gelbooru.com");
     // Request window manager features.
     supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     // Inflate views.
@@ -249,9 +249,14 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
         setSupportProgressBarIndeterminateVisibility(false);
         searchCallback = null;
         if (this.searchResult != null) {
-          // Extend existing search result for endless scrolling.
-          this.searchResult.addImages(searchResult.getImages(), searchResult.getCurrentOffset());
-          searchResultGridFragment.setSearchResult(this.searchResult);
+          // Set onLastPage if no more images were fetched.
+          if (searchResult.getImages().length == 0) {
+            this.searchResult.onLastPage();
+          } else {
+            // Extend existing search result for endless scrolling.
+            this.searchResult.addImages(searchResult.getImages(), searchResult.getCurrentOffset());
+            searchResultGridFragment.setSearchResult(this.searchResult);
+          }
         } else {
           // Show search result.
           searchResultGridFragment.setSearchResult(searchResult);
