@@ -45,6 +45,8 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   public static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
   /** Identifier used to send the position of the selected {@link com.cuddlesoft.norilib.Image} to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
   public static final String BUNDLE_ID_IMAGE_INDEX = "com.cuddlesoft.nori.ImageIndex";
+  /** Identifier used to send {@link com.cuddlesoft.norilib.clients.SearchClient} settings to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
+  public static final String BUNDLE_ID_SEARCH_CLIENT_SETTINGS = "com.cuddlesoft.nori.SearchClient.Settings";
   /** Search API Client. */
   private SearchClient searchClient;
   /** Search view menu item. */
@@ -177,6 +179,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     final Intent intent = new Intent(SearchActivity.this, ImageViewerActivity.class);
     intent.putExtra(BUNDLE_ID_IMAGE_INDEX, position);
     intent.putExtra(BUNDLE_ID_SEARCH_RESULT, searchResultGridFragment.getSearchResult());
+    intent.putExtra(BUNDLE_ID_SEARCH_CLIENT_SETTINGS, searchClient.getSettings());
     startActivity(intent);
   }
 

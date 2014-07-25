@@ -63,7 +63,6 @@ public class ImageFragment extends Fragment {
         .load(imageUrl)
         .into(view);
 
-
     return view;
   }
 

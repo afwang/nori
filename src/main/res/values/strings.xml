@@ -13,5 +13,6 @@
 
     <!-- Toast notifications -->
     <string name="toast_networkError" formatted="false">Network error: %s</string>
+    <string name="activity_image_viewer_infiniteScrollingFetchError" formatted="false">An error occurred when trying to fetch more images: %s</string>
 
 </resources>
