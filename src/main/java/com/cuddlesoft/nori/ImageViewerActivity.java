@@ -28,9 +28,7 @@ import java.io.IOException;
 
 /** Activity used to display full-screen images. */
 public class ImageViewerActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener {
-  // TODO: Endless scrolling.
   // TODO: Share button.
-  // TODO: Pinch to zoom.
   // TODO: Auto-hide action bar.
   // TODO: Transparent action bar.
   // TODO: Download image.

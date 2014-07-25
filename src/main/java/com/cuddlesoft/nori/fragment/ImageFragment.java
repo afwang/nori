@@ -11,16 +11,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.cuddlesoft.nori.util.NetworkUtils;
 import com.cuddlesoft.norilib.Image;
+import com.ortiz.touch.TouchImageView;
 import com.squareup.picasso.Picasso;
 
 /** Fragment used to display images in {@link com.cuddlesoft.nori.ImageViewerActivity}. */
 public class ImageFragment extends Fragment {
   /** Bundle identifier used to save the displayed image object in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_IMAGE = "com.cuddlesoft.nori.Image";
+  /** Image view used to show the image in this fragment. */
+  private TouchImageView imageView;
 
   /** Required empty public constructor. */
   public ImageFragment() {
@@ -42,9 +44,19 @@ public class ImageFragment extends Fragment {
     return fragment;
   }
 
+  /**
+   * Check if the {@link android.support.v4.view.ViewPager} containing this fragment can scroll horizontally.
+   *
+   * @param direction Direction being scrolled in.
+   * @return true if the {@link android.support.v4.view.ViewPager} containing this fragment can scroll horizontally.
+   */
+  public boolean canScroll(int direction) {
+    return imageView == null || imageView.canScrollHorizontallyFroyo(direction);
+  }
+
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    final ImageView view = new ImageView(getActivity());
+    imageView = new TouchImageView(getActivity());
 
     // Extract image from arguments bundle.
     Image image = getArguments().getParcelable(BUNDLE_ID_IMAGE);
@@ -61,9 +73,9 @@ public class ImageFragment extends Fragment {
     // Load image into view.
     Picasso.with(getActivity())
         .load(imageUrl)
-        .into(view);
+        .into(imageView);
 
-    return view;
+    return imageView;
   }
 
 }
