@@ -6,7 +6,11 @@
     </style>
     <!-- Dark theme used by the image viewer activity. -->
     <style name="ImageViewerTheme" parent="Theme.AppCompat">
-        <!-- Customize your theme here. -->
+        <item name="windowActionBarOverlay">true</item>
+        <item name="actionBarStyle">@style/ImageViewerActionBar</item>
+    </style>
+    <style name="ImageViewerActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/image_viewer_actionbarBackground</item>
     </style>
 
 </resources>

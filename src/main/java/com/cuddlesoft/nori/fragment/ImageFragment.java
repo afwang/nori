@@ -6,6 +6,7 @@
 
 package com.cuddlesoft.nori.fragment;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.WallpaperManager;
 import android.content.Context;
@@ -19,10 +20,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -37,8 +40,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+
 /** Fragment used to display images in {@link com.cuddlesoft.nori.ImageViewerActivity}. */
-public class ImageFragment extends Fragment {
+public class ImageFragment extends Fragment implements GestureDetector.OnDoubleTapListener {
   /** String to prepend to Pixiv IDs to open them in the system web browser. */
   private static final String PIXIV_URL_PREFIX = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=";
   /** Bundle identifier used to save the displayed image object in {@link #onSaveInstanceState(android.os.Bundle)}. */
@@ -47,6 +51,8 @@ public class ImageFragment extends Fragment {
   private TouchImageView imageView;
   /** Image object displayed in this fragment. */
   private Image image;
+  /** Class used for communication with the class that contains this fragment. */
+  private ImageFragmentListener listener;
 
   /** Required empty public constructor. */
   public ImageFragment() {
@@ -79,9 +85,27 @@ public class ImageFragment extends Fragment {
   }
 
   @Override
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    try {
+      listener = (ImageFragmentListener) getActivity();
+    } catch (ClassCastException e) {
+      throw new ClassCastException(activity.toString()
+          + " must implement OnFragmentInteractionListener");
+    }
+  }
+
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    listener = null;
+  }
+
+  @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Extract image from arguments bundle and initialize ImageView.
     imageView = new TouchImageView(getActivity());
+    imageView.setOnDoubleTapListener(this);
     image = getArguments().getParcelable(BUNDLE_ID_IMAGE);
 
     // Evaluate the current network conditions to decide whether to load the medium-resolution
@@ -229,4 +253,29 @@ public class ImageFragment extends Fragment {
     }.execute();
   }
 
+  @Override
+  public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
+    if (listener != null) {
+      listener.onSingleTapConfirmed();
+    }
+    return true;
+  }
+
+  @Override
+  public boolean onDoubleTap(MotionEvent motionEvent) {
+    return false;
+  }
+
+  @Override
+  public boolean onDoubleTapEvent(MotionEvent motionEvent) {
+    return false;
+  }
+
+  public static interface ImageFragmentListener {
+    /**
+     * Called when the {@link android.widget.ImageView} contained by this fragment is tapped once.
+     * Used to auto-hide the {@link android.support.v7.app.ActionBar}.
+     */
+    public void onSingleTapConfirmed();
+  }
 }

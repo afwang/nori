@@ -6,7 +6,9 @@
 
 package com.cuddlesoft.nori;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -27,9 +30,9 @@ import com.cuddlesoft.norilib.clients.SearchClient;
 import java.io.IOException;
 
 /** Activity used to display full-screen images. */
-public class ImageViewerActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener {
-  // TODO: Auto-hide action bar.
-  // TODO: Transparent action bar.
+public class ImageViewerActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener, ImageFragment.ImageFragmentListener {
+  // TODO: Tag list.
+  // TODO: Keep the screen on.
   /** Identifier used to keep the displayed {@link com.cuddlesoft.norilib.SearchResult} in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
   /** Identifier used to keep the position of the selected {@link com.cuddlesoft.norilib.Image} in {@link #onSaveInstanceState(android.os.Bundle)}. */
@@ -78,8 +81,14 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
 
     // Set up the action bar.
     final ActionBar actionBar = getSupportActionBar();
+    actionBar.hide();
     actionBar.setDisplayShowHomeEnabled(false);
     actionBar.setDisplayHomeAsUpEnabled(true);
+
+    // Dim system UI.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+      viewPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+    }
 
     // Create and set the image viewer Fragment pager adapter.
     imagePagerAdapter = new ImagePagerAdapter(getSupportFragmentManager());
@@ -161,6 +170,23 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
 
   @Override
   public void onPageScrollStateChanged(int state) {
+  }
+
+  @Override
+  public void onSingleTapConfirmed() {
+    // Toggle the action bar and UI dim.
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar.isShowing()) {
+      actionBar.hide();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        viewPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+      }
+    } else {
+      actionBar.show();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        viewPager.setSystemUiVisibility(0);
+      }
+    }
   }
 
   /** Adapter used to populate {@link android.support.v4.view.ViewPager} with {@link com.cuddlesoft.nori.fragment.ImageFragment}s. */
