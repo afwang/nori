@@ -73,6 +73,7 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
           .load(image.previewUrl)
           .resize(thumbnailSize, thumbnailSize)
           .centerCrop()
+          .placeholder(R.color.network_thumbnail_placeholder)
           .into(imageView);
 
       return imageView;
