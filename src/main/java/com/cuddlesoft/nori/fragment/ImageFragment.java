@@ -6,12 +6,20 @@
 
 package com.cuddlesoft.nori.fragment;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cuddlesoft.nori.R;
 import com.cuddlesoft.nori.util.NetworkUtils;
 import com.cuddlesoft.norilib.Image;
 import com.ortiz.touch.TouchImageView;
@@ -23,6 +31,8 @@ public class ImageFragment extends Fragment {
   private static final String BUNDLE_ID_IMAGE = "com.cuddlesoft.nori.Image";
   /** Image view used to show the image in this fragment. */
   private TouchImageView imageView;
+  /** Image object displayed in this fragment. */
+  private Image image;
 
   /** Required empty public constructor. */
   public ImageFragment() {
@@ -56,10 +66,9 @@ public class ImageFragment extends Fragment {
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    // Extract image from arguments bundle and initialize ImageView.
     imageView = new TouchImageView(getActivity());
-
-    // Extract image from arguments bundle.
-    Image image = getArguments().getParcelable(BUNDLE_ID_IMAGE);
+    image = getArguments().getParcelable(BUNDLE_ID_IMAGE);
 
     // Evaluate the current network conditions to decide whether to load the medium-resolution
     // (sample) version of the image or the original full-resolution one.
@@ -75,7 +84,32 @@ public class ImageFragment extends Fragment {
         .load(imageUrl)
         .into(imageView);
 
+    // Enable options menu.
+    setHasOptionsMenu(true);
+
     return imageView;
+  }
+
+  @Override
+  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    inflater.inflate(R.menu.image, menu);
+
+    // Set up ShareActionProvider
+    MenuItem shareItem = menu.findItem(R.id.action_share);
+    ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+    shareActionProvider.setShareIntent(getShareIntent());
+  }
+
+  /**
+   * Get {@link android.content.Intent} to be sent by the {@link android.support.v7.widget.ShareActionProvider}.
+   * @return Share intent.
+   */
+  protected Intent getShareIntent() {
+    // Send web URL to image.
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.putExtra(Intent.EXTRA_TEXT, image.webUrl);
+    intent.setType("text/plain");
+    return intent;
   }
 
 }

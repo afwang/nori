@@ -10,6 +10,11 @@
     <!-- Action bar items -->
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
+    <string name="action_share">Share</string>
+    <string name="action_downloadImage">Download</string>
+    <string name="action_viewOnWeb">View on Web</string>
+    <string name="action_viewOnPixiv">View on Pixiv</string>
+    <string name="action_setAsWallpaper">Set as Wallpaper</string>
 
     <!-- Toast notifications -->
     <string name="toast_networkError" formatted="false">Network error: %s</string>
