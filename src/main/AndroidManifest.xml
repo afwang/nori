@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- Needed to download images to external storage. -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- Needed to set images as wallpapers. -->
+    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
 
     <application
         android:allowBackup="true"

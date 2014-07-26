@@ -14,8 +14,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
@@ -32,9 +30,6 @@ import java.io.IOException;
 public class ImageViewerActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener {
   // TODO: Auto-hide action bar.
   // TODO: Transparent action bar.
-  // TODO: View image on web.
-  // TODO: View image on pixiv.
-  // TODO: Set image as wallpaper.
   /** Identifier used to keep the displayed {@link com.cuddlesoft.norilib.SearchResult} in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
   /** Identifier used to keep the position of the selected {@link com.cuddlesoft.norilib.Image} in {@link #onSaveInstanceState(android.os.Bundle)}. */
@@ -210,7 +205,7 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
 
       // Display error toast notification to the user.
       Toast.makeText(ImageViewerActivity.this,
-          String.format(getString(R.string.activity_image_viewer_infiniteScrollingFetchError),
+          String.format(getString(R.string.toast_infiniteScrollingFetchError),
               e.getLocalizedMessage()), Toast.LENGTH_LONG
       ).show();
     }

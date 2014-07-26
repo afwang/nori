@@ -7,9 +7,11 @@
 package com.cuddlesoft.nori.fragment;
 
 import android.app.DownloadManager;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,12 +25,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.cuddlesoft.nori.R;
 import com.cuddlesoft.nori.util.NetworkUtils;
 import com.cuddlesoft.norilib.Image;
 import com.ortiz.touch.TouchImageView;
 import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /** Fragment used to display images in {@link com.cuddlesoft.nori.ImageViewerActivity}. */
 public class ImageFragment extends Fragment {
@@ -125,6 +132,9 @@ public class ImageFragment extends Fragment {
       case R.id.action_viewOnPixiv:
         viewOnPixiv();
         return true;
+      case R.id.action_setAsWallpaper:
+        setAsWallpaper();
+        return true;
       default:
         return super.onOptionsItemSelected(item);
     }
@@ -152,6 +162,7 @@ public class ImageFragment extends Fragment {
     // Extract file name from URL.
     String fileName = image.fileUrl.substring(image.fileUrl.lastIndexOf("/")+1);
     // Create download directory, if it does not already exist.
+    //noinspection ResultOfMethodCallIgnored
     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
 
     // Create and queue download request.
@@ -184,6 +195,38 @@ public class ImageFragment extends Fragment {
     // Create and send to intent to display the image's pixiv page in the web browser.
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(PIXIV_URL_PREFIX + image.pixivId));
     startActivity(intent);
+  }
+
+  /**
+   * Downloads the full-resolution image in the background and sets it as the wallpaper.
+   */
+  protected void setAsWallpaper() {
+    // Fetch and set full-screen image as wallpaper on background thread.
+    final Context context = getActivity();
+    final String imageUrl = image.fileUrl;
+    final WallpaperManager wallpaperManager = WallpaperManager.getInstance(getActivity());
+
+    new AsyncTask<Void, Void, Exception>() {
+      @Override
+      protected Exception doInBackground(Void... ignored) {
+        try {
+          InputStream inputStream = new URL(imageUrl).openStream();
+          wallpaperManager.setStream(inputStream);
+        } catch (IOException e) {
+          return e;
+        }
+        return null;
+      }
+
+      @Override
+      protected void onPostExecute(Exception error) {
+        if (error != null) {
+          // Show error message to the user.
+          Toast.makeText(context, String.format(context.getString(R.string.toast_couldNotSetWallpaper),
+              error.getLocalizedMessage()), Toast.LENGTH_LONG).show();
+        }
+      }
+    }.execute();
   }
 
 }
