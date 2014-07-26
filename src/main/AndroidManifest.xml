@@ -8,6 +8,8 @@
     <!-- Needed to assess network condition and decide whether to download high resolution images
     by default. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- Needed to download images to external storage. -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"

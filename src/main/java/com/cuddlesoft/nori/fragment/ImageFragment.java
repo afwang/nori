@@ -6,9 +6,13 @@
 
 package com.cuddlesoft.nori.fragment;
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
@@ -100,6 +104,17 @@ public class ImageFragment extends Fragment {
     shareActionProvider.setShareIntent(getShareIntent());
   }
 
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_download:
+        downloadImage();
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
+
   /**
    * Get {@link android.content.Intent} to be sent by the {@link android.support.v7.widget.ShareActionProvider}.
    * @return Share intent.
@@ -112,4 +127,29 @@ public class ImageFragment extends Fragment {
     return intent;
   }
 
+  /**
+   * Use the system {@link android.app.DownloadManager} service to download the image.
+   */
+  protected void downloadImage() {
+    // Get download manager system service.
+    DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+
+    // Extract file name from URL.
+    String fileName = image.fileUrl.substring(image.fileUrl.lastIndexOf("/")+1);
+    // Create download directory, if it does not already exist.
+    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
+
+    // Create and queue download request.
+    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(image.fileUrl))
+        .setTitle(fileName)
+        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+        .setVisibleInDownloadsUi(true);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+      // Trigger media scanner to add image to system gallery app on Honeycomb and above.
+      request.allowScanningByMediaScanner();
+      // Show download UI notification on Honeycomb and above.
+      request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+    }
+    downloadManager.enqueue(request);
+  }
 }
