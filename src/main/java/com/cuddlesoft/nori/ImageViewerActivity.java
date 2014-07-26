@@ -6,7 +6,6 @@
 
 package com.cuddlesoft.nori;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +18,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.cuddlesoft.nori.fragment.ImageFragment;
@@ -75,6 +75,8 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
 
     // Request window features.
     supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+    // Keep screen on.
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     // Populate content view.
     setContentView(R.layout.activity_image_viewer);
@@ -139,7 +141,7 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
     getSupportActionBar().show();
     // Request search result from API client.
     searchCallback = new InfiniteScrollingSearchCallback(searchResult);
-    searchClient.search(Tag.stringFromArray(searchResult.getQuery()), searchResult.getCurrentOffset()+1, searchCallback);
+    searchClient.search(Tag.stringFromArray(searchResult.getQuery()), searchResult.getCurrentOffset() + 1, searchCallback);
   }
 
   @Override
@@ -217,6 +219,7 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
 
     /**
      * Create a new InfiniteScrollingSearchCallback.
+     *
      * @param searchResult Search result to append new results to.
      */
     public InfiniteScrollingSearchCallback(SearchResult searchResult) {
