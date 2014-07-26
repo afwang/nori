@@ -120,7 +120,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     // TODO: Implement API server picker.
-    searchClient = new Gelbooru("http://gelbooru.com");
+    searchClient = new Gelbooru("http://safebooru.org");
     // Request window manager features.
     supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     // Inflate views.

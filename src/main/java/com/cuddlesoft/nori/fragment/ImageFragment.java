@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +32,8 @@ import com.squareup.picasso.Picasso;
 
 /** Fragment used to display images in {@link com.cuddlesoft.nori.ImageViewerActivity}. */
 public class ImageFragment extends Fragment {
+  /** String to prepend to Pixiv IDs to open them in the system web browser. */
+  private static final String PIXIV_URL_PREFIX = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=";
   /** Bundle identifier used to save the displayed image object in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_IMAGE = "com.cuddlesoft.nori.Image";
   /** Image view used to show the image in this fragment. */
@@ -102,6 +105,12 @@ public class ImageFragment extends Fragment {
     MenuItem shareItem = menu.findItem(R.id.action_share);
     ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
     shareActionProvider.setShareIntent(getShareIntent());
+
+    // Hide the view on Pixiv menu item, if the Image does not have a Pixiv source URL.
+    MenuItem shareOnPixivItem = menu.findItem(R.id.action_viewOnPixiv);
+    if (image.pixivId == null || TextUtils.isEmpty(image.pixivId)) {
+      shareOnPixivItem.setVisible(false);
+    }
   }
 
   @Override
@@ -109,6 +118,12 @@ public class ImageFragment extends Fragment {
     switch (item.getItemId()) {
       case R.id.action_download:
         downloadImage();
+        return true;
+      case R.id.action_viewOnWeb:
+        viewOnWeb();
+        return true;
+      case R.id.action_viewOnPixiv:
+        viewOnPixiv();
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -152,4 +167,23 @@ public class ImageFragment extends Fragment {
     }
     downloadManager.enqueue(request);
   }
+
+  /**
+   * Opens the image Danbooru page in the system web browser.
+   */
+  protected void viewOnWeb() {
+    // Create and send intent to display the image in the web browser.
+    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(image.webUrl));
+    startActivity(intent);
+  }
+
+  /**
+   * Opens the image Pixiv page in the system web browser.
+   */
+  protected void viewOnPixiv() {
+    // Create and send to intent to display the image's pixiv page in the web browser.
+    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(PIXIV_URL_PREFIX + image.pixivId));
+    startActivity(intent);
+  }
+
 }
