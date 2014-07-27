@@ -12,4 +12,8 @@
     <!-- Search result grid dimensions -->
     <dimen name="searchResultGrid_spacing">2dp</dimen>
     <dimen name="searchResultGrid_columnWidth">100dp</dimen>
+
+    <!-- Tag list dialog. -->
+    <dimen name="tag_list_itemHeight">48dp</dimen>
+    <dimen name="tag_list_textSize">18sp</dimen>
 </resources>

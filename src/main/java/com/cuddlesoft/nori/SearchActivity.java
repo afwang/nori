@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.WindowCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
 import android.util.Log;
@@ -33,6 +32,14 @@ import io.github.vomitcuddle.SearchViewAllowEmpty.SearchView;
 
 /** Searches for images and displays the results in a scrollable grid of thumbnails. */
 public class SearchActivity extends ActionBarActivity implements SearchResultGridFragment.OnSearchResultGridFragmentInteractionListener {
+  /** Identifier used to send the active {@link com.cuddlesoft.norilib.SearchResult} to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
+  public static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
+  /** Identifier used to send the position of the selected {@link com.cuddlesoft.norilib.Image} to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
+  public static final String BUNDLE_ID_IMAGE_INDEX = "com.cuddlesoft.nori.ImageIndex";
+  /** Identifier used to send {@link com.cuddlesoft.norilib.clients.SearchClient} settings to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
+  public static final String BUNDLE_ID_SEARCH_CLIENT_SETTINGS = "com.cuddlesoft.nori.SearchClient.Settings";
+  /** Identifier used for the query string to search when starting this activity with an {@link android.content.Intent} */
+  public static final String INTENT_EXTRA_SEARCH_QUERY = "com.cuddlesoft.nori.SearchQuery";
   /** LogCat tag (used for filtering log output). */
   private static final String TAG = "com.cuddlesoft.nori.SearchActivity";
   /** Identifier used to preserve current search query in {@link #onSaveInstanceState(android.os.Bundle)}. */
@@ -41,12 +48,6 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   private static final String BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED = "com.cuddlesoft.nori.SearchView.isExpanded";
   /** Identifier used to preserve search view focused state. */
   private static final String BUNDLE_ID_SEARCH_VIEW_IS_FOCUSED = "com.cuddlesoft.nori.SearchView.isFocused";
-  /** Identifier used to send the active {@link com.cuddlesoft.norilib.SearchResult} to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
-  public static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
-  /** Identifier used to send the position of the selected {@link com.cuddlesoft.norilib.Image} to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
-  public static final String BUNDLE_ID_IMAGE_INDEX = "com.cuddlesoft.nori.ImageIndex";
-  /** Identifier used to send {@link com.cuddlesoft.norilib.clients.SearchClient} settings to {@link com.cuddlesoft.nori.ImageViewerActivity}. */
-  public static final String BUNDLE_ID_SEARCH_CLIENT_SETTINGS = "com.cuddlesoft.nori.SearchClient.Settings";
   /** Search API Client. */
   private SearchClient searchClient;
   /** Search view menu item. */
@@ -94,6 +95,12 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     // Set event listener responding to submitted queries.
     SearchView.OnQueryTextListener searchViewHandler = new SearchViewListener();
     searchView.setOnQueryTextListener(searchViewHandler);
+
+    if (savedInstanceState == null && getIntent() != null && getIntent().getAction().equals(Intent.ACTION_SEARCH)) {
+      // Activity was started with search intent.
+      MenuItemCompat.expandActionView(searchMenuItem);
+      searchView.setQuery(getIntent().getStringExtra(INTENT_EXTRA_SEARCH_QUERY), true);
+    }
   }
 
   /**
@@ -127,8 +134,9 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     setContentView(R.layout.activity_search);
     // Get search result grid fragment from fragment manager.
     searchResultGridFragment = (SearchResultGridFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_searchResultGrid);
-    // Search for default query on first launch.
-    if (savedInstanceState == null) {
+
+    if (savedInstanceState == null && (getIntent() == null || !getIntent().getAction().equals(Intent.ACTION_SEARCH))) {
+      // Search for default query on first launch.
       doSearch(searchClient.getDefaultQuery());
     }
   }
@@ -193,7 +201,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     setSupportProgressBarIndeterminateVisibility(true);
     // Request search result from API client.
     searchCallback = new SearchResultCallback(searchResult);
-    searchClient.search(Tag.stringFromArray(searchResult.getQuery()), searchResult.getCurrentOffset()+1, searchCallback);
+    searchClient.search(Tag.stringFromArray(searchResult.getQuery()), searchResult.getCurrentOffset() + 1, searchCallback);
   }
 
   /** Listens for queries submitted to the action bar {@link android.support.v7.widget.SearchView}. */
@@ -217,10 +225,10 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
 
   /** Callback waiting for a SearchResult received on a background thread from the Search API. */
   private class SearchResultCallback implements SearchClient.SearchCallback {
-    /** Callback cancelled and should no longer respond to received SearchResult. */
-    private boolean isCancelled = false;
     /** Search result to extend when fetching more images for endless scrolling. */
     private final SearchResult searchResult;
+    /** Callback cancelled and should no longer respond to received SearchResult. */
+    private boolean isCancelled = false;
 
     /** Default constructor. */
     public SearchResultCallback() {

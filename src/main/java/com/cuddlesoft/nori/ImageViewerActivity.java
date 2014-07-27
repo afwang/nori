@@ -31,8 +31,6 @@ import java.io.IOException;
 
 /** Activity used to display full-screen images. */
 public class ImageViewerActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener, ImageFragment.ImageFragmentListener {
-  // TODO: Tag list.
-  // TODO: Keep the screen on.
   /** Identifier used to keep the displayed {@link com.cuddlesoft.norilib.SearchResult} in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
   /** Identifier used to keep the position of the selected {@link com.cuddlesoft.norilib.Image} in {@link #onSaveInstanceState(android.os.Bundle)}. */
@@ -87,17 +85,17 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
     actionBar.setDisplayShowHomeEnabled(false);
     actionBar.setDisplayHomeAsUpEnabled(true);
 
-    // Dim system UI.
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      viewPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-    }
-
     // Create and set the image viewer Fragment pager adapter.
     imagePagerAdapter = new ImagePagerAdapter(getSupportFragmentManager());
     viewPager = (ViewPager) findViewById(R.id.image_pager);
     viewPager.setAdapter(imagePagerAdapter);
     viewPager.setOnPageChangeListener(this);
     viewPager.setCurrentItem(imageIndex);
+
+    // Dim system UI.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+      viewPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+    }
   }
 
   @Override

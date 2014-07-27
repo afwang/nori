@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
@@ -147,6 +148,9 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
+      case R.id.action_tags:
+        showTagListDialog();
+        return true;
       case R.id.action_download:
         downloadImage();
         return true;
@@ -174,6 +178,14 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
     intent.putExtra(Intent.EXTRA_TEXT, image.webUrl);
     intent.setType("text/plain");
     return intent;
+  }
+
+  /**
+   * Show the {@link com.cuddlesoft.nori.fragment.TagListDialogFragment} for the current image.
+   */
+  protected void showTagListDialog() {
+    DialogFragment tagListFragment = TagListDialogFragment.newInstance(image);
+    tagListFragment.show(getFragmentManager(), "TagListDialogFragment");
   }
 
   /**
