@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of nori.
+  ~ Copyright (c) 2014 vomitcuddle <shinku@dollbooru.org>
+  ~ License: ISC
+  -->
+
+<resources>
+    <!-- Obscenity Filter preferences entries. -->
+    <string-array name="preference_nsfwFilter_entries">
+        <item>Safe</item>
+        <item>Questionable</item>
+        <item>Explicit</item>
+        <item>Unknown</item>
+    </string-array>
+    <!-- Obscenity Filter preferences entry values. -->
+    <string-array name="preference_nsfwFilter_values">
+        <item>safe</item>
+        <item>questionable</item>
+        <item>explicit</item>
+        <item>unknown</item>
+    </string-array>
+    <string-array name="preference_nsfwFilter_defaultValues">
+        <item>safe</item>
+        <item>unknown</item>
+    </string-array>
+</resources>
