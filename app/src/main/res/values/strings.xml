@@ -6,6 +6,7 @@
     <!-- Activity titles -->
     <!-- (Image ID): (Image tags) -->
     <string name="activity_image_viewer_titleFormat" formatted="false">%s: %s</string>
+    <string name="activity_settings">Settings</string>
 
     <!-- Action bar items -->
     <string name="action_settings">Settings</string>

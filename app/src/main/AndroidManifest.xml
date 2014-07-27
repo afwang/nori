@@ -31,6 +31,8 @@
             android:name=".ImageViewerActivity"
             android:theme="@style/ImageViewerTheme">
         </activity>
+        <activity android:name=".SettingsActivity"
+                  android:label="@string/activity_settings"/>
     </application>
 
 </manifest>
