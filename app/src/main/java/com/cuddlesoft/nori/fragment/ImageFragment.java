@@ -11,11 +11,13 @@ import android.app.DownloadManager;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -105,6 +107,7 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Extract image from arguments bundle and initialize ImageView.
+    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
     imageView = new TouchImageView(getActivity());
     imageView.setOnDoubleTapListener(this);
     image = getArguments().getParcelable(BUNDLE_ID_IMAGE);
@@ -112,7 +115,8 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
     // Evaluate the current network conditions to decide whether to load the medium-resolution
     // (sample) version of the image or the original full-resolution one.
     final String imageUrl;
-    if (NetworkUtils.shouldFetchImageSamples(getActivity())) {
+    if (sharedPreferences.getBoolean(getString(R.string.preference_image_viewer_conserveBandwidth_key), false)
+        || NetworkUtils.shouldFetchImageSamples(getActivity())) {
       imageUrl = image.sampleUrl;
     } else {
       imageUrl = image.fileUrl;
