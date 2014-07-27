@@ -7,8 +7,10 @@
 package com.cuddlesoft.nori;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -54,6 +56,9 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    // Get shared preferences.
+    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
     // Get data out of Intent sent by SearchActivity or restore them from the saved instance
     // state.
     final int imageIndex;
@@ -73,8 +78,10 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
 
     // Request window features.
     supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-    // Keep screen on.
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    // Keep screen on, if enabled by the user.
+    if (sharedPreferences.getBoolean(getString(R.string.preference_image_viewer_keepScreenOn_key), true)) {
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
 
     // Populate content view.
     setContentView(R.layout.activity_image_viewer);
