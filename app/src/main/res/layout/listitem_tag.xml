@@ -14,7 +14,7 @@
           android:paddingRight="16dp"
           android:paddingTop="8dp"
           android:gravity="center_vertical"
-          android:minHeight="@dimen/tag_list_itemHeight"
+          android:minHeight="@dimen/list_item_minWidth"
           android:singleLine="true"
           android:textSize="@dimen/tag_list_textSize">
 

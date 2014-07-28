@@ -8,20 +8,26 @@
 <resources>
     <!-- Obscenity Filter preferences entries. -->
     <string-array name="preference_nsfwFilter_entries">
-        <item>Safe</item>
-        <item>Questionable</item>
-        <item>Explicit</item>
-        <item>Unknown</item>
+        <item>@string/obscenity_rating_safe</item>
+        <item>@string/obscenity_rating_questionable</item>
+        <item>@string/obscenity_rating_explicit</item>
+        <item>@string/obscenity_rating_undefined</item>
+    </string-array>
+    <string-array name="preference_nsfwFilter_summaries">
+        <item>@string/obscenity_rating_safe_summary</item>
+        <item>@string/obscenity_rating_questionable_summary</item>
+        <item>@string/obscenity_rating_explicit_summary</item>
+        <item>@string/obscenity_rating_undefined_summary</item>
     </string-array>
     <!-- Obscenity Filter preferences entry values. -->
     <string-array name="preference_nsfwFilter_values">
         <item>safe</item>
         <item>questionable</item>
         <item>explicit</item>
-        <item>unknown</item>
+        <item>undefined</item>
     </string-array>
     <string-array name="preference_nsfwFilter_defaultValues">
         <item>safe</item>
-        <item>unknown</item>
+        <item>undefined</item>
     </string-array>
 </resources>

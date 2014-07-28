@@ -7,8 +7,10 @@
 package com.cuddlesoft.nori;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
@@ -48,6 +50,8 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   private static final String BUNDLE_ID_SEARCH_VIEW_IS_EXPANDED = "com.cuddlesoft.nori.SearchView.isExpanded";
   /** Identifier used to preserve search view focused state. */
   private static final String BUNDLE_ID_SEARCH_VIEW_IS_FOCUSED = "com.cuddlesoft.nori.SearchView.isFocused";
+  /** Default {@link android.content.SharedPreferences} object. */
+  private SharedPreferences sharedPreferences;
   /** Search API Client. */
   private SearchClient searchClient;
   /** Search view menu item. */
@@ -130,6 +134,8 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     searchClient = new Gelbooru("http://safebooru.org");
     // Request window manager features.
     supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+    // Get shared preferences.
+    sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     // Inflate views.
     setContentView(R.layout.activity_search);
     // Get search result grid fragment from fragment manager.
@@ -260,9 +266,21 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
         // Clear callback and hide progress indicator in Action Bar.
         setSupportProgressBarIndeterminateVisibility(false);
         searchCallback = null;
+
+        // Filter the received SearchResult.
+        final int resultCount = searchResult.getImages().length;
+        if (sharedPreferences.contains(getString(R.string.preference_nsfwFilter_key))) {
+          // Get filter from shared preferences.
+          searchResult.filter(Image.ObscenityRating.arrayFromStrings(
+              sharedPreferences.getString(getString(R.string.preference_nsfwFilter_key), "").split(" ")));
+        } else {
+          // Get default filter from resources.
+          searchResult.filter(Image.ObscenityRating.arrayFromStrings(getResources().getStringArray(R.array.preference_nsfwFilter_defaultValues)));
+        }
+
         if (this.searchResult != null) {
           // Set onLastPage if no more images were fetched.
-          if (searchResult.getImages().length == 0) {
+          if (resultCount == 0) {
             this.searchResult.onLastPage();
           } else {
             // Extend existing search result for endless scrolling.
@@ -271,6 +289,9 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
           }
         } else {
           // Show search result.
+          if (resultCount == 0) {
+            searchResult.onLastPage();
+          }
           searchResultGridFragment.setSearchResult(searchResult);
         }
       }

@@ -14,6 +14,8 @@
     <dimen name="searchResultGrid_columnWidth">100dp</dimen>
 
     <!-- Tag list dialog. -->
-    <dimen name="tag_list_itemHeight">48dp</dimen>
     <dimen name="tag_list_textSize">18sp</dimen>
+
+    <!-- List items -->
+    <dimen name="list_item_minWidth">48dp</dimen>
 </resources>

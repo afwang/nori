@@ -41,6 +41,8 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
   private static final String BUNDLE_ID_SEARCH_CLIENT_SETTINGS = "com.cuddlesoft.nori.SearchClient.Settings";
   /** Fetch more images when the displayed image is this far from the last {@link com.cuddlesoft.norilib.Image} in the current {@link com.cuddlesoft.norilib.SearchResult}. */
   private static final int INFINITE_SCROLLING_THRESHOLD = 3;
+  /** Default shared preferences. */
+  private SharedPreferences sharedPreferences;
   /** View pager used to display the images. */
   private ViewPager viewPager;
   /** Search result shown by the {@link android.support.v4.app.FragmentStatePagerAdapter}. */
@@ -57,7 +59,7 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
     super.onCreate(savedInstanceState);
 
     // Get shared preferences.
-    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
     // Get data out of Intent sent by SearchActivity or restore them from the saved instance
     // state.
@@ -254,6 +256,15 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
         // Just mark the current SearchResult as having reached the last page.
         this.searchResult.onLastPage();
       } else {
+        // Filter the received SearchResult.
+        if (sharedPreferences.contains(getString(R.string.preference_nsfwFilter_key))) {
+          // Get filter from shared preferences.
+          searchResult.filter(Image.ObscenityRating.arrayFromStrings(
+              sharedPreferences.getString(getString(R.string.preference_nsfwFilter_key), "").split(" ")));
+        } else {
+          // Get default filter from resources.
+          searchResult.filter(Image.ObscenityRating.arrayFromStrings(getResources().getStringArray(R.array.preference_nsfwFilter_defaultValues)));
+        }
         // Update the search result and notify the ViewPager adapter that the data set has changed.
         this.searchResult.addImages(searchResult.getImages(), searchResult.getCurrentOffset());
         imagePagerAdapter.notifyDataSetChanged();

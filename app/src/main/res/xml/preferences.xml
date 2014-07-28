@@ -37,15 +37,13 @@
 
     <PreferenceCategory
         android:title="@string/preference_category_search">
-        <MultiSelectListPreference
-            android:defaultValue="@array/preference_nsfwFilter_defaultValues"
-            android:dialogTitle="@string/preference_nsfwFilter_title"
-            android:entries="@array/preference_nsfwFilter_entries"
-            android:entryValues="@array/preference_nsfwFilter_values"
-            android:key="@string/preference_nsfwFilter_key"
-            android:persistent="true"
+        <Preference
             android:summary="@string/preference_nsfwFilter_summary"
-            android:title="@string/preference_nsfwFilter_title"/>
+            android:title="@string/preference_nsfwFilter_title">
+            <intent
+                android:targetClass="com.cuddlesoft.nori.NSFWFilterSettingsActivity"
+                android:targetPackage="com.cuddlesoft.nori"/>
+            </Preference>
         <Preference
             android:summary="@string/preference_tagFilter_summary"
             android:title="@string/preference_tagFilter_title">
