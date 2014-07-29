@@ -277,6 +277,10 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
           // Get default filter from resources.
           searchResult.filter(Image.ObscenityRating.arrayFromStrings(getResources().getStringArray(R.array.preference_nsfwFilter_defaultValues)));
         }
+        if (sharedPreferences.contains(getString(R.string.preference_tagFilter_key))) {
+          // Get tag filters from shared preferences and filter the result.
+          searchResult.filter(Tag.arrayFromString(sharedPreferences.getString(getString(R.string.preference_tagFilter_key), "")));
+        }
 
         if (this.searchResult != null) {
           // Set onLastPage if no more images were fetched.

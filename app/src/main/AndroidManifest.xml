@@ -37,8 +37,11 @@
             android:label="@string/activity_settings" />
         <activity
             android:name=".NSFWFilterSettingsActivity"
-            android:label="@string/title_activity_nsfwfilter_settings" >
+            android:label="@string/activity_nsfwfilter_settings" >
         </activity>
+        <activity
+            android:name=".TagFilterSettingsActivity"
+            android:label="@string/activity_tag_filter_settings"/>
     </application>
 
 </manifest>

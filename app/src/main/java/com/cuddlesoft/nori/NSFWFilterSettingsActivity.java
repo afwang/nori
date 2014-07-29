@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,7 +61,10 @@ public class NSFWFilterSettingsActivity extends ActionBarActivity implements Lis
 
     // Get current value of the preference_nsfwFilter preference, or fallback to the default value.
     if (sharedPreferences.contains(getString(R.string.preference_nsfwFilter_key))) {
-      obscenityRatingsFiltered.addAll((Arrays.asList(sharedPreferences.getString(getString(R.string.preference_nsfwFilter_key), null).split(" "))));
+      final String nsfwFilter = sharedPreferences.getString(getString(R.string.preference_nsfwFilter_key), null).trim();
+      if (!TextUtils.isEmpty(nsfwFilter)) {
+        obscenityRatingsFiltered.addAll((Arrays.asList(nsfwFilter.split(" "))));
+      }
     } else {
       final String[] obscenityRatingDefaultValues = getResources().getStringArray(R.array.preference_nsfwFilter_defaultValues);
       obscenityRatingsFiltered.addAll(Arrays.asList(obscenityRatingDefaultValues));
@@ -102,7 +106,7 @@ public class NSFWFilterSettingsActivity extends ActionBarActivity implements Lis
     // Update SharedPreferences.
     sharedPreferences.edit()
         .putString(getString(R.string.preference_nsfwFilter_key),
-            StringUtils.mergeStringArray(obscenityRatingsFiltered.toArray(new String[obscenityRatingsFiltered.size()]), " "))
+            StringUtils.mergeStringArray(obscenityRatingsFiltered.toArray(new String[obscenityRatingsFiltered.size()]), " ").trim())
         .apply();
   }
 

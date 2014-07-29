@@ -265,6 +265,10 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
           // Get default filter from resources.
           searchResult.filter(Image.ObscenityRating.arrayFromStrings(getResources().getStringArray(R.array.preference_nsfwFilter_defaultValues)));
         }
+        if (sharedPreferences.contains(getString(R.string.preference_tagFilter_key))) {
+          // Get tag filters from shared preferences and filter the result.
+          searchResult.filter(Tag.arrayFromString(sharedPreferences.getString(getString(R.string.preference_tagFilter_key), "")));
+        }
         // Update the search result and notify the ViewPager adapter that the data set has changed.
         this.searchResult.addImages(searchResult.getImages(), searchResult.getCurrentOffset());
         imagePagerAdapter.notifyDataSetChanged();
