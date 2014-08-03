@@ -143,9 +143,8 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
     if (searchCallback != null) {
       return;
     }
-    // Show the indeterminate progress bar in the action bar, and show the action bar if hidden.
+    // Show the indeterminate progress bar in the action bar.
     setSupportProgressBarIndeterminateVisibility(true);
-    getSupportActionBar().show();
     // Request search result from API client.
     searchCallback = new InfiniteScrollingSearchCallback(searchResult);
     searchClient.search(Tag.stringFromArray(searchResult.getQuery()), searchResult.getCurrentOffset() + 1, searchCallback);
