@@ -1,11 +1,14 @@
 package com.cuddlesoft.nori.database;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 
@@ -205,7 +208,59 @@ public class APISettingsDatabase extends SQLiteOpenHelper {
   }
 
   /** Loader class used to asynchronously offload database access to a background thread. */
-/*  public static class Loader {
-    // TODO: Implement me.
-  }*/
+  public static class Loader extends AsyncTaskLoader<List<Pair<Integer, SearchClient.Settings>>> {
+    /** Database access helper. */
+    private final APISettingsDatabase db;
+    /** Cached result. */
+    private List<Pair<Integer, SearchClient.Settings>> settingsList;
+    /** {@link android.content.BroadcastReceiver} receiving database change notifications. */
+    private final BroadcastReceiver contentChangedBroadcastReceiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        Loader.this.onContentChanged();
+      }
+    };
+
+    /**
+     * Create a new loader to asynchronously offloads {@link APISettingsDatabase} access to a background thread.
+     *
+     * @param context Android context.
+     */
+    public Loader(Context context) {
+      super(context);
+      // Create database instance.
+      this.db = new APISettingsDatabase(context);
+    }
+
+    @Override
+    protected void onStartLoading() {
+      super.onStartLoading();
+
+      // If there is a cached result available, deliver it immediately.
+      if (settingsList != null) {
+        deliverResult(settingsList);
+      }
+
+      // Register broadcast receiver handling database change notifications.
+      LocalBroadcastManager.getInstance(getContext()).registerReceiver(contentChangedBroadcastReceiver,
+          new IntentFilter(APISettingsDatabase.BROADCAST_UPDATE));
+
+      // If the data has changed since the last time it was loaded or is not currently available, start a load.
+      if (takeContentChanged() || settingsList == null) {
+        forceLoad();
+      }
+    }
+
+    @Override
+    protected void onReset() {
+      super.onReset();
+      // Unregister broadcast receiver handling database change notifications.
+      LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(contentChangedBroadcastReceiver);
+    }
+
+    @Override
+    public List<Pair<Integer, SearchClient.Settings>> loadInBackground() {
+      return db.getAll();
+    }
+  }
 }
