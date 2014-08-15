@@ -11,16 +11,26 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
 import android.util.Log;
+import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cuddlesoft.nori.database.APISettingsDatabase;
 import com.cuddlesoft.nori.fragment.SearchResultGridFragment;
 import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.SearchResult;
@@ -29,6 +39,7 @@ import com.cuddlesoft.norilib.clients.Gelbooru;
 import com.cuddlesoft.norilib.clients.SearchClient;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.github.vomitcuddle.SearchViewAllowEmpty.SearchView;
 
@@ -99,12 +110,16 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     // Set event listener responding to submitted queries.
     SearchView.OnQueryTextListener searchViewHandler = new SearchViewListener();
     searchView.setOnQueryTextListener(searchViewHandler);
+  }
 
-    if (savedInstanceState == null && getIntent() != null && getIntent().getAction().equals(Intent.ACTION_SEARCH)) {
-      // Activity was started with search intent.
-      MenuItemCompat.expandActionView(searchMenuItem);
-      searchView.setQuery(getIntent().getStringExtra(INTENT_EXTRA_SEARCH_QUERY), true);
-    }
+  /** Set up the {@link android.support.v7.app.ActionBar}, including the API service picker dropdown. */
+  private void setUpActionBar() {
+    ActionBar actionBar = getSupportActionBar();
+    ServiceDropdownAdapter serviceDropdownAdapter = new ServiceDropdownAdapter();
+    actionBar.setIcon(R.drawable.ic_launcher);
+    actionBar.setDisplayShowTitleEnabled(false);
+    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+    actionBar.setListNavigationCallbacks(serviceDropdownAdapter, serviceDropdownAdapter);
   }
 
   /**
@@ -113,6 +128,10 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
    * @param query Query string (comma-separated list of tags).
    */
   private void doSearch(String query) {
+    // Ignore request if searchClient is not created yet. This should never happen in practice, but...
+    if (searchClient == null) {
+      return;
+    }
     // Cancel any existing callbacks waiting for a SearchResult.
     if (searchCallback != null) {
       searchCallback.cancel();
@@ -127,10 +146,32 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     searchClient.search(query, searchCallback);
   }
 
+  /**
+   * Called when a Search API is picked by the user.
+   *
+   * @param settings Selected {@link com.cuddlesoft.norilib.clients.SearchClient.Settings} object.
+   */
+  protected void onSearchAPIChanged(SearchClient.Settings settings) {
+    searchClient = settings.createSearchClient();
+
+    if (getIntent() != null && getIntent().getAction().equals(Intent.ACTION_SEARCH)) {
+      // Search for query in Intent.
+      MenuItemCompat.expandActionView(searchMenuItem);
+      searchView.setQuery(getIntent().getStringExtra(INTENT_EXTRA_SEARCH_QUERY), true);
+      // Clear intent action.
+      setIntent(null);
+    } else if (savedInstanceState == null || savedInstanceState.containsKey(BUNDLE_ID_SEARCH_RESULT)) {
+      // Search for default query.
+      searchView.setQuery(searchClient.getDefaultQuery(), true);
+    } else if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_ID_SEARCH_RESULT)) {
+      // Remove saved search result from savedInstanceState, so that default query is searched for on next API server change.
+      savedInstanceState.remove(BUNDLE_ID_SEARCH_RESULT);
+    }
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    // TODO: Implement API server picker.
     searchClient = new Gelbooru("Safebooru", "http://safebooru.org");
     // Request window manager features.
     supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -138,13 +179,10 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     // Inflate views.
     setContentView(R.layout.activity_search);
+    // Set up the dropdown API server picker.
+    setUpActionBar();
     // Get search result grid fragment from fragment manager.
     searchResultGridFragment = (SearchResultGridFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_searchResultGrid);
-
-    if (savedInstanceState == null && (getIntent() == null || !getIntent().getAction().equals(Intent.ACTION_SEARCH))) {
-      // Search for default query on first launch.
-      doSearch(searchClient.getDefaultQuery());
-    }
   }
 
   @Override
@@ -304,6 +342,115 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     /** Cancels this callback. */
     public void cancel() {
       this.isCancelled = true;
+    }
+  }
+
+  /** Adapter populating the Search API picker in the ActionBar. */
+  private class ServiceDropdownAdapter extends BaseAdapter implements LoaderManager.LoaderCallbacks<List<Pair<Integer, SearchClient.Settings>>>, ActionBar.OnNavigationListener {
+    /** Search client settings loader ID. */
+    private static final int LOADER_ID_API_SETTINGS = 0x00;
+    /** Shared preference key used to store the last active {@link com.cuddlesoft.norilib.clients.SearchClient}. */
+    private static final String SHARED_PREFERENCE_LAST_SELECTED_INDEX = "com.cuddlesoft.nori.SearchActivity.lastSelectedServiceIndex";
+    /** List of service settings loaded from {@link com.cuddlesoft.nori.database.APISettingsDatabase}. */
+    private List<Pair<Integer, SearchClient.Settings>> settingsList;
+    /** ID of the last selected item. */
+    private long lastSelectedItem;
+
+    public ServiceDropdownAdapter() {
+      // Restore last active item from SharedPreferences.
+      lastSelectedItem = sharedPreferences.getLong(SHARED_PREFERENCE_LAST_SELECTED_INDEX, 1L);
+      // Initialize the search client settings database loader.
+      getSupportLoaderManager().initLoader(LOADER_ID_API_SETTINGS, null, this);
+    }
+
+    @Override
+    public int getCount() {
+      if (settingsList == null) {
+        return 0;
+      } else {
+        return settingsList.size();
+      }
+    }
+
+    @Override
+    public SearchClient.Settings getItem(int position) {
+      return settingsList.get(position).second;
+    }
+
+    @Override
+    public long getItemId(int position) {
+      // Return database row ID.
+      return settingsList.get(position).first;
+    }
+
+    /**
+     * Get position of the item with given database row ID.
+     *
+     * @param id Row ID.
+     * @return Position of the item.
+     */
+    public int getPositionByItemId(long id) {
+      for (int i = 0; i < getCount(); i++) {
+        if (getItemId(i) == id) {
+          return i;
+        }
+      }
+      return 0;
+    }
+
+    @Override
+    public View getView(int position, View recycledView, ViewGroup container) {
+      // Reuse recycled view, if possible.
+      View view = recycledView;
+      if (view == null) {
+        // View could not be recycled, inflate new view.
+        view = LayoutInflater.from(SearchActivity.this).inflate(android.R.layout.simple_spinner_dropdown_item, container, false);
+      }
+
+      // Populate views with content.
+      SearchClient.Settings settings = getItem(position);
+      TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+      text1.setText(settings.getName());
+
+      return view;
+    }
+
+    @Override
+    public Loader<List<Pair<Integer, SearchClient.Settings>>> onCreateLoader(int id, Bundle args) {
+      if (id == LOADER_ID_API_SETTINGS) {
+        return new APISettingsDatabase.Loader(SearchActivity.this);
+      }
+      return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Pair<Integer, SearchClient.Settings>>> loader, List<Pair<Integer, SearchClient.Settings>> data) {
+      if (loader.getId() == LOADER_ID_API_SETTINGS) {
+        // Update adapter data.
+        settingsList = data;
+        notifyDataSetChanged();
+        // Reselect last active item.
+        getSupportActionBar().setSelectedNavigationItem(getPositionByItemId(lastSelectedItem));
+      }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Pair<Integer, SearchClient.Settings>>> loader) {
+      // Invalidate adapter's data.
+      settingsList = null;
+      notifyDataSetInvalidated();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(int position, long id) {
+      // Save last active item to SharedPreferences.
+      lastSelectedItem = id;
+      sharedPreferences.edit().putLong(SHARED_PREFERENCE_LAST_SELECTED_INDEX, id).apply();
+      // Notify parent activity.
+      onSearchAPIChanged(getItem(position));
+
+      return true;
     }
   }
 }
