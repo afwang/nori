@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Nori</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Activity titles -->
+    <!-- (Image ID): (Image tags) -->
+    <string name="activity_image_viewer_titleFormat" formatted="false">%s: %s</string>
+    <string name="activity_settings">Settings</string>
+    <string name="activity_tag_filter_settings">Tag Filter</string>
+    <string name="activity_nsfwfilter_settings">Obscenity Filter</string>
+    <string name="activity_service_settings">Service Settings</string>
+
+    <!-- EditText hints -->
+    <string name="hint_tag">Tag</string>
+    <string name="hint_service_name">Service name</string>
+    <string name="hint_service_uri">Service URL</string>
+    <string name="hint_service_username">Username (optional)</string>
+    <string name="hint_service_passphrase">Password/API key (optional)</string>
+
+    <!-- Action bar items -->
+    <string name="action_add">Add</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_share">Share</string>
+    <string name="action_tags">Tags</string>
+    <string name="action_downloadImage">Download</string>
+    <string name="action_viewOnWeb">View on Web</string>
+    <string name="action_viewOnPixiv">View on Pixiv</string>
+    <string name="action_setAsWallpaper">Set as Wallpaper</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_editService">Edit service</string>
+    <string name="dialog_title_addService">Add service</string>
+    <string name="dialog_tags_closeButton">Close</string>
+    <string name="dialog_message_detectingApiType">Detecting API settings…</string>
+
+    <!-- Accessibility image content descriptions -->
+    <string name="content_description_remove">Remove</string>
+
+    <!-- Toast notifications -->
+    <string name="toast_networkError" formatted="false">Network error: %s</string>
+    <string name="toast_couldNotSetWallpaper" formatted="false">Could not set image as wallpaper: %s</string>
+    <string name="toast_infiniteScrollingFetchError" formatted="false">An error occurred when trying to fetch more images: %s</string>
+    <string name="toast_error_serviceUriInvalid">The given service URL is invalid.</string>
+    <string name="toast_error_noNetwork">Couldn\'t connect to network.</string>
+    <string name="toast_error_noServiceAtGivenUri">Couldn\'t find a supported API at the given URL.</string>
+
+    <!-- Preferences -->
+    <string name="preference_category_search">Search</string>
+    <string name="preference_nsfwFilter_title">Obscenity Filter</string>
+    <string name="preference_nsfwFilter_summary">Manage the NSFW filter settings</string>
+    <string name="preference_tagFilter_summary">Manage tags to remove from search results</string>
+    <string name="preference_tagFilter_title">Tag Filter</string>
+    <string name="preference_clearSearchHistory_summary">Clear the search history</string>
+    <string name="preference_clearSearchHistory_title">Clear History</string>
+    <string name="preference_imageViewer">Image Viewer</string>
+    <string name="preference_image_viewer_keepScreenOn_summary">Keep the screen on in the image viewer</string>
+    <string name="preference_image_viewer_keepScreenOn_title">Keep Screen On</string>
+    <string name="preference_image_viewer_conserveBandwidth_summary">Always fetch scaled-down images, even on fast connections</string>
+    <string name="preference_image_viewer_conserveBandwidth_title">Conserve Bandwidth</string>
+    <string name="preference_category_services">Services</string>
+    <string name="preference_service_settings_summary">Add, edit or remove imageboard service settings</string>
+    <string name="preference_service_settings_title">Service Settings</string>
+    <!-- Untranslatable -->
+    <string name="preference_nsfwFilter_key">preference_nsfwFilter</string>
+    <string name="preference_tagFilter_key">preference_tagFilter</string>
+    <string name="preference_image_viewer_keepScreenOn_key">preference_image_viewer_keepScreenOn</string>
+    <string name="preference_image_viewer_conserveBandwidth_key">preference_image_viewer_conserveBandwidth</string>
+
+    <!-- NSFW ratings -->
+    <string name="obscenity_rating_safe">Safe</string>
+    <string name="obscenity_rating_questionable">Questionable</string>
+    <string name="obscenity_rating_explicit">Explicit</string>
+    <string name="obscenity_rating_undefined">Undefined</string>
+    <string name="obscenity_rating_safe_summary">Safe for work</string>
+    <string name="obscenity_rating_questionable_summary">Mild nudity and sexually-suggestive content</string>
+    <string name="obscenity_rating_explicit_summary">Full nudity and sexually-explicit content</string>
+    <string name="obscenity_rating_undefined_summary">Show content for which no obscenity rating has been defined</string>
+
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+  <AutoCompleteTextView
+    android:id="@+id/name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:hint="@string/hint_service_name"
+    android:inputType="text"
+    android:singleLine="true"/>
+
+  <EditText
+    android:id="@+id/uri"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:hint="@string/hint_service_uri"
+    android:inputType="textUri"
+    android:singleLine="true"/>
+
+  <EditText
+    android:id="@+id/username"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:hint="@string/hint_service_username"
+    android:inputType="textVisiblePassword"
+    android:singleLine="true"
+    android:visibility="gone"/>
+
+  <EditText
+    android:id="@+id/passphrase"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:hint="@string/hint_service_passphrase"
+    android:inputType="textVisiblePassword"
+    android:singleLine="true"
+    android:visibility="gone"/>
+
+</LinearLayout>

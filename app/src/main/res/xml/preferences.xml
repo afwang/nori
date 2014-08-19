@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ This file is part of nori.
+  ~ Copyright (c) 2014 vomitcuddle <shinku@dollbooru.org>
+  ~ License: ISC
+  -->
+
+<!-- List of preferences displayed in SettingsActivity. -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/preference_category_services">
+        <Preference
+            android:summary="@string/preference_service_settings_summary"
+            android:title="@string/preference_service_settings_title">
+            <intent
+                android:targetClass="com.cuddlesoft.nori.APISettingsActivity"
+                android:targetPackage="com.cuddlesoft.nori"/>
+        </Preference>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/preference_imageViewer">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/preference_image_viewer_keepScreenOn_key"
+            android:persistent="true"
+            android:summary="@string/preference_image_viewer_keepScreenOn_summary"
+            android:title="@string/preference_image_viewer_keepScreenOn_title"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/preference_image_viewer_conserveBandwidth_key"
+            android:persistent="true"
+            android:summary="@string/preference_image_viewer_conserveBandwidth_summary"
+            android:title="@string/preference_image_viewer_conserveBandwidth_title"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/preference_category_search">
+        <Preference
+            android:summary="@string/preference_nsfwFilter_summary"
+            android:title="@string/preference_nsfwFilter_title">
+            <intent
+                android:targetClass="com.cuddlesoft.nori.NSFWFilterSettingsActivity"
+                android:targetPackage="com.cuddlesoft.nori"/>
+            </Preference>
+        <Preference
+            android:summary="@string/preference_tagFilter_summary"
+            android:title="@string/preference_tagFilter_title">
+            <intent
+                android:targetClass="com.cuddlesoft.nori.TagFilterSettingsActivity"
+                android:targetPackage="com.cuddlesoft.nori"/>
+        </Preference>
+        <Preference
+            android:summary="@string/preference_clearSearchHistory_summary"
+            android:title="@string/preference_clearSearchHistory_title">
+            <intent
+                android:targetClass="com.cuddlesoft.nori.service.ClearSearchHistoryService"
+                android:targetPackage="com.cuddlesoft.nori"/>
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>

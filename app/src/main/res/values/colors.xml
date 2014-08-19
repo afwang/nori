@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of nori.
+  ~ Copyright (c) 2014 vomitcuddle <shinku@dollbooru.org>
+  ~ License: ISC
+  -->
+
+<resources>
+    <color name="network_thumbnail_placeholder">#dfdfdf</color>
+    <color name="image_viewer_actionbarBackground">#aa000000</color>
+
+    <!-- Tag list colours -->
+    <color name="taglist_general">@android:color/primary_text_dark</color>
+    <color name="taglist_artist">#A00</color>
+    <color name="taglist_copyright">#A0A</color>
+    <color name="taglist_character">#0A0</color>
+</resources>

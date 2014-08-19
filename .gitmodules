@@ -1,0 +1,6 @@
+[submodule "SearchViewAllowEmpty"]
+	path = SearchViewAllowEmpty
+	url = https://github.com/vomitcuddle/SearchViewAllowEmpty.git
+[submodule "norilib"]
+	path = norilib
+	url = https://github.com/vomitcuddle/norilib.git

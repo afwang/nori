@@ -1,5 +1,0 @@
-<resources>
-  <dimen name="search_result_grid_spacing">2dp</dimen>
-  <dimen name="search_result_column_width">100dp</dimen>
-  <dimen name="default_activity_margin">16dp</dimen>
-</resources>
