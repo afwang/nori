@@ -42,6 +42,8 @@
         <activity
             android:name=".TagFilterSettingsActivity"
             android:label="@string/activity_tag_filter_settings"/>
+        <activity android:name=".APISettingsActivity"
+                  android:label="@string/activity_service_settings"/>
     </application>
 
 </manifest>
