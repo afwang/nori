@@ -2,6 +2,8 @@
 <resources>
 
     <string name="app_name">Nori</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Activity titles -->
     <!-- (Image ID): (Image tags) -->
@@ -9,9 +11,14 @@
     <string name="activity_settings">Settings</string>
     <string name="activity_tag_filter_settings">Tag Filter</string>
     <string name="activity_nsfwfilter_settings">Obscenity Filter</string>
+    <string name="activity_service_settings">Service Settings</string>
 
     <!-- EditText hints -->
     <string name="hint_tag">Tag</string>
+    <string name="hint_service_name">Service name</string>
+    <string name="hint_service_uri">Service URL</string>
+    <string name="hint_service_username">Username (optional)</string>
+    <string name="hint_service_passphrase">Password/API key (optional)</string>
 
     <!-- Action bar items -->
     <string name="action_add">Add</string>
@@ -23,10 +30,12 @@
     <string name="action_viewOnWeb">View on Web</string>
     <string name="action_viewOnPixiv">View on Pixiv</string>
     <string name="action_setAsWallpaper">Set as Wallpaper</string>
-    <string name="action_cancel">Cancel</string>
 
     <!-- Dialogs -->
+    <string name="dialog_title_editService">Edit service</string>
+    <string name="dialog_title_addService">Add service</string>
     <string name="dialog_tags_closeButton">Close</string>
+    <string name="dialog_message_detectingApiType">Detecting API settings…</string>
 
     <!-- Accessibility image content descriptions -->
     <string name="content_description_remove">Remove</string>
@@ -35,6 +44,9 @@
     <string name="toast_networkError" formatted="false">Network error: %s</string>
     <string name="toast_couldNotSetWallpaper" formatted="false">Could not set image as wallpaper: %s</string>
     <string name="toast_infiniteScrollingFetchError" formatted="false">An error occurred when trying to fetch more images: %s</string>
+    <string name="toast_error_serviceUriInvalid">The given service URL is invalid.</string>
+    <string name="toast_error_noNetwork">Couldn\'t connect to network.</string>
+    <string name="toast_error_noServiceAtGivenUri">Couldn\'t find a supported API at the given URL.</string>
 
     <!-- Preferences -->
     <string name="preference_category_search">Search</string>

@@ -6,28 +6,46 @@
   -->
 
 <resources>
-    <!-- Obscenity Filter preferences entries. -->
-    <string-array name="preference_nsfwFilter_entries">
-        <item>@string/obscenity_rating_safe</item>
-        <item>@string/obscenity_rating_questionable</item>
-        <item>@string/obscenity_rating_explicit</item>
-        <item>@string/obscenity_rating_undefined</item>
-    </string-array>
-    <string-array name="preference_nsfwFilter_summaries">
-        <item>@string/obscenity_rating_safe_summary</item>
-        <item>@string/obscenity_rating_questionable_summary</item>
-        <item>@string/obscenity_rating_explicit_summary</item>
-        <item>@string/obscenity_rating_undefined_summary</item>
-    </string-array>
-    <!-- Obscenity Filter preferences entry values. -->
-    <string-array name="preference_nsfwFilter_values">
-        <item>safe</item>
-        <item>questionable</item>
-        <item>explicit</item>
-        <item>undefined</item>
-    </string-array>
-    <string-array name="preference_nsfwFilter_defaultValues">
-        <item>safe</item>
-        <item>undefined</item>
-    </string-array>
+  <!-- Obscenity Filter preferences entries. -->
+  <string-array name="preference_nsfwFilter_entries">
+    <item>@string/obscenity_rating_safe</item>
+    <item>@string/obscenity_rating_questionable</item>
+    <item>@string/obscenity_rating_explicit</item>
+    <item>@string/obscenity_rating_undefined</item>
+  </string-array>
+  <string-array name="preference_nsfwFilter_summaries">
+    <item>@string/obscenity_rating_safe_summary</item>
+    <item>@string/obscenity_rating_questionable_summary</item>
+    <item>@string/obscenity_rating_explicit_summary</item>
+    <item>@string/obscenity_rating_undefined_summary</item>
+  </string-array>
+  <!-- Obscenity Filter preferences entry values. -->
+  <string-array name="preference_nsfwFilter_values">
+    <item>safe</item>
+    <item>questionable</item>
+    <item>explicit</item>
+    <item>undefined</item>
+  </string-array>
+  <string-array name="preference_nsfwFilter_defaultValues">
+    <item>safe</item>
+    <item>undefined</item>
+  </string-array>
+  <!-- Service name suggestions shown when adding or editing service API settings. -->
+  <string-array name="service_suggestions_names">
+    <item>Danbooru</item>
+    <item>Gelbooru</item>
+    <item>Safebooru</item>
+    <item>Konachan</item>
+    <item>yande.re</item>
+    <item>Dollbooru</item>
+  </string-array>
+  <!-- Service URLs automatically filled in when a suggested service name is picked. -->
+  <string-array name="service_suggestions_uris">
+    <item>http://danbooru.donmai.us</item>
+    <item>http://gelbooru.com</item>
+    <item>http://safebooru.org</item>
+    <item>http://konachan.com</item>
+    <item>https://yande.re</item>
+    <item>http://dollbooru.org</item>
+  </string-array>
 </resources>

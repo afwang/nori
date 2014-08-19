@@ -86,7 +86,7 @@ public class AddTagFilterDialogFragment extends DialogFragment {
                 }
               }
             }
-        ).setNegativeButton(R.string.action_cancel, new DialogInterface.OnClickListener() {
+        ).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialogInterface, int i) {
                 // Dismiss dialog.
