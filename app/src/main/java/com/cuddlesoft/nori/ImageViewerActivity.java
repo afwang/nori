@@ -63,7 +63,7 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
 
     // Get data out of Intent sent by SearchActivity or restore them from the saved instance
     // state.
-    final int imageIndex;
+    int imageIndex;
     if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_ID_IMAGE_INDEX) &&
         savedInstanceState.containsKey(BUNDLE_ID_SEARCH_RESULT)) {
       imageIndex = savedInstanceState.getInt(BUNDLE_ID_IMAGE_INDEX);
@@ -100,6 +100,8 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
     viewPager.setAdapter(imagePagerAdapter);
     viewPager.setOnPageChangeListener(this);
     viewPager.setCurrentItem(imageIndex);
+    // Set activity title.
+    setTitle(searchResult.getImages()[imageIndex]);
 
     // Dim system UI.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -132,6 +134,7 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
     if (title.length() > getResources().getInteger(R.integer.activity_image_viewer_titleMaxLength)) {
       title = title.substring(0, getResources().getInteger(R.integer.activity_image_viewer_titleMaxLength)) + "…";
     }
+
     setTitle(title);
   }
 
