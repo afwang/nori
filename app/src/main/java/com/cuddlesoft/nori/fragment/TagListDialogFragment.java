@@ -24,13 +24,18 @@ import com.cuddlesoft.nori.R;
 import com.cuddlesoft.nori.SearchActivity;
 import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.Tag;
+import com.cuddlesoft.norilib.clients.SearchClient;
 
 /** Dialog showing a list of tags for given image in {@link com.cuddlesoft.nori.ImageViewerActivity}. */
 public class TagListDialogFragment extends DialogFragment implements ListView.OnItemClickListener {
+  /** Identifier used for the parceled {@link com.cuddlesoft.norilib.clients.SearchClient.Settings} object in this fragment's argument bundle. */
+  private static final String BUNDLE_ID_SEARCH_CLIENT_SETTINGS = "com.cuddlesoft.nori.SearchClient.Settings";
   /** Identifier used for the parceled {@link com.cuddlesoft.norilib.Image} object in this fragment's argument bundle. */
   private static final String BUNDLE_ID_IMAGE = "com.cuddlesoft.nori.Image";
   /** The image object containing the tags to show in this fragment. */
   private Image image;
+  /** Search client settings object included in {@link android.content.Intent}s to launch {@link com.cuddlesoft.nori.SearchActivity}. */
+  private SearchClient.Settings settings;
 
   /** Required empty constructor. */
   public TagListDialogFragment() {
@@ -40,34 +45,26 @@ public class TagListDialogFragment extends DialogFragment implements ListView.On
    * Factory method to create a new TagListDialogFragment for given {@link com.cuddlesoft.norilib.Image}.
    *
    * @param image Image to display tags from.
+   * @param settings Settings object included in SearchActivity launch intents sent from this dialog.
    * @return A new instance of TagListDialogFragment.
    */
   @SuppressWarnings("TypeMayBeWeakened")
-  public static TagListDialogFragment newInstance(Image image) {
+  public static TagListDialogFragment newInstance(Image image, SearchClient.Settings settings) {
     // Package image object into the fragment's argument bundle.
     TagListDialogFragment fragment = new TagListDialogFragment();
     Bundle arguments = new Bundle();
     arguments.putParcelable(BUNDLE_ID_IMAGE, image);
+    arguments.putParcelable(BUNDLE_ID_SEARCH_CLIENT_SETTINGS, settings);
     fragment.setArguments(arguments);
 
     return fragment;
   }
 
   @Override
-  public void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    // Save the displayed image.
-    outState.putParcelable(BUNDLE_ID_IMAGE, image);
-  }
-
-  @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
-    // Get the image object from saved instance state or arguments bundle, as needed.
-    if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_ID_IMAGE)) {
-      image = savedInstanceState.getParcelable(BUNDLE_ID_IMAGE);
-    } else {
-      image = getArguments().getParcelable(BUNDLE_ID_IMAGE);
-    }
+    // Extract data from the arguments bundle.
+    image = getArguments().getParcelable(BUNDLE_ID_IMAGE);
+    settings = getArguments().getParcelable(BUNDLE_ID_SEARCH_CLIENT_SETTINGS);
 
     // Create and initialize the ListView.
     final ListView listView = new ListView(getActivity());
@@ -90,8 +87,12 @@ public class TagListDialogFragment extends DialogFragment implements ListView.On
     // Start SearchActivity with search for the given tag.
     final Intent intent = new Intent(getActivity(), SearchActivity.class);
     intent.setAction(Intent.ACTION_SEARCH);
+    intent.putExtra(SearchActivity.INTENT_EXTRA_SEARCH_CLIENT_SETTINGS, settings);
     intent.putExtra(SearchActivity.INTENT_EXTRA_SEARCH_QUERY, image.tags[position].getName());
     startActivity(intent);
+
+    // Dismiss the dialog after the activity is started.
+    dismiss();
   }
 
   /**

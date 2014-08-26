@@ -15,6 +15,7 @@
 
     <!-- EditText hints -->
     <string name="hint_tag">Tag</string>
+    <string name="hint_search_images">Search images</string>
     <string name="hint_service_name">Service name</string>
     <string name="hint_service_uri">Service URL</string>
     <string name="hint_service_username">Username (optional)</string>

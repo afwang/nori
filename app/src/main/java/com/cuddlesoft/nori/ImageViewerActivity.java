@@ -197,6 +197,11 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
     }
   }
 
+  @Override
+  public SearchClient.Settings getSearchClientSettings() {
+    return searchClient.getSettings();
+  }
+
   /** Adapter used to populate {@link android.support.v4.view.ViewPager} with {@link com.cuddlesoft.nori.fragment.ImageFragment}s. */
   private class ImagePagerAdapter extends FragmentStatePagerAdapter {
     public ImagePagerAdapter(FragmentManager fm) {

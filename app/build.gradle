@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.cuddlesoft.nori"
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion 20
         versionCode 1
         versionName "2.0.0-${gitRevision()}"
         testApplicationId "com.cuddlesoft.nori.test"
@@ -28,8 +28,8 @@ android {
 
 dependencies {
     // Support libraries.
-    compile 'com.android.support:appcompat-v7:19.+'
-    compile 'com.android.support:support-v4:19.+'
+    compile 'com.android.support:appcompat-v7:20.0.0'
+    compile 'com.android.support:support-v4:20.0.0'
 
     // Third-party libraries.
     // An HTTP+SPDY client for Android and Java applications. http://square.github.io/okhttp/

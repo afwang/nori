@@ -6,9 +6,9 @@
 
 package com.cuddlesoft.nori;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
@@ -16,8 +16,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.InputType;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +32,6 @@ import com.cuddlesoft.nori.fragment.SearchResultGridFragment;
 import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.SearchResult;
 import com.cuddlesoft.norilib.Tag;
-import com.cuddlesoft.norilib.clients.Gelbooru;
 import com.cuddlesoft.norilib.clients.SearchClient;
 
 import java.io.IOException;
@@ -53,8 +49,8 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   public static final String BUNDLE_ID_SEARCH_CLIENT_SETTINGS = "com.cuddlesoft.nori.SearchClient.Settings";
   /** Identifier used for the query string to search when starting this activity with an {@link android.content.Intent} */
   public static final String INTENT_EXTRA_SEARCH_QUERY = "com.cuddlesoft.nori.SearchQuery";
-  /** LogCat tag (used for filtering log output). */
-  private static final String TAG = "com.cuddlesoft.nori.SearchActivity";
+  /** Identifier used to include {@link SearchClient.Settings} objects in search intents. */
+  public static final String INTENT_EXTRA_SEARCH_CLIENT_SETTINGS = "com.cuddlesoft.nori.SearchClient.Settings";
   /** Identifier used to preserve current search query in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_SEARCH_QUERY = "com.cuddlesoft.nori.SearchQuery";
   /** Identifier used to preserve iconified/expanded state of the SearchView in {@link #onSaveInstanceState(android.os.Bundle)}. */
@@ -63,7 +59,9 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   private static final String BUNDLE_ID_SEARCH_VIEW_IS_FOCUSED = "com.cuddlesoft.nori.SearchView.isFocused";
   /** Default {@link android.content.SharedPreferences} object. */
   private SharedPreferences sharedPreferences;
-  /** Search API Client. */
+  /* {@link SearchClient.Settings} object selected from the service dropdown menu. */
+  private SearchClient.Settings searchClientSettings;
+  /** Search API client. */
   private SearchClient searchClient;
   /** Search view menu item. */
   private MenuItem searchMenuItem;
@@ -82,18 +80,47 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
    * @param menu Menu after being inflated in {@link #onCreateOptionsMenu(android.view.Menu)}.
    */
   private void setUpSearchView(Menu menu) {
-    // Get SearchView from the Menu item.
+    // Extract SearchView from the MenuItem object.
     searchMenuItem = menu.findItem(R.id.action_search);
+    searchMenuItem.setVisible(searchClientSettings != null);
     searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-    // Set SearchView attributes.
+
+    // Set Searchable XML configuration.
+    SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+    // Set SearchView attributes and event listeners.
     searchView.setFocusable(false);
-    searchView.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      // Force ASCII keyboard on foreign input methods. (API 16+)
-      searchView.setImeOptions(EditorInfo.IME_ACTION_SEARCH | EditorInfo.IME_FLAG_FORCE_ASCII);
-    }
-    // Restore state from saved instance state bundle (after screen rotation, app restored from background, etc.)
+    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+      @Override
+      public boolean onQueryTextSubmit(String query) {
+        if (searchClientSettings != null) {
+          // Prepare a intent to send to a new instance of this activity.
+          Intent intent = new Intent(SearchActivity.this, SearchActivity.class);
+          intent.setAction(Intent.ACTION_SEARCH);
+          intent.putExtra(BUNDLE_ID_SEARCH_CLIENT_SETTINGS, searchClientSettings);
+          intent.putExtra(BUNDLE_ID_SEARCH_QUERY, query);
+
+          // Collapse the ActionView. This makes navigating through previous results using the back key less painful.
+          MenuItemCompat.collapseActionView(searchMenuItem);
+
+          // Start a new activity with the created Intent.
+          startActivity(intent);
+        }
+
+        // Returns true to override the default behaviour and stop another search Intent from being sent.
+        return true;
+      }
+
+      @Override
+      public boolean onQueryTextChange(String newText) {
+        // Returns false to perform the default action.
+        return false;
+      }
+    });
+
     if (savedInstanceState != null) {
+      // Restore state from saved instance state bundle (after screen rotation, app restored from background, etc.)
       if (savedInstanceState.containsKey(BUNDLE_ID_SEARCH_QUERY)) {
         // Restore search query from saved instance state.
         searchView.setQuery(savedInstanceState.getCharSequence(BUNDLE_ID_SEARCH_QUERY), false);
@@ -106,10 +133,10 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
           searchView.clearFocus();
         }
       }
+    } else if (getIntent() != null && getIntent().getAction().equals(Intent.ACTION_SEARCH)) {
+      // Set SearchView query string to match the one sent in the SearchIntent.
+      searchView.setQuery(getIntent().getStringExtra(BUNDLE_ID_SEARCH_QUERY), false);
     }
-    // Set event listener responding to submitted queries.
-    SearchView.OnQueryTextListener searchViewHandler = new SearchViewListener();
-    searchView.setOnQueryTextListener(searchViewHandler);
   }
 
   /** Set up the {@link android.support.v7.app.ActionBar}, including the API service picker dropdown. */
@@ -123,66 +150,84 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   }
 
   /**
-   * Submit a search query.
+   * Request a {@link SearchResult} object to be fetched from the background.
    *
-   * @param query Query string (comma-separated list of tags).
+   * @param query Query string (a space-separated list of tags).
    */
   private void doSearch(String query) {
-    // Ignore request if searchClient is not created yet. This should never happen in practice, but...
-    if (searchClient == null) {
-      return;
-    }
-    // Cancel any existing callbacks waiting for a SearchResult.
-    if (searchCallback != null) {
-      searchCallback.cancel();
-      searchCallback = null;
-    }
-    // Remove results from the search result grid fragment.
-    searchResultGridFragment.setSearchResult(null);
     // Show progress bar in ActionBar.
     setSupportProgressBarIndeterminateVisibility(true);
-    // Request search result from API client.
+    // Request a search result from the API client.
     searchCallback = new SearchResultCallback();
     searchClient.search(query, searchCallback);
   }
 
   /**
-   * Called when a Search API is picked by the user.
+   * Called when a new Search API is selected by the user from the action bar dropdown.
    *
    * @param settings Selected {@link com.cuddlesoft.norilib.clients.SearchClient.Settings} object.
    */
-  protected void onSearchAPIChanged(SearchClient.Settings settings) {
-    searchClient = settings.createSearchClient();
+  protected void onSearchAPISelected(SearchClient.Settings settings) {
+    if (settings == null) {
+      // The SearchClient setting database is empty.
+      return;
+    }
 
-    if (getIntent() != null && getIntent().getAction().equals(Intent.ACTION_SEARCH)) {
-      // Search for query in Intent.
+    // Show search action bar icon (if not already visible).
+    if (searchMenuItem != null) {
+      searchMenuItem.setVisible(true);
+    }
+    // Expand the SearchView when an API is selected manually by the user.
+    // (and not automatically restored from previous state when the app is first launched)
+    if (searchClientSettings != null && searchMenuItem != null) {
       MenuItemCompat.expandActionView(searchMenuItem);
-      searchView.setQuery(getIntent().getStringExtra(INTENT_EXTRA_SEARCH_QUERY), true);
-      // Clear intent action.
-      setIntent(null);
-    } else if (savedInstanceState == null || savedInstanceState.containsKey(BUNDLE_ID_SEARCH_RESULT)) {
-      // Search for default query.
-      searchView.setQuery(searchClient.getDefaultQuery(), true);
-    } else if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_ID_SEARCH_RESULT)) {
-      // Remove saved search result from savedInstanceState, so that default query is searched for on next API server change.
-      savedInstanceState.remove(BUNDLE_ID_SEARCH_RESULT);
+    }
+
+    searchClientSettings = settings;
+
+    // If a SearchClient wasn't included in the Intent that started this activity, create one now and search for the default query.
+    if (searchClient == null && searchResultGridFragment.getSearchResult() == null) {
+      searchClient = settings.createSearchClient();
+      doSearch(searchClient.getDefaultQuery());
     }
   }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    searchClient = new Gelbooru("Safebooru", "http://safebooru.org");
+
     // Request window manager features.
     supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
     // Get shared preferences.
     sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
     // Inflate views.
     setContentView(R.layout.activity_search);
-    // Set up the dropdown API server picker.
-    setUpActionBar();
+
     // Get search result grid fragment from fragment manager.
     searchResultGridFragment = (SearchResultGridFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_searchResultGrid);
+
+    // If the activity was started from a Search intent, create the SearchClient object and submit search.
+    Intent intent = getIntent();
+    if (intent != null && intent.getAction().equals(Intent.ACTION_SEARCH) && searchResultGridFragment.getSearchResult() == null) {
+      SearchClient.Settings searchClientSettings = intent.getParcelableExtra(BUNDLE_ID_SEARCH_CLIENT_SETTINGS);
+      searchClient = searchClientSettings.createSearchClient();
+      doSearch(intent.getStringExtra(BUNDLE_ID_SEARCH_QUERY));
+    }
+
+    // Set up the dropdown API server picker.
+    setUpActionBar();
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+
+    // Cancel pending API callbacks.
+    if (searchCallback != null) {
+      searchCallback.cancel();
+    }
   }
 
   @Override
@@ -249,25 +294,6 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     searchClient.search(Tag.stringFromArray(searchResult.getQuery()), searchResult.getCurrentOffset() + 1, searchCallback);
   }
 
-  /** Listens for queries submitted to the action bar {@link android.support.v7.widget.SearchView}. */
-  private class SearchViewListener implements SearchView.OnQueryTextListener {
-
-    @Override
-    public boolean onQueryTextSubmit(String s) {
-      // Remove focus from the SearchView and submit query.
-      searchView.clearFocus();
-      SearchActivity.this.doSearch(s);
-
-      return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String s) {
-      // Return false to perform the default action of showing any suggestions available.
-      return false;
-    }
-  }
-
   /** Callback waiting for a SearchResult received on a background thread from the Search API. */
   private class SearchResultCallback implements SearchClient.SearchCallback {
     /** Search result to extend when fetching more images for endless scrolling. */
@@ -287,8 +313,6 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
 
     @Override
     public void onFailure(IOException e) {
-      // Log failure.
-      Log.e(TAG, String.format("Error occurred when fetching query: %s", e.toString()));
       if (!isCancelled) {
         // Show error message to user.
         Toast.makeText(SearchActivity.this, String.format(getString(R.string.toast_networkError), e.getLocalizedMessage()), Toast.LENGTH_LONG).show();
@@ -430,9 +454,10 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
         settingsList = data;
         notifyDataSetChanged();
         // Reselect last active item.
-        getSupportActionBar().setSelectedNavigationItem(getPositionByItemId(lastSelectedItem));
+        if (!data.isEmpty()) {
+          getSupportActionBar().setSelectedNavigationItem(getPositionByItemId(lastSelectedItem));
+        }
       }
-
     }
 
     @Override
@@ -448,7 +473,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
       lastSelectedItem = id;
       sharedPreferences.edit().putLong(SHARED_PREFERENCE_LAST_SELECTED_INDEX, id).apply();
       // Notify parent activity.
-      onSearchAPIChanged(getItem(position));
+      onSearchAPISelected(getItem(position));
 
       return true;
     }

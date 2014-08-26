@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.cuddlesoft.nori.R;
 import com.cuddlesoft.nori.util.NetworkUtils;
 import com.cuddlesoft.norilib.Image;
+import com.cuddlesoft.norilib.clients.SearchClient;
 import com.ortiz.touch.TouchImageView;
 import com.squareup.picasso.Picasso;
 
@@ -188,7 +189,7 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
    * Show the {@link com.cuddlesoft.nori.fragment.TagListDialogFragment} for the current image.
    */
   protected void showTagListDialog() {
-    DialogFragment tagListFragment = TagListDialogFragment.newInstance(image);
+    DialogFragment tagListFragment = TagListDialogFragment.newInstance(image, listener.getSearchClientSettings());
     tagListFragment.show(getFragmentManager(), "TagListDialogFragment");
   }
 
@@ -293,5 +294,10 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
      * Used to auto-hide the {@link android.support.v7.app.ActionBar}.
      */
     public void onSingleTapConfirmed();
+
+    /**
+     * Should return the {@link SearchClient.Settings} object with the same settings used to fetch the image displayed by this fragment.
+     */
+    public SearchClient.Settings getSearchClientSettings();
   }
 }
