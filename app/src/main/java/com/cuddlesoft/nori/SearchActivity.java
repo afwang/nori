@@ -393,10 +393,30 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
           // Show search result.
           if (resultCount == 0) {
             searchResult.onLastPage();
+          } else {
+            addSearchHistoryEntry(Tag.stringFromArray(searchResult.getQuery()));
           }
           searchResultGridFragment.setSearchResult(searchResult);
         }
       }
+    }
+
+    /**
+     * Adds a new entry to the {@link SearchSuggestionDatabase} on a background thread
+     * (to prevent blocking the UI thread with database I/O).
+     *
+     * @param query Query string searched for by the user.
+     */
+    private void addSearchHistoryEntry(final String query) {
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          // Add query string to the database.
+          SearchSuggestionDatabase searchSuggestionDatabase = new SearchSuggestionDatabase(SearchActivity.this);
+          searchSuggestionDatabase.insert(query);
+          searchSuggestionDatabase.close();
+        }
+      }).run();
     }
 
     /** Cancels this callback. */

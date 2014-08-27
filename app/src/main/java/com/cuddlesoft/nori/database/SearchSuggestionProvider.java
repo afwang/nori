@@ -16,8 +16,8 @@ import static com.cuddlesoft.nori.database.SearchSuggestionDatabase.TABLE_NAME;
 public class SearchSuggestionProvider extends ContentProvider {
   /** Content provider authority. (Unique ID) */
   public static String AUTHORITY = "com.cuddlesoft.nori.SearchSuggestionProvider";
-  /** SQLite database access helper. */
-  private SearchSuggestionDatabase dbHelper;
+  /** Read-only instance of the SQLite database. */
+  private SQLiteDatabase db;
 
   /**
    * Uri path ID for queried suggestions data.
@@ -43,8 +43,9 @@ public class SearchSuggestionProvider extends ContentProvider {
 
   @Override
   public boolean onCreate() {
-    // Create an instance of the SQLite access helper to the underlying database.
-    dbHelper = new SearchSuggestionDatabase(getContext());
+    // Open the search suggestion SQLite database in read-only mode.
+    SearchSuggestionDatabase dbHelper = new SearchSuggestionDatabase(getContext());
+    db = dbHelper.getReadableDatabase();
 
     return true;
   }
@@ -56,12 +57,11 @@ public class SearchSuggestionProvider extends ContentProvider {
    * @return Database cursor with returned suggestion.
    */
   private Cursor getSuggestions(String query) {
-    SQLiteDatabase db = dbHelper.getReadableDatabase();
-
+    // Query the database for search suggestions.
     if (query == null) {
-      return db.query(TABLE_NAME, COLUMNS, null, null, null, null, null);
+      return db.query(TABLE_NAME, COLUMNS, null, null, null, null, COLUMN_ID + " DESC");
     } else {
-      return db.query(TABLE_NAME, COLUMNS, COLUMN_NAME + " LIKE ?", new String[]{query + "%"}, null, null, null);
+      return db.query(TABLE_NAME, COLUMNS, COLUMN_NAME + " LIKE ?", new String[]{query + "%"}, null, null, COLUMN_ID + " DESC");
     }
   }
 

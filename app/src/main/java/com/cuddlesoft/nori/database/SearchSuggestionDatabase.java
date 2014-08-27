@@ -6,6 +6,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.cuddlesoft.nori.R;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,9 +28,11 @@ public class SearchSuggestionDatabase extends SQLiteOpenHelper {
   /** Tag name column. These values are presented as search suggestions. */
   public static final String COLUMN_NAME = SearchManager.SUGGEST_COLUMN_TEXT_1;
   /** Column holding the resource ID of the icon displayed next to the suggestion to indicate its type (recent/Safebooru top 1000). */
-  public static final String COLUMN_ICON = SearchManager.SUGGEST_COLUMN_ICON_2;
+  public static final String COLUMN_ICON = SearchManager.SUGGEST_COLUMN_ICON_1;
   /** Resource ID of the icon used to represent recent search history items. */
-  private static final String RESOURCE_ICON_RECENT_HISTORY = "ic_search_suggestion_recent";
+  private static final String RESOURCE_ICON_RECENT_HISTORY = Integer.toString(R.drawable.ic_search_suggestion_recent);
+  /** Resource ID of the icon used to represent suggestions from the built-in tag data set */
+  private static final String RESOURCE_ICON_BUILT_IN = Integer.toString(android.R.drawable.ic_search_category_default);
   /** Database schema version. */
   private static final int SCHEMA_VERSION = 1;
   /** Android activity context. */
@@ -46,6 +50,12 @@ public class SearchSuggestionDatabase extends SQLiteOpenHelper {
    * @return ID of the newly inserted row.
    */
   public long insert(String tag) {
+    // Don't add queries shorter than 3 characters,
+    // since that's the minimum threshold at which the suggestion dropdown is shown.
+    if (tag.length() < 3) {
+      return -1;
+    }
+
     // Get a writable instance of the database.
     SQLiteDatabase db = getWritableDatabase();
 
@@ -94,7 +104,9 @@ public class SearchSuggestionDatabase extends SQLiteOpenHelper {
 
       // Insert each line into the database.
       while ((line = in.readLine()) != null) {
-        db.execSQL(String.format(Locale.US, "INSERT INTO %s (%s) VALUES (?);", TABLE_NAME, COLUMN_NAME), new String[]{line});
+        db.execSQL(String.format(Locale.US, "INSERT INTO %s (%s, %s) VALUES (?, ?);",
+                TABLE_NAME, COLUMN_NAME, COLUMN_ICON),
+            new String[]{line, RESOURCE_ICON_BUILT_IN});
       }
 
       // Close the file.
