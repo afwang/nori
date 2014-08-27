@@ -276,9 +276,15 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
           // Get tag filters from shared preferences and filter the result.
           searchResult.filter(Tag.arrayFromString(sharedPreferences.getString(getString(R.string.preference_tagFilter_key), "")));
         }
+
         // Update the search result and notify the ViewPager adapter that the data set has changed.
         this.searchResult.addImages(searchResult.getImages(), searchResult.getCurrentOffset());
         imagePagerAdapter.notifyDataSetChanged();
+
+        // If all images in the current search result were filtered out, try fetching the next page.
+        if (searchResult.getImages().length == 0) {
+          fetchMoreImages();
+        }
       }
     }
   }
