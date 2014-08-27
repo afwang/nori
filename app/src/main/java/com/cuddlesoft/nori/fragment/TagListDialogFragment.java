@@ -76,7 +76,7 @@ public class TagListDialogFragment extends DialogFragment implements ListView.On
         .setPositiveButton(R.string.dialog_tags_closeButton, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialogInterface, int i) {
-            getDialog().dismiss();
+            dismiss();
           }
 
         }).create();
