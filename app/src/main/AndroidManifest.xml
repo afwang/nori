@@ -1,55 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cuddlesoft.nori" >
+<manifest
+    package="com.cuddlesoft.nori"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Needed to access the internet -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!--
-    Needed to assess network condition and decide whether to download high resolution images
-    by default.
-    -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- Needed to download images to external storage. -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- Needed to set images as wallpapers. -->
-    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+  <!-- Needed to access the internet -->
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <!--
+  Needed to assess network condition and decide whether to download high resolution images
+  by default.
+  -->
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <!-- Needed to download images to external storage. -->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <!-- Needed to set images as wallpapers. -->
+  <uses-permission android:name="android.permission.SET_WALLPAPER"/>
 
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name=".SearchActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-          <intent-filter>
-            <action android:name="android.intent.action.SEARCH" />
-            <category android:name="android.intent.category.DEFAULT" />
-          </intent-filter>
-          <meta-data
-              android:name="android.app.searchable"
-              android:resource="@xml/searchable" />
-        </activity>
-        <activity
-            android:name=".ImageViewerActivity"
-            android:theme="@style/ImageViewerTheme" >
-        </activity>
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/activity_settings" />
-        <activity
-            android:name=".NSFWFilterSettingsActivity"
-            android:label="@string/activity_nsfwfilter_settings" >
-        </activity>
-        <activity
-            android:name=".TagFilterSettingsActivity"
-            android:label="@string/activity_tag_filter_settings"/>
-        <activity android:name=".APISettingsActivity"
-                  android:label="@string/activity_service_settings"/>
-    </application>
+  <application
+      android:allowBackup="true"
+      android:icon="@drawable/ic_launcher"
+      android:label="@string/app_name"
+      android:theme="@style/AppTheme">
+    <activity
+        android:name=".SearchActivity"
+        android:label="@string/app_name">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.SEARCH"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+
+      <meta-data
+          android:name="android.app.searchable"
+          android:resource="@xml/searchable"/>
+    </activity>
+    <activity
+        android:name=".ImageViewerActivity"
+        android:theme="@style/ImageViewerTheme">
+    </activity>
+    <activity
+        android:name=".SettingsActivity"
+        android:label="@string/activity_settings"/>
+    <activity
+        android:name=".NSFWFilterSettingsActivity"
+        android:label="@string/activity_nsfwfilter_settings">
+    </activity>
+    <activity
+        android:name=".TagFilterSettingsActivity"
+        android:label="@string/activity_tag_filter_settings"/>
+    <activity
+        android:name=".APISettingsActivity"
+        android:label="@string/activity_service_settings"/>
+
+    <provider
+        android:name=".database.SearchSuggestionProvider"
+        android:authorities="com.cuddlesoft.nori.SearchSuggestionProvider"
+        android:exported="false" />
+  </application>
 
 </manifest>

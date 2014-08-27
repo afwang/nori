@@ -7,4 +7,7 @@
     android:searchMode="queryRewriteFromText"
     android:inputType="textFilter"
     android:imeOptions="actionSearch|flagForceAscii"
-    android:includeInGlobalSearch="false" />
+    android:includeInGlobalSearch="false"
+    android:searchSuggestAuthority="com.cuddlesoft.nori.SearchSuggestionProvider"
+    android:searchSuggestThreshold="3"
+    />

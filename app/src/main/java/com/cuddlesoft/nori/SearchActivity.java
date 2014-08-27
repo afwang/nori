@@ -9,11 +9,13 @@ package com.cuddlesoft.nori;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Pair;
@@ -28,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cuddlesoft.nori.database.APISettingsDatabase;
+import com.cuddlesoft.nori.database.SearchSuggestionDatabase;
 import com.cuddlesoft.nori.fragment.SearchResultGridFragment;
 import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.SearchResult;
@@ -89,8 +92,11 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
     searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-    // Set SearchView attributes and event listeners.
+    // Set SearchView attributes.
     searchView.setFocusable(false);
+    searchView.setQueryRefinementEnabled(true);
+
+    // Set SearchView event listeners.
     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override
       public boolean onQueryTextSubmit(String query) {
@@ -116,6 +122,36 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
       public boolean onQueryTextChange(String newText) {
         // Returns false to perform the default action.
         return false;
+      }
+    });
+    searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+      @Override
+      public boolean onSuggestionSelect(int position) {
+        return onSuggestionClick(position);
+      }
+
+      @Override
+      public boolean onSuggestionClick(int position) {
+        if (searchClientSettings != null) {
+          // Get the SearchView's suggestion adapter.
+          CursorAdapter adapter = searchView.getSuggestionsAdapter();
+          // Get the suggestion at given position.
+          Cursor c = adapter.getCursor();
+          c.moveToPosition(position);
+
+          // Create and send a search intent.
+          Intent intent = new Intent(SearchActivity.this, SearchActivity.class);
+          intent.setAction(Intent.ACTION_SEARCH);
+          intent.putExtra(BUNDLE_ID_SEARCH_CLIENT_SETTINGS, searchClientSettings);
+          intent.putExtra(BUNDLE_ID_SEARCH_QUERY, c.getString(c.getColumnIndex(SearchSuggestionDatabase.COLUMN_NAME)));
+          startActivity(intent);
+
+          // Release native resources.
+          c.close();
+        }
+
+        // Return true to override default behaviour and prevent another intent from being sent.
+        return true;
       }
     });
 
