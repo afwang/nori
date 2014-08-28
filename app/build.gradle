@@ -36,7 +36,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
     // A powerful image downloading and caching library for Android http://square.github.io/picasso/
-    compile 'com.squareup.picasso:picasso:2.3.3'
+    compile 'com.squareup.picasso:picasso:2.3.4'
     // Utility library for easier unit testing.
     androidTestCompile 'org.easytesting:fest-assert-core:2.0M10'
 
