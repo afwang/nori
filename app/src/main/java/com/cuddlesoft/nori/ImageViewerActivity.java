@@ -8,6 +8,7 @@ package com.cuddlesoft.nori;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -24,6 +25,8 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.cuddlesoft.nori.fragment.ImageFragment;
+import com.cuddlesoft.nori.fragment.PicassoImageFragment;
+import com.cuddlesoft.nori.fragment.WebViewImageFragment;
 import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.SearchResult;
 import com.cuddlesoft.norilib.Tag;
@@ -214,7 +217,28 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
     @Override
     public Fragment getItem(int position) {
       // Create a new instance of ImageFragment for the given image.
-      return ImageFragment.newInstance(searchResult.getImages()[position]);
+      Image image = searchResult.getImages()[position];
+
+      if (shouldUseWebViewImageFragment(image)) {
+        return WebViewImageFragment.newInstance(image);
+      } else {
+        return PicassoImageFragment.newInstance(image);
+      }
+    }
+
+    /**
+     * Check if {@link com.cuddlesoft.nori.fragment.WebViewImageFragment} should be used to display given image object.
+     * @param image Image object.
+     * @return True if the WebKit-based fragment should be used, instead of the ImageView based one.
+     */
+    @SuppressWarnings("RedundantIfStatement")
+    private boolean shouldUseWebViewImageFragment(Image image) {
+      // GIF images should use the WebKit fragment.
+      String path = Uri.parse(image.fileUrl).getPath();
+      if (path.contains(".") && path.substring(path.lastIndexOf(".")+1).equals("gif")) {
+        return true;
+      }
+      return false;
     }
 
     @Override

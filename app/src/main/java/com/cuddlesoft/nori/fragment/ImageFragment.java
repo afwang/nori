@@ -23,12 +23,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -37,8 +35,6 @@ import com.cuddlesoft.nori.R;
 import com.cuddlesoft.nori.util.NetworkUtils;
 import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.clients.SearchClient;
-import com.ortiz.touch.TouchImageView;
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,37 +42,15 @@ import java.net.URL;
 
 
 /** Fragment used to display images in {@link com.cuddlesoft.nori.ImageViewerActivity}. */
-public class ImageFragment extends Fragment implements GestureDetector.OnDoubleTapListener {
+public abstract class ImageFragment extends Fragment {
   /** String to prepend to Pixiv IDs to open them in the system web browser. */
   private static final String PIXIV_URL_PREFIX = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=";
   /** Bundle identifier used to save the displayed image object in {@link #onSaveInstanceState(android.os.Bundle)}. */
-  private static final String BUNDLE_ID_IMAGE = "com.cuddlesoft.nori.Image";
-  /** Image view used to show the image in this fragment. */
-  private TouchImageView imageView;
+  protected static final String BUNDLE_ID_IMAGE = "com.cuddlesoft.nori.Image";
   /** Image object displayed in this fragment. */
-  private Image image;
+  protected Image image;
   /** Class used for communication with the class that contains this fragment. */
-  private ImageFragmentListener listener;
-
-  /** Required empty public constructor. */
-  public ImageFragment() {
-  }
-
-  /**
-   * Factory method used to construct new fragments.
-   *
-   * @param image Image to display in the created fragment.
-   * @return Fragment instance displaying the given image.
-   */
-  @SuppressWarnings("TypeMayBeWeakened")
-  public static ImageFragment newInstance(Image image) {
-    // Create new instance of the fragment and add the image to the fragment's arguments bundle.
-    final ImageFragment fragment = new ImageFragment();
-    final Bundle arguments = new Bundle();
-    arguments.putParcelable(BUNDLE_ID_IMAGE, image);
-    fragment.setArguments(arguments);
-    return fragment;
-  }
+  protected ImageFragmentListener listener;
 
   /**
    * Check if the {@link android.support.v4.view.ViewPager} containing this fragment can scroll horizontally.
@@ -84,8 +58,18 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
    * @param direction Direction being scrolled in.
    * @return true if the {@link android.support.v4.view.ViewPager} containing this fragment can scroll horizontally.
    */
-  public boolean canScroll(int direction) {
-    return imageView == null || imageView.canScrollHorizontallyFroyo(direction);
+  public abstract boolean canScroll(int direction);
+
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    // Get the image object from the fragment's arguments bundle.
+    image = getArguments().getParcelable(BUNDLE_ID_IMAGE);
+
+    // Enable options menu items for fragment.
+    setHasOptionsMenu(true);
   }
 
   @Override
@@ -106,33 +90,7 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // Extract image from arguments bundle and initialize ImageView.
-    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-    imageView = new TouchImageView(getActivity());
-    imageView.setOnDoubleTapListener(this);
-    image = getArguments().getParcelable(BUNDLE_ID_IMAGE);
-
-    // Evaluate the current network conditions to decide whether to load the medium-resolution
-    // (sample) version of the image or the original full-resolution one.
-    final String imageUrl;
-    if (sharedPreferences.getBoolean(getString(R.string.preference_image_viewer_conserveBandwidth_key), false)
-        || NetworkUtils.shouldFetchImageSamples(getActivity())) {
-      imageUrl = image.sampleUrl;
-    } else {
-      imageUrl = image.fileUrl;
-    }
-
-    // Load image into view.
-    Picasso.with(getActivity())
-        .load(imageUrl)
-        .into(imageView);
-
-    // Enable options menu.
-    setHasOptionsMenu(true);
-
-    return imageView;
-  }
+  public abstract View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
 
   @Override
   public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -174,7 +132,21 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
   }
 
   /**
+   * Evaluate the current network conditions using the {@link com.cuddlesoft.nori.util.NetworkUtils} class to decide
+   * if lower resolution images should be loaded to conserve bandwidth.
+   *
+   * @return True if lower resolution images should be used.
+   */
+  protected boolean shouldLoadImageSamples() {
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+    return preferences.getBoolean(getString(R.string.preference_image_viewer_conserveBandwidth_key), false)
+        || NetworkUtils.shouldFetchImageSamples(getActivity());
+  }
+
+  /**
    * Get {@link android.content.Intent} to be sent by the {@link android.support.v7.widget.ShareActionProvider}.
+   *
    * @return Share intent.
    */
   protected Intent getShareIntent() {
@@ -201,7 +173,7 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
     DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
 
     // Extract file name from URL.
-    String fileName = image.fileUrl.substring(image.fileUrl.lastIndexOf("/")+1);
+    String fileName = image.fileUrl.substring(image.fileUrl.lastIndexOf("/") + 1);
     // Create download directory, if it does not already exist.
     //noinspection ResultOfMethodCallIgnored
     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
@@ -268,24 +240,6 @@ public class ImageFragment extends Fragment implements GestureDetector.OnDoubleT
         }
       }
     }.execute();
-  }
-
-  @Override
-  public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
-    if (listener != null) {
-      listener.onSingleTapConfirmed();
-    }
-    return true;
-  }
-
-  @Override
-  public boolean onDoubleTap(MotionEvent motionEvent) {
-    return false;
-  }
-
-  @Override
-  public boolean onDoubleTapEvent(MotionEvent motionEvent) {
-    return false;
   }
 
   public static interface ImageFragmentListener {
