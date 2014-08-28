@@ -244,12 +244,6 @@ public abstract class ImageFragment extends Fragment {
 
   public static interface ImageFragmentListener {
     /**
-     * Called when the {@link android.widget.ImageView} contained by this fragment is tapped once.
-     * Used to auto-hide the {@link android.support.v7.app.ActionBar}.
-     */
-    public void onSingleTapConfirmed();
-
-    /**
      * Should return the {@link SearchClient.Settings} object with the same settings used to fetch the image displayed by this fragment.
      */
     public SearchClient.Settings getSearchClientSettings();

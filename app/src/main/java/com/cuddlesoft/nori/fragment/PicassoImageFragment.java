@@ -1,9 +1,7 @@
 package com.cuddlesoft.nori.fragment;
 
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,7 +13,7 @@ import com.squareup.picasso.Picasso;
  * Fragment using the {@link com.ortiz.touch.TouchImageView} widget
  * and the Picasso HTTP image loading library to display images.
  */
-public class PicassoImageFragment extends ImageFragment implements GestureDetector.OnDoubleTapListener {
+public class PicassoImageFragment extends ImageFragment {
   /** Widget used to display the image. */
   private TouchImageView imageView;
 
@@ -50,7 +48,6 @@ public class PicassoImageFragment extends ImageFragment implements GestureDetect
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Initialize the ImageView widget.
     imageView = new TouchImageView(getActivity());
-    imageView.setOnDoubleTapListener(this);
 
     // Load image into the view.
     String imageUrl = shouldLoadImageSamples() ? image.sampleUrl : image.fileUrl;
@@ -59,24 +56,5 @@ public class PicassoImageFragment extends ImageFragment implements GestureDetect
         .into(imageView);
 
     return imageView;
-  }
-
-  @Override
-  public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
-    // Notify the parent activity about the single tap event.
-    if (listener != null) {
-      listener.onSingleTapConfirmed();
-    }
-    return true;
-  }
-
-  @Override
-  public boolean onDoubleTap(MotionEvent motionEvent) {
-    return false;
-  }
-
-  @Override
-  public boolean onDoubleTapEvent(MotionEvent motionEvent) {
-    return false;
   }
 }

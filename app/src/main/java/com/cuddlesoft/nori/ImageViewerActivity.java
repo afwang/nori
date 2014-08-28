@@ -18,7 +18,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.GestureDetector;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 import com.cuddlesoft.nori.fragment.ImageFragment;
 import com.cuddlesoft.nori.fragment.PicassoImageFragment;
 import com.cuddlesoft.nori.fragment.WebViewImageFragment;
+import com.cuddlesoft.nori.view.ImageViewerPager;
 import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.SearchResult;
 import com.cuddlesoft.norilib.Tag;
@@ -35,7 +38,8 @@ import com.cuddlesoft.norilib.clients.SearchClient;
 import java.io.IOException;
 
 /** Activity used to display full-screen images. */
-public class ImageViewerActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener, ImageFragment.ImageFragmentListener {
+public class ImageViewerActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener,
+    ImageFragment.ImageFragmentListener, ImageViewerPager.OnMotionEventListener {
   /** Identifier used to keep the displayed {@link com.cuddlesoft.norilib.SearchResult} in {@link #onSaveInstanceState(android.os.Bundle)}. */
   private static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
   /** Identifier used to keep the position of the selected {@link com.cuddlesoft.norilib.Image} in {@link #onSaveInstanceState(android.os.Bundle)}. */
@@ -46,8 +50,18 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
   private static final int INFINITE_SCROLLING_THRESHOLD = 3;
   /** Default shared preferences. */
   private SharedPreferences sharedPreferences;
+  /** Used to detect single taps on the ViewPager widget which toggle the visibility of this activity's ActionBar. */
+  private GestureDetector gestureDetector;
+  /** Used to toggle the action bar when a single tap gesture is detected. */
+  private GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+      toggleActionBar();
+      return true;
+    }
+  };
   /** View pager used to display the images. */
-  private ViewPager viewPager;
+  private ImageViewerPager viewPager;
   /** Search result shown by the {@link android.support.v4.app.FragmentStatePagerAdapter}. */
   private SearchResult searchResult;
   /** Adapter used to populate the {@link android.support.v4.view.ViewPager} used to display and flip through the images. */
@@ -99,10 +113,15 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
 
     // Create and set the image viewer Fragment pager adapter.
     imagePagerAdapter = new ImagePagerAdapter(getSupportFragmentManager());
-    viewPager = (ViewPager) findViewById(R.id.image_pager);
+    viewPager = (ImageViewerPager) findViewById(R.id.image_pager);
     viewPager.setAdapter(imagePagerAdapter);
     viewPager.setOnPageChangeListener(this);
     viewPager.setCurrentItem(imageIndex);
+
+    // Set up the GestureDetector used to toggle the action bar.
+    gestureDetector = new GestureDetector(this, gestureListener);
+    viewPager.setOnMotionEventListener(this);
+
     // Set activity title.
     setTitle(searchResult.getImages()[imageIndex]);
 
@@ -187,7 +206,11 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
   }
 
   @Override
-  public void onSingleTapConfirmed() {
+  public void onMotionEvent(MotionEvent ev) {
+    gestureDetector.onTouchEvent(ev);
+  }
+
+  public void toggleActionBar() {
     // Toggle the action bar and UI dim.
     ActionBar actionBar = getSupportActionBar();
     if (actionBar.isShowing()) {
@@ -228,6 +251,7 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
 
     /**
      * Check if {@link com.cuddlesoft.nori.fragment.WebViewImageFragment} should be used to display given image object.
+     *
      * @param image Image object.
      * @return True if the WebKit-based fragment should be used, instead of the ImageView based one.
      */
@@ -235,7 +259,7 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
     private boolean shouldUseWebViewImageFragment(Image image) {
       // GIF images should use the WebKit fragment.
       String path = Uri.parse(image.fileUrl).getPath();
-      if (path.contains(".") && path.substring(path.lastIndexOf(".")+1).equals("gif")) {
+      if (path.contains(".") && path.substring(path.lastIndexOf(".") + 1).equals("gif")) {
         return true;
       }
       return false;
