@@ -134,20 +134,7 @@ public class TagListDialogFragment extends DialogFragment implements ListView.On
       // Set tag name.
       textView.setText(tag.getName());
       // Set appropriate colour for the tag type.
-      switch (tag.getType()) {
-        case GENERAL:
-          textView.setTextColor(getResources().getColor(R.color.taglist_general));
-          break;
-        case ARTIST:
-          textView.setTextColor(getResources().getColor(R.color.taglist_artist));
-          break;
-        case CHARACTER:
-          textView.setTextColor(getResources().getColor(R.color.taglist_character));
-          break;
-        case COPYRIGHT:
-          textView.setTextColor(getResources().getColor(R.color.taglist_copyright));
-          break;
-      }
+      textView.setTextColor(getResources().getColor(tag.getColor()));
 
       return textView;
     }
