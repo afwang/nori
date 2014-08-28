@@ -19,7 +19,7 @@ import android.telephony.TelephonyManager;
 public abstract class NetworkUtils {
 
   /**
-   * Decides if low-resolution ("samples") images should be fetched by default instead of full-size images, based on:
+   * Decides if low-resolution ("sample") images should be fetched by default instead of full-size images, based on:
    * - Screen density
    * - Network link speed and quality
    * - Is the network metered? ($$$ per MB)
@@ -32,25 +32,18 @@ public abstract class NetworkUtils {
 
     // Check screen resolution.
     if (context.getResources().getDisplayMetrics().density <= 1.0) {
-      return false;
+      return true;
     }
 
     // Get system connectivity manager service.
     ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     // Check if network is metered.
     if (isActiveNetworkMetered(cm)) {
-      return false;
+      return true;
     }
     // Check link quality.
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-    if (!isConnectionFast(networkInfo.getType(), networkInfo.getSubtype())) {
-      return false;
-    }
-
-    // TODO: Check user preference.
-    // Preference should probably default to false for better latency.
-
-    return true;
+    return !isConnectionFast(networkInfo.getType(), networkInfo.getSubtype());
   }
 
   /**
