@@ -6,7 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
+import com.cuddlesoft.nori.R;
 import com.cuddlesoft.norilib.Image;
 
 /**
@@ -14,6 +16,8 @@ import com.cuddlesoft.norilib.Image;
  * (such as animated GIFs).
  */
 public class WebViewImageFragment extends ImageFragment {
+  /** WebView used to display the image. */
+  private WebView webView;
 
   /**
    * Factory method used to construct new fragments.
@@ -39,20 +43,22 @@ public class WebViewImageFragment extends ImageFragment {
 
   @Override
   public boolean canScroll(int direction) {
-    return true;
+    return false;
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // Initialize the WebView widget.
-    WebView webView = new WebView(getActivity());
+    // Inflate the WebView widget.
+    View view = inflater.inflate(R.layout.fragment_image_viewer_webview, container, false);
+    webView = (WebView) view.findViewById(R.id.webView);
 
     // Set background color to black.
     webView.setBackgroundColor(0);
-    webView.setBackgroundResource(android.R.color.black);
+    webView.setBackgroundResource(android.R.color.transparent);
 
     // Zoom out the view port to display the entire image by default.
     WebSettings webSettings = webView.getSettings();
+    webSettings.setBuiltInZoomControls(false);
     webSettings.setUseWideViewPort(true);
     webSettings.setLoadWithOverviewMode(true);
 
@@ -60,6 +66,6 @@ public class WebViewImageFragment extends ImageFragment {
     String imageUrl = shouldLoadImageSamples() ? image.sampleUrl : image.fileUrl;
     webView.loadUrl(imageUrl);
 
-    return webView;
+    return view;
   }
 }
