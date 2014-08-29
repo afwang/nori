@@ -8,9 +8,11 @@ package com.cuddlesoft.nori.view;
 
 import android.content.Context;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 import com.cuddlesoft.nori.fragment.ImageFragment;
 
@@ -54,14 +56,14 @@ public class ImageViewerPager extends ViewPager {
   }
 
   @Override
-  public boolean canScrollHorizontally(int direction) {
-    // Check if TouchImageView isn't panning a zoomed image and will let us scroll the ViewPager.
-    final ImageFragment imageFragment =
-        (ImageFragment) ((FragmentPagerAdapter) getAdapter()).getItem(getCurrentItem());
+  protected boolean canScroll(View v, boolean checkV, int dx, int x, int y) {
+    // Make sure the ImageViewerFragment isn't currently panning a zoomed in image.
+    // #instantiateItem() seems to be the "least awful" way to get the current item.
+    ImageFragment imageFragment = (ImageFragment) getAdapter().instantiateItem(null, getCurrentItem());
     if (imageFragment != null) {
-      return imageFragment.canScroll(direction);
+      return imageFragment.canScroll(-dx);
     }
-    return super.canScrollHorizontally(direction);
+    return super.canScroll(v, checkV, dx, x, y);
   }
 
   public static interface OnMotionEventListener {

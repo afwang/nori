@@ -41,7 +41,7 @@ public class PicassoImageFragment extends ImageFragment {
 
   @Override
   public boolean canScroll(int direction) {
-    return imageView == null || !imageView.canScrollHorizontallyFroyo(direction);
+    return imageView == null || imageView.canScrollHorizontallyFroyo(direction);
   }
 
   @Override
