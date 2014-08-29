@@ -32,7 +32,7 @@ public class SearchSuggestionDatabase extends SQLiteOpenHelper {
   /** Resource ID of the icon used to represent recent search history items. */
   private static final String RESOURCE_ICON_RECENT_HISTORY = Integer.toString(R.drawable.ic_search_suggestion_recent);
   /** Resource ID of the icon used to represent suggestions from the built-in tag data set */
-  private static final String RESOURCE_ICON_BUILT_IN = Integer.toString(android.R.drawable.ic_search_category_default);
+  private static final String RESOURCE_ICON_BUILT_IN = Integer.toString(R.drawable.ic_search_suggestion_builtin);
   /** Database schema version. */
   private static final int SCHEMA_VERSION = 1;
   /** Android activity context. */
