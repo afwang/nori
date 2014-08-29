@@ -484,7 +484,8 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
       View view = recycledView;
       if (view == null) {
         // View could not be recycled, inflate new view.
-        view = LayoutInflater.from(SearchActivity.this).inflate(android.R.layout.simple_spinner_dropdown_item, container, false);
+        LayoutInflater inflater = LayoutInflater.from(SearchActivity.this);
+        view = inflater.inflate(R.layout.simple_dropdown_item, container, false);
       }
 
       // Populate views with content.
