@@ -58,6 +58,7 @@
 
   <!-- Preferences -->
   <string name="preference_category_search">Search</string>
+  <string name="preference_previewSize_title">Thumbnail size</string>
   <string name="preference_nsfwFilter_title">Obscenity Filter</string>
   <string name="preference_nsfwFilter_summary">Manage the NSFW filter settings</string>
   <string name="preference_tagFilter_summary">Manage tags to remove from search results</string>
@@ -73,10 +74,17 @@
   <string name="preference_service_settings_summary">Add, edit or remove imageboard service settings</string>
   <string name="preference_service_settings_title">Service Settings</string>
   <!-- Untranslatable -->
+  <string name="preference_previewSize_key">preference_previewSize</string>
+  <string name="preference_previewSize_default">medium</string>
   <string name="preference_nsfwFilter_key">preference_nsfwFilter</string>
   <string name="preference_tagFilter_key">preference_tagFilter</string>
   <string name="preference_image_viewer_keepScreenOn_key">preference_image_viewer_keepScreenOn</string>
   <string name="preference_image_viewer_conserveBandwidth_key">preference_image_viewer_conserveBandwidth</string>
+
+  <!-- Thumbnail sizes -->
+  <string name="preference_previewSize_small">Small</string>
+  <string name="preference_previewSize_medium">Medium</string>
+  <string name="preference_previewSize_large">Large</string>
 
   <!-- NSFW ratings -->
   <string name="obscenity_rating_safe">Safe</string>

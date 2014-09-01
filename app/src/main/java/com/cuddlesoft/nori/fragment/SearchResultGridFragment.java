@@ -7,7 +7,10 @@
 package com.cuddlesoft.nori.fragment;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.cuddlesoft.nori.R;
+import com.cuddlesoft.nori.widget.SquareImageView;
 import com.cuddlesoft.norilib.Image;
 import com.cuddlesoft.norilib.SearchResult;
 import com.squareup.picasso.Picasso;
@@ -29,6 +33,8 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
   private static final String BUNDLE_ID_SEARCH_RESULT = "com.cuddlesoft.nori.SearchResult";
   /** Interface used for communication with parent class. */
   private OnSearchResultGridFragmentInteractionListener mListener;
+  /** GridView used to display the thumbnails. */
+  private GridView gridView;
   /** Search result displayed by the SearchResultGridFragment. */
   private SearchResult searchResult;
   /** Adapter used by the GridView in this fragment. */
@@ -59,19 +65,26 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
       Image image = getItem(position);
       // Create image view for given position.
       ImageView imageView = (ImageView) convertView;
-      // Get thumbnail size from resources.
-      final int thumbnailSize = getResources().getDimensionPixelSize(R.dimen.searchResultGrid_columnWidth);
 
       // Create a new image, if not recycled.
       if (imageView == null) {
-        imageView = new ImageView(getActivity());
-        imageView.setLayoutParams(new GridView.LayoutParams(thumbnailSize, thumbnailSize));
+        imageView = new SquareImageView(getActivity());
+        imageView.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+      }
+
+      int previewSize;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        // Resize thumbnails to actual GridView column width on Jelly Bean and above.
+        previewSize = gridView.getColumnWidth();
+      } else {
+        // Fallback to requested column width on older versions.
+        previewSize = getGridViewColumnWidth();
       }
 
       // Load image into view.
       Picasso.with(getActivity())
           .load(image.previewUrl)
-          .resize(thumbnailSize, thumbnailSize)
+          .resize(previewSize, previewSize)
           .centerCrop()
           .placeholder(R.color.network_thumbnail_placeholder)
           .into(imageView);
@@ -109,8 +122,7 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_search_result_grid, container, false);
     // Restore SearchResult from saved instance state to preserve search results across screen rotations.
@@ -118,17 +130,39 @@ public class SearchResultGridFragment extends Fragment implements AdapterView.On
       searchResult = savedInstanceState.getParcelable(BUNDLE_ID_SEARCH_RESULT);
     }
     // Set adapter for GridView.
-    GridView gridView = (GridView) view.findViewById(R.id.image_grid);
+    gridView = (GridView) view.findViewById(R.id.image_grid);
+    gridView.setColumnWidth(getGridViewColumnWidth());
     gridView.setAdapter(gridAdapter);
     gridView.setOnScrollListener(this);
     gridView.setOnItemClickListener(this);
+
     // Return inflated view.
     return view;
   }
 
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+  /**
+   * Get the grid view column size from the thumbnail size shared preference.
+   *
+   * @return Minimum column size, in pixels.
+   */
+  private int getGridViewColumnWidth() {
+    // Get preference value from SharedPreference.
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+    String previewSize = sharedPreferences.getString(getString(R.string.preference_previewSize_key),
+        getString(R.string.preference_previewSize_default));
+
+    // Return dimension for given preference value, in pixels.
+    switch (previewSize) {
+      case "small":
+        return getResources().getDimensionPixelSize(R.dimen.previewSize_small);
+      case "medium":
+        return getResources().getDimensionPixelSize(R.dimen.previewSize_medium);
+      case "large":
+        return getResources().getDimensionPixelSize(R.dimen.previewSize_large);
+      default:
+        return getResources().getDimensionPixelSize(R.dimen.previewSize_medium);
+    }
+
   }
 
   @Override

@@ -37,6 +37,13 @@
 
   <PreferenceCategory
       android:title="@string/preference_category_search">
+    <ListPreference
+        android:defaultValue="@string/preference_previewSize_default"
+        android:dialogTitle="@string/preference_previewSize_title"
+        android:entries="@array/preference_previewSize_entries"
+        android:entryValues="@array/preference_previewSize_entryValues"
+        android:key="@string/preference_previewSize_key"
+        android:title="@string/preference_previewSize_title"/>
     <Preference
         android:summary="@string/preference_nsfwFilter_summary"
         android:title="@string/preference_nsfwFilter_title">

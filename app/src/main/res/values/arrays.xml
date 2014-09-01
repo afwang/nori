@@ -6,6 +6,18 @@
   -->
 
 <resources>
+  <!-- Thumbnail size preference entries. -->
+  <string-array name="preference_previewSize_entries">
+    <item>@string/preference_previewSize_small</item>
+    <item>@string/preference_previewSize_medium</item>
+    <item>@string/preference_previewSize_large</item>
+  </string-array>
+  <!-- Thumbnail size preference entry values. -->
+  <string-array name="preference_previewSize_entryValues">
+    <item>small</item>
+    <item>medium</item>
+    <item>large</item>
+  </string-array>
   <!-- Obscenity Filter preferences entries. -->
   <string-array name="preference_nsfwFilter_entries">
     <item>@string/obscenity_rating_safe</item>

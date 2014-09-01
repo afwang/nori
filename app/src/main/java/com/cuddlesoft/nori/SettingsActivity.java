@@ -9,19 +9,24 @@ package com.cuddlesoft.nori;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import com.cuddlesoft.nori.service.ClearSearchHistoryService;
 
 /** Main settings activity managing all the core preferences for the app, launched from {@link com.cuddlesoft.nori.SearchActivity}. */
 @SuppressWarnings("deprecation")
 // The non-fragment Preferences API is deprecated, but there is no alternative in the support library for API<11 support.
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,34 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     addPreferencesFromResource(R.xml.preferences);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    // Register listener used to update the summary of ListPreferences with their current value.
+    SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
+    sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+    // Iterate through shared preferences to update preference summaries when the activity is started.
+    for (String key : sharedPreferences.getAll().keySet()) {
+      onSharedPreferenceChanged(sharedPreferences, key);
+    }
+  }
+
+  @Override
+  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    Preference preference = findPreference(key);
+
+    // Set the summary for each ListPreference and EditTextPreference to its current value.
+    if (preference instanceof ListPreference) {
+      ListPreference listPreference = (ListPreference) preference;
+      listPreference.setSummary(listPreference.getEntry());
+    } else if (preference instanceof EditTextPreference) {
+      EditTextPreference editTextPreference = (EditTextPreference) preference;
+      editTextPreference.setSummary(editTextPreference.getText());
+    }
   }
 
   @Override
@@ -65,5 +98,13 @@ public class SettingsActivity extends PreferenceActivity {
     } else {
       return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+
+    // Unregister SharedPreferenceChangeListener.
+    getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
   }
 }
