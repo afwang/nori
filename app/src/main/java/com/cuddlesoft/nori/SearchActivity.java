@@ -18,6 +18,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -222,10 +223,26 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
     searchClientSettings = settings;
 
     // If a SearchClient wasn't included in the Intent that started this activity, create one now and search for the default query.
+    // Only do this if NSFW images would not be included in the search result.
     if (searchClient == null && searchResultGridFragment.getSearchResult() == null) {
       searchClient = settings.createSearchClient();
-      doSearch(searchClient.getDefaultQuery());
+      if (shouldLoadDefaultQuery()) {
+        doSearch(searchClient.getDefaultQuery());
+      } else if (searchMenuItem != null) {
+        MenuItemCompat.expandActionView(searchMenuItem);
+      }
     }
+  }
+
+  /**
+   * Only load the default query on app launch if NSFW images would not be shown.
+   *
+   * @return True if default query search results should be shown on first launch.
+   */
+  protected boolean shouldLoadDefaultQuery() {
+    String filters = sharedPreferences.getString(getString(R.string.preference_nsfwFilter_key), "");
+
+    return !(filters.contains("questionable") || filters.contains("explicit"));
   }
 
   @Override
@@ -367,7 +384,8 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
 
         // Filter the received SearchResult.
         final int resultCount = searchResult.getImages().length;
-        if (sharedPreferences.contains(getString(R.string.preference_nsfwFilter_key))) {
+        if (sharedPreferences.contains(getString(R.string.preference_nsfwFilter_key)) &&
+            !TextUtils.isEmpty(sharedPreferences.getString(getString(R.string.preference_nsfwFilter_key), "").trim())) {
           // Get filter from shared preferences.
           searchResult.filter(Image.ObscenityRating.arrayFromStrings(
               sharedPreferences.getString(getString(R.string.preference_nsfwFilter_key), "").split(" ")));
