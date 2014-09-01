@@ -1,6 +1,7 @@
 package com.cuddlesoft.nori.fragment;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +12,13 @@ import android.webkit.WebViewClient;
 import com.cuddlesoft.nori.R;
 import com.cuddlesoft.norilib.Image;
 
+import java.util.Locale;
+
 /**
  * Fragment used to display images not supported by the standard {@link android.widget.ImageView} widget
  * (such as animated GIFs).
  */
 public class WebViewImageFragment extends ImageFragment {
-  /** WebView used to display the image. */
-  private WebView webView;
 
   /**
    * Factory method used to construct new fragments.
@@ -50,7 +51,7 @@ public class WebViewImageFragment extends ImageFragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the WebView widget.
     View view = inflater.inflate(R.layout.fragment_image_viewer_webview, container, false);
-    webView = (WebView) view.findViewById(R.id.webView);
+    WebView webView = (WebView) view.findViewById(R.id.webView);
 
     // Set background color to black.
     webView.setBackgroundColor(0);
@@ -62,9 +63,11 @@ public class WebViewImageFragment extends ImageFragment {
     webSettings.setUseWideViewPort(true);
     webSettings.setLoadWithOverviewMode(true);
 
-    // Load image into the WebView.
-    String imageUrl = shouldLoadImageSamples() ? image.sampleUrl : image.fileUrl;
-    webView.loadUrl(imageUrl);
+    // Escape HTML entities from the image URL.
+    String imageUrl = TextUtils.htmlEncode(shouldLoadImageSamples() ? image.sampleUrl : image.fileUrl);
+    // Load the HTML to display the image in the center of the view.
+    webView.loadData(String.format(Locale.US, "<center><img src=\"%s\" alt=\"\" /></center>", imageUrl),
+        "text/html", "utf-8");
 
     return view;
   }
