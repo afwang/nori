@@ -13,5 +13,6 @@
     android:gravity="center_horizontal"
     android:horizontalSpacing="@dimen/searchResultGrid_spacing"
     android:numColumns="auto_fit"
+    android:scrollbarStyle="outsideOverlay"
     android:stretchMode="columnWidth"
     android:verticalSpacing="@dimen/searchResultGrid_spacing"/>
