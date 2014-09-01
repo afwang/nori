@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,7 +99,7 @@ public class EditAPISettingDialogFragment extends DialogFragment implements Adap
     passphrase = (EditText) view.findViewById(R.id.passphrase);
 
     // Set service name autosuggestion adapter.
-    name.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.service_suggestions_names)));
+    name.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.simple_dropdown_item, getResources().getStringArray(R.array.service_suggestions_names)));
     name.setThreshold(1);
     name.setOnItemClickListener(this);
 
@@ -158,7 +157,7 @@ public class EditAPISettingDialogFragment extends DialogFragment implements Adap
     String[] serviceNames = getResources().getStringArray(R.array.service_suggestions_names);
     String[] serviceUris = getResources().getStringArray(R.array.service_suggestions_uris);
 
-    for (int i=0; i < serviceNames.length; i++) {
+    for (int i = 0; i < serviceNames.length; i++) {
       if (serviceNames[i].equals(name)) {
         uri.setText(serviceUris[i]);
       }
