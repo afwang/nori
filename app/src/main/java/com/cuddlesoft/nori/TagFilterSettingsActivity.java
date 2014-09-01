@@ -94,8 +94,10 @@ public class TagFilterSettingsActivity extends ActionBarActivity implements View
       }
     }
 
-    // Set up the ActionBar.
+    // Hide the app icon and use the activity title as the home button.
     final ActionBar actionBar = getSupportActionBar();
+    actionBar.setDisplayShowHomeEnabled(false);
+    actionBar.setDisplayShowTitleEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     // Set up the ListView adapter.

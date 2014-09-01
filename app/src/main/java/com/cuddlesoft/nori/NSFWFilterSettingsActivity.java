@@ -47,8 +47,10 @@ public class NSFWFilterSettingsActivity extends ActionBarActivity implements Lis
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_nsfwfilter_settings);
 
-    // Set up the action bar.
-    final ActionBar actionBar = getSupportActionBar();
+    // Hide the action bar icon and use the activity title as the home button.
+    ActionBar actionBar = getSupportActionBar();
+    actionBar.setDisplayShowHomeEnabled(false);
+    actionBar.setDisplayShowTitleEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     // Get shared preference object.

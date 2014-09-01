@@ -32,6 +32,9 @@ public class SettingsActivity extends PreferenceActivity {
       // Add "up" button to the action bar.
       @SuppressLint("AppCompatMethod") ActionBar actionBar = getActionBar();
       if (actionBar != null) {
+        // Hide the app icon and use the activity title as the home button.
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
       }
     }

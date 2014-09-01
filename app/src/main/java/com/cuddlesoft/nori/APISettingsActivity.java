@@ -41,8 +41,10 @@ public class APISettingsActivity extends ActionBarActivity implements EditAPISet
     // Inflate layout XML.
     setContentView(R.layout.activity_service_settings);
 
-    // Set up the ActionBar.
+    // Hide the app icon and use the activity title as the home button.
     ActionBar actionBar = getSupportActionBar();
+    actionBar.setDisplayShowHomeEnabled(false);
+    actionBar.setDisplayShowTitleEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
 
     // Set up the ListView adapter and OnItemClickListener.
