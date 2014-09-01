@@ -180,7 +180,7 @@ public class SearchActivity extends ActionBarActivity implements SearchResultGri
   private void setUpActionBar() {
     ActionBar actionBar = getSupportActionBar();
     ServiceDropdownAdapter serviceDropdownAdapter = new ServiceDropdownAdapter();
-    actionBar.setIcon(R.drawable.ic_launcher);
+    actionBar.setDisplayShowHomeEnabled(false);
     actionBar.setDisplayShowTitleEnabled(false);
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
     actionBar.setListNavigationCallbacks(serviceDropdownAdapter, serviceDropdownAdapter);
