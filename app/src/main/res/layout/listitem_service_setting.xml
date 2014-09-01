@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of nori.
+  ~ Copyright (c) 2014 vomitcuddle <shinku@dollbooru.org>
+  ~ License: ISC
+  -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"

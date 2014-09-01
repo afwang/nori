@@ -1,3 +1,9 @@
+/*
+ * This file is part of nori.
+ * Copyright (c) 2014 vomitcuddle <shinku@dollbooru.org>
+ * License: ISC
+ */
+
 package com.cuddlesoft.nori.test.database;
 
 import android.content.BroadcastReceiver;
