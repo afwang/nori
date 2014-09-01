@@ -6,6 +6,6 @@
   -->
 
 <resources>
-    <!-- Maximum length of the image metadata string shown in ImageViewerActivity's title. -->
-    <integer name="activity_image_viewer_titleMaxLength">45</integer>
+  <!-- Maximum length of the image metadata string shown in ImageViewerActivity's title. -->
+  <integer name="activity_image_viewer_titleMaxLength">45</integer>
 </resources>

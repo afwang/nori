@@ -14,41 +14,43 @@
               android:minHeight="?android:attr/listPreferredItemHeight"
               android:paddingRight="?android:attr/scrollbarSize">
 
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="6dip"
-        android:layout_marginLeft="15dip"
-        android:layout_marginRight="6dip"
-        android:layout_marginTop="6dip"
-        android:layout_weight="1">
+  <RelativeLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="6dip"
+      android:layout_marginLeft="15dip"
+      android:layout_marginRight="6dip"
+      android:layout_marginTop="6dip"
+      android:layout_weight="1">
 
-        <TextView android:id="@+id/title"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:ellipsize="marquee"
-                  android:fadingEdge="horizontal"
-                  android:singleLine="true"
-                  android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-        <TextView android:id="@+id/summary"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignLeft="@id/title"
-                  android:layout_below="@id/title"
-                  android:maxLines="4"
-                  android:textAppearance="?android:attr/textAppearanceSmall"
-                  android:textColor="?android:attr/textColorSecondary"/>
-
-    </RelativeLayout>
-
-    <CheckBox
-        android:id="@id/checkbox"
+    <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginRight="16dp"
-        android:focusable="false"
-        android:focusableInTouchMode="false"/>
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <TextView
+        android:id="@+id/summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/title"
+        android:layout_below="@id/title"
+        android:maxLines="4"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?android:attr/textColorSecondary"/>
+
+  </RelativeLayout>
+
+  <CheckBox
+      android:id="@id/checkbox"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_marginRight="16dp"
+      android:focusable="false"
+      android:focusableInTouchMode="false"/>
 
 </LinearLayout>

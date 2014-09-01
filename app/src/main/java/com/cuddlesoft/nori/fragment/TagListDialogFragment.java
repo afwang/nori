@@ -44,7 +44,7 @@ public class TagListDialogFragment extends DialogFragment implements ListView.On
   /**
    * Factory method to create a new TagListDialogFragment for given {@link com.cuddlesoft.norilib.Image}.
    *
-   * @param image Image to display tags from.
+   * @param image    Image to display tags from.
    * @param settings Settings object included in SearchActivity launch intents sent from this dialog.
    * @return A new instance of TagListDialogFragment.
    */

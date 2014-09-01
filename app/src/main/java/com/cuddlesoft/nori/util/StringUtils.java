@@ -12,7 +12,7 @@ public abstract class StringUtils {
   /**
    * Merge a string array into a single string. Does the opposite of {@link String#split(String)}.
    *
-   * @param array String array to merge.
+   * @param array     String array to merge.
    * @param separator Separator to use.
    * @return String merged from array using the given separator.
    */

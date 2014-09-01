@@ -7,8 +7,8 @@
 
 <resources>
 
-    <style name="ImageViewerTheme" parent="Theme.AppCompat">@style/ImageViewerActionBar
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:actionBarStyle">@style/ImageViewerActionBar</item>
-    </style>
+  <style name="ImageViewerTheme" parent="Theme.AppCompat">@style/ImageViewerActionBar
+    <item name="android:windowActionBarOverlay">true</item>
+    <item name="android:actionBarStyle">@style/ImageViewerActionBar</item>
+  </style>
 </resources>

@@ -14,8 +14,10 @@ import android.test.RenamingDelegatingContext;
 
 import com.cuddlesoft.nori.database.SearchSuggestionDatabase;
 
+import static com.cuddlesoft.nori.database.SearchSuggestionDatabase.COLUMN_ICON;
+import static com.cuddlesoft.nori.database.SearchSuggestionDatabase.COLUMN_ID;
+import static com.cuddlesoft.nori.database.SearchSuggestionDatabase.TABLE_NAME;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static com.cuddlesoft.nori.database.SearchSuggestionDatabase.*;
 
 /** Tests the {@link SearchSuggestionDatabase} class. */
 public class SearchSuggestionDatabaseTest extends InstrumentationTestCase {

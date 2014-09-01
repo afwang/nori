@@ -6,7 +6,7 @@
   -->
 
 <resources>
-    <color name="network_thumbnail_placeholder">#dfdfdf</color>
-    <color name="image_viewer_actionbarBackground">#aa000000</color>
+  <color name="network_thumbnail_placeholder">#dfdfdf</color>
+  <color name="image_viewer_actionbarBackground">#aa000000</color>
 
 </resources>
