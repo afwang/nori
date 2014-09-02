@@ -24,6 +24,15 @@ import java.util.Locale;
  * (such as animated GIFs).
  */
 public class WebViewImageFragment extends ImageFragment {
+  /** String format used to create HTML used to display the images. */
+  private static final String IMAGE_HTML = "<!DOCTYPE html>" +
+      "<html><head>" +
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">" +
+      "<title></title>" +
+      "<style>img { max-width:100%%; max-height:100%%; bottom:0; left:0; margin: auto; overflow: auto; position: absolute; right: 0; top: 0; }</style>" +
+      "</head><body>" +
+      "<img src=\"%s\" alt=\"\" />" +
+      "</body></html>";
 
   /**
    * Factory method used to construct new fragments.
@@ -61,18 +70,18 @@ public class WebViewImageFragment extends ImageFragment {
     // Set background color to black.
     webView.setBackgroundColor(0);
     webView.setBackgroundResource(android.R.color.transparent);
+    // Disable over-scroll effect.
+    webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
     // Zoom out the view port to display the entire image by default.
     WebSettings webSettings = webView.getSettings();
     webSettings.setBuiltInZoomControls(false);
-    webSettings.setUseWideViewPort(true);
-    webSettings.setLoadWithOverviewMode(true);
 
     // Escape HTML entities from the image URL.
     String imageUrl = TextUtils.htmlEncode(shouldLoadImageSamples() ? image.sampleUrl : image.fileUrl);
     // Load the HTML to display the image in the center of the view.
-    webView.loadData(String.format(Locale.US, "<center><img src=\"%s\" alt=\"\" /></center>", imageUrl),
-        "text/html", "utf-8");
+    webView.loadDataWithBaseURL(null, String.format(Locale.US, IMAGE_HTML, imageUrl),
+        "text/html", "utf-8", null);
 
     return view;
   }
