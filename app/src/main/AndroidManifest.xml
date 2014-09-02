@@ -15,6 +15,11 @@
   <!-- Needed to set images as wallpapers. -->
   <uses-permission android:name="android.permission.SET_WALLPAPER"/>
 
+  <!-- Define explicit tablet support. -->
+  <supports-screens
+      android:largeScreens="true"
+      android:xlargeScreens="true"/>
+
   <application
       android:allowBackup="true"
       android:icon="@drawable/ic_launcher"
