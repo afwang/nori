@@ -157,7 +157,7 @@ public class ImageViewerActivity extends ActionBarActivity implements ViewPager.
       title = title.substring(0, getResources().getInteger(R.integer.activity_image_viewer_titleMaxLength)) + "…";
     }
 
-    setTitle(title);
+    getSupportActionBar().setTitle(title);
   }
 
   /**
