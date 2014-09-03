@@ -1,7 +1,8 @@
 [![Gittip](http://img.shields.io/gittip/vomitcuddle.svg)](https://www.gittip.com/vomitcuddle/)
 
-Nori² is a complete rewrite of my first Android app - Nori Danbooru Client. It
-fixes most issues with the previous versions, such as constant OutOfMemory
-errors by making use of modern libraries and best practices.
+Nori is a free and open source Android client for [Danbooru](https://github.com/r888888888/danbooru)/Gelbooru/[Shimmie2](https://github.com/shish/shimmie2)-based imageboards and image galleries.
 
-[![Get it on Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](http://play.google.com/store/apps/details?id=com.cuddlesoft.nori)
+### Notice ###
+**This app is no longer available on Google Play store.**
+
+[Download the latest APK here](https://github.com/vomitcuddle/nori/releases/download/v2.0.0-RC2/app-release.apk)
